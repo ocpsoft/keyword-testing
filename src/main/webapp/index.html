@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+   <head>
+       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+       <title>Welcome to The Keyword Framework</title>
+   </head>
+   <body>
+
+       <center>
+       <H1>Welcome to The Keyword Framework</H1><P /><BR />
+       Current Suite is: <input type="text" id="className" />
+       <input type="submit" value="LoadSuite" onClick='getTestSuite()'/><P />
+       <P />
+       </center>
+       The User will 
+       	<select id="keyword" onchange="instruction_Selected()">
+			<option value="BeginClass">Begin New Suite</option>
+			<option value="BeginTest">Begin New Test</option>
+			<option value="OpenBrowser">Open Browser</option>
+			<option value="Click">Click Link</option>
+			<option value="VerifyObjectProperty">Verify Object Property</option>
+			<option value="VerifyObjectIsDisplayed">Verify Object Is Displayed</option>			
+			<option value="VerifyObjectIsNotDisplayed">Verify Object Is NOT Displayed</option>
+			<option value="SelectDropdownValue">Select Dropdown Value</option>
+			<option value="EndTest">End Current Test</option>
+			<option value="EndClass">End Test Suite</option>
+		</select>
+		<P />
+       <div id='entireInput1'>
+       		<div id="input1Desc">with Input 1: </div> 
+       		<input type="text" id="Input1" /><P />
+       </div>
+       <div id='entireInput2'>
+	       <div id="input2Desc">with Input 2: </div> 
+    	   <input type="text" id="Input2" /><P />
+       </div>
+       <div id='entireInput3'>
+	       <div id="input3Desc">with Input 3: </div>
+    	   <input type="text" id="Input3" /><P />
+       </div>
+       <div id='entireInput4'>
+	       <div id="input4Desc">with Input 4: </div>
+     	  <input type="text" id="Input4" /><P />
+       </div>         
+       <input type="submit" value="Add Instruction" onClick='addInstruction()' /><P />
+       <center>
+       <div id="InstructionStatus"></div><P />
+       <input type="submit" value="Run Tests" onClick='runTests()'/><P />
+       <div id="RunTests"></div><P />
+       <BR /><P /><BR />
+       </center>
+       <input type="submit" value="Clear Console" onClick='clearDivs()'/><input type="submit" value="Delete Suite" onClick='deleteSuite()'/><br />
+		The test currently looks as follows:
+		<div id="testSuite"></div>
+
+
+        <script type="text/javascript">
+
+		function instruction_Selected(){
+			var dropdown = document.getElementById("keyword");
+			var keyword = dropdown.options[dropdown.selectedIndex].text;
+			var input1Desc = document.getElementById("input1Desc");
+			var input1 = document.getElementById("Input1");
+			var input2Desc = document.getElementById("input2Desc");
+			var input2 = document.getElementById("Input2");
+			var input3Desc = document.getElementById("input3Desc");
+			var input3 = document.getElementById("Input3");
+			var input4Desc = document.getElementById("input4Desc");
+			var input4 = document.getElementById("Input4");
+
+			hideAllInputs();
+			
+			switch (keyword)
+			{
+			case "Begin New Suite":
+				showInputsForBeginTestSuite();
+				break;
+			case "Begin New Test":
+				showSpecificInput("1");
+			  	input1Desc.innerHTML = "with Test Name of:";
+			  	input1.value = "testName";
+
+				input2.value = "assigned_null";
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "Open Browser":
+				showSpecificInput("1");
+				input1Desc.innerHTML = "with Starting Webpage of:";
+				input1.value = "index.html";
+
+				input2.value = "assigned_null";
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "Click Link":
+				showSpecificInput("1");
+			  	input1Desc.innerHTML = "with Text of:";
+			  	input1.value = "Get Your Info Here";
+			  	showSpecificInput("2");
+			  	input2Desc.innerHTML = "and desired Destination Path of:";
+			  	input2.value = "myInfo.html";
+				  	
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "Verify Object Property":
+				showSpecificInput("1");
+			  	input1Desc.innerHTML = "with Verification Message of:";
+			  	input1.value = "Selected Value should be Begin New Suite";
+			  	showSpecificInput("2");
+			  	input2Desc.innerHTML = "with object Type of:";
+			  	input2.value = "select";
+			  	showSpecificInput("3");
+			  	input3Desc.innerHTML = "with XPath property to verify of:";
+			  	input3.value = "//select[@id='keyword']";
+			  	showSpecificInput("4");
+			  	input4Desc.innerHTML = "with value to verify of:";
+			  	input4.value = "Begin New Suite";
+			  break;			  
+			case "Verify Object Is Displayed":
+				showSpecificInput("1");
+			  	input1Desc.innerHTML = "with Verification Message of:";
+			  	input1.value = "User should be on MyInfo Page!";
+			  	showSpecificInput("2");
+			  	input2Desc.innerHTML = "with XPath property to verify of:";
+			  	input2.value = "div[@id='myFBdata']";
+				  	
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "Verify Object Is NOT Displayed":
+				showSpecificInput("1");
+			  	input1Desc.innerHTML = "with Verification Message of:";
+			  	input1.value = "User should NOT see message [Error: invalid action]!";
+			  	showSpecificInput("2");
+			  	input2Desc.innerHTML = "with XPath property to verify of:";
+			  	input2.value = "div[@id='myFBdata']";
+				  	
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "Select Dropdown Value":
+				showSpecificInput("1");
+			  	input1Desc.innerHTML = "with Dropdown object's ID of:";
+			  	input1.value = "keyword";
+			  	showSpecificInput("2");
+			  	input2Desc.innerHTML = "selecting the value of:";
+			  	input2.value = "Begin New Suite";
+				  	
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "End Current Test":
+			  	input1.value = "assigned_null";
+				input2.value = "assigned_null";
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			case "End Test Suite":
+			  	input1.value = "assigned_null";
+				input2.value = "assigned_null";
+			  	input3.value = "assigned_null";
+			  	input4.value = "assigned_null";
+			  break;
+			} 
+		}
+
+		function hideAllInputs(){
+			var element;
+			for(var x=1; x<5; x++){
+				element = document.getElementById("entireInput" + x);
+				element.style.visibility = 'visible';
+			}
+		}
+
+		function showSpecificInput(inputNum){
+			var entireInput = document.getElementById("entireInput" + inputNum);
+			var inputDesc = document.getElementById("input" + inputNum + "Desc");
+			var input = document.getElementById("Input" + inputNum);			
+			entireInput.style.visibility = 'visible';
+			inputDesc.style.visibility = 'visible';
+			input.style.visibility = 'visible';		
+		}
+
+		function showInputsForBeginTestSuite(){
+			var input1Desc = document.getElementById("input1Desc");
+			var input1 = document.getElementById("Input1");
+			var input2 = document.getElementById("Input2");
+			var input3 = document.getElementById("Input3");
+			var input4 = document.getElementById("Input4");
+			showSpecificInput("1");
+		  	input1Desc.innerHTML = "with Suite Name of:";
+		  	input1.value = "MySuiteTest";
+
+			input2.value = "assigned_null";
+		  	input3.value = "assigned_null";
+		  	input4.value = "assigned_null";
+		}
+
+		function doGET(GetURL){
+			var myObj = null;
+			var xmlhttp = null;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+				if ( typeof xmlhttp.overrideMimeType != 'undefined') {
+					xmlhttp.overrideMimeType('text/json');
+				}
+			} else if (window.ActiveXObject) {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			} else {
+				alert('Your browser does not support xmlhttprequests. Sorry.');
+			}
+
+			xmlhttp.open('GET', GetURL, true);
+			xmlhttp.setRequestHeader('Content-Type', 'application/json');
+			xmlhttp.send(null);
+
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == 4) {
+					if(xmlhttp.status == 200) {
+						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
+						myObj = xmlhttp.responseText;
+						if(GetURL.indexOf("/CopyTestIntoProject/") != -1){
+							//Update the element on the page
+							document.getElementById('TestsCopied').innerHTML = myObj;
+						}
+						else if(GetURL.indexOf("/RunBuild") != -1){
+							document.getElementById('RunTests').innerHTML = myObj;
+						}
+						else if(GetURL.indexOf("/TestSuite") != -1){
+							document.getElementById('testSuite').innerHTML = myObj;
+						}
+						return myObj;
+					}
+					else {
+						if(isDEBUG){
+							alert("GET Fail - status: " + xmlhttp.status + " - " + xmlhttp.responseText);
+						}
+					}
+				} else {
+					// wait for the call to complete
+				}
+			};
+		return null;
+		}//doGET
+
+		function doPOST(POSTURL, JSONInput, isAsync) {
+			var myObj = null;
+			var xmlhttp = null;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+				if ( typeof xmlhttp.overrideMimeType != 'undefined') {
+					xmlhttp.overrideMimeType('application/json');
+				}
+			} else if (window.ActiveXObject) {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			} else {
+				alert('Your browser does not support xmlhttprequests. Sorry.');
+			}
+			
+			xmlhttp.open('POST', POSTURL, isAsync);
+			xmlhttp.setRequestHeader('Content-Type', 'application/json');
+			xmlhttp.send(JSONInput);
+			
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == 4) {
+					if(xmlhttp.status == 200) {
+						myObj = xmlhttp.responseText;
+						return myObj;
+					}
+					else {
+						alert("POST Fail - status: " + xmlhttp.status + " - " + xmlhttp.responseText);
+					}
+				} else {
+				// wait for the call to complete
+				}
+			};
+			//This would be wierd, but if we get here and we have a response, return what we got and not null
+			if(xmlhttp.responseText.length > 0){
+				return xmlhttp.responseText;
+			}
+			return null;
+		}//doPOST
+
+
+		function runTests() {
+			var GETurl = 'rest/webService/RunBuild';
+			var returnVal = doGET(GETurl);
+			return returnVal;
+		}
+
+		function getTestSuite() {
+			var className = document.getElementById("className").value;
+			var GETurl = 'rest/webService/TestSuite/' + className + '.java';
+			var returnVal = doGET(GETurl);
+			return returnVal;
+		}
+
+		function postInstruction(keyword, input1, input2, input3, input4){
+			var className = document.getElementById("className").value;
+			var POSTurl = 'rest/webService/NewInstruction/' + 
+				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + 
+				encodeURLComp(input1) + '/' + encodeURLComp(input2) + '/' + 
+				encodeURLComp(input3) + '/' + encodeURLComp(input4);
+			var returnVal = doPOST(POSTurl, "", false);
+			return returnVal;
+		}
+
+		function encodeURLComp(component){
+			//TODO: For some reason encodeURIComponent isn't working for WebService, seems like Java is Decoding it before the @Path takes a look, don't know why...
+			return component.replace("//", "&&&***");
+		}
+		function clearDivs(){
+			document.getElementById('RunTests').innerHTML = "";
+			document.getElementById('testSuite').innerHTML = "";
+		}
+
+		function deleteSuite(){
+			var className = document.getElementById("className").value;
+			var POSTurl = 'rest/webService/DeleteTestSuite/' + className + '.java';
+			var returnVal = doPOST(POSTurl, "", false);
+			clearDivs();
+			document.getElementById('testSuite').innerHTML = returnVal;		
+		}
+
+		function addInstruction(){
+			var e = document.getElementById("keyword");
+			var keyword = e.options[e.selectedIndex].value;
+			e = document.getElementById("Input1");
+			var input1 = e.value;
+			e = document.getElementById("Input2");
+			var input2 = e.value;
+			e = document.getElementById("Input3");
+			var input3 = e.value;
+			e = document.getElementById("Input4");
+			var input4 = e.value;						
+			//alert("keyword = " + keyword + ", input1: " + input1 + ", input2: " + input2);
+
+			if(keyword == "BeginClass"){
+				document.getElementById("className").value = document.getElementById("Input1").value;
+			}
+			if(typeof(document.getElementById("className").value) === 'undefined' || document.getElementById("className").value == ''){
+				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
+			}
+			else{
+				postInstruction(keyword, input1, input2, input3, input4);
+				getTestSuite();
+			}
+		}
+
+		hideAllInputs();
+		showInputsForBeginTestSuite();
+		document.getElementById("className").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
+		</script>
+       
+</body>
+</html>
