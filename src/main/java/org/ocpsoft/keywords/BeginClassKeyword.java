@@ -42,6 +42,7 @@ public class BeginClassKeyword implements Keyword {
 			writetoTest.println("		return ShrinkWrap.create(WebArchive.class, \"FBTutorialDemo.war\")");
 			writetoTest.println("						.addAsResource(\"META-INF/persistence.xml\")");
 			writetoTest.println("						.addAsWebResource(new File(WEBAPP_SRC, \"index.html\"))");
+			writetoTest.println("						.addAsWebResource(new File(WEBAPP_SRC, \"index2.html\"))");
 			writetoTest.println("						.addAsWebResource(new File(WEBAPP_SRC, \"myInfo.html\"))");
 			writetoTest.println("						.addAsWebResource(new File(WEBAPP_SRC, \"friendsInfo.html\"))");
 			writetoTest.println("						.addAsWebInfResource(EmptyAsset.INSTANCE, \"beans.xml\");");
@@ -58,6 +59,8 @@ public class BeginClassKeyword implements Keyword {
 			writetoTest.println("private String getValue(String objectType, String objectXPath){");
 			writetoTest.println("\tif(objectType.equals(\"select\")) {");
 			writetoTest.println("\t\treturn browser.getSelectedLabel(objectXPath);");
+			writetoTest.println("\t} else if(objectType.equals(\"input\")) {");
+			writetoTest.println("\t\treturn browser.getValue(objectXPath);");			
 			writetoTest.println("\t} else {");
 			writetoTest.println("\t\treturn browser.getText(objectXPath);");
 			writetoTest.println("\t}");

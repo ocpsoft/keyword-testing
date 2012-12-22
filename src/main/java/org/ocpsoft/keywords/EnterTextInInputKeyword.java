@@ -4,15 +4,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-public class ClickKeyword implements Keyword {
+public class EnterTextInInputKeyword implements Keyword {
 
 	@Override
 	public String getType() {
-		return "Click";
+		return "EnterTextInInput";
 	}
 
 	@Override
-	public String addInstruction(String testPath, String linkText, String linkPath,
+	public String addInstruction(String testPath, String xPathOfInput, String inputTextValue,
 			String desc3, String desc4, String value) {
 		try{
 			File f = new File(testPath);
@@ -23,8 +23,7 @@ public class ClickKeyword implements Keyword {
 				PrintStream writetoTest = new PrintStream(
 					     new FileOutputStream(testPath, true)); 
 				writetoTest.append("\n" +
-									"\t\tbrowser.click(\"link=" + linkText + "\");\n" +
-									"\t\tbrowser.waitForFrameToLoad(\"" + linkPath + "\", \"15000\");\n");
+									"\t\tbrowser.type(\"" + xPathOfInput + "\", \"" + inputTextValue + "\");\n");
 				writetoTest.close();
 				return "SUCCESS";
 			}
@@ -36,8 +35,7 @@ public class ClickKeyword implements Keyword {
 	}
 
 	/* EXAMPLE:
-	 *  browser.click("link=Get Your Info Here");
-     *  browser.waitForFrameToLoad("myInfo.html", "15000");
+	 *  browser.type("//input[@id='className']","Text to Enter");
 	 */
 	
 }

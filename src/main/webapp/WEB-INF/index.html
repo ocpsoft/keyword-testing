@@ -17,8 +17,7 @@
 			<option value="BeginClass">Begin New Suite</option>
 			<option value="BeginTest">Begin New Test</option>
 			<option value="OpenBrowser">Open Browser</option>
-			<option value="ClickLink">Click Link</option>
-			<option value="EnterTextInInput">Enter Text in Box</option>
+			<option value="Click">Click Link</option>
 			<option value="VerifyObjectProperty">Verify Object Property</option>
 			<option value="VerifyObjectIsDisplayed">Verify Object Is Displayed</option>			
 			<option value="VerifyObjectIsNotDisplayed">Verify Object Is NOT Displayed</option>
@@ -88,7 +87,7 @@
 			case "Open Browser":
 				showSpecificInput("1");
 				input1Desc.innerHTML = "with Starting Webpage of:";
-				input1.value = "index2.html";
+				input1.value = "index.html";
 
 				input2.value = "assigned_null";
 			  	input3.value = "assigned_null";
@@ -105,17 +104,6 @@
 			  	input3.value = "assigned_null";
 			  	input4.value = "assigned_null";
 			  break;
-			case "Enter Text in Box":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with xPath of Input:";
-			  	input1.value = "//input[@id='className']";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "and Text to enter:";
-			  	input2.value = "Assigning Input Text";
-				  	
-			  	input3.value = "assigned_null";
-			  	input4.value = "assigned_null";
-			  break;			  
 			case "Verify Object Property":
 				showSpecificInput("1");
 			  	input1Desc.innerHTML = "with Verification Message of:";
