@@ -35,8 +35,7 @@ public class SelectDropdownValueKeyword implements Keyword {
 	}
 
 	/* EXAMPLE:
-	 *  browser.click("link=Get Your Info Here");
-     *  browser.waitForFrameToLoad("myInfo.html", "15000");
+	 *  browser.select("id=keyword", "label=Begin New Suite");
 	 */
 	
 }

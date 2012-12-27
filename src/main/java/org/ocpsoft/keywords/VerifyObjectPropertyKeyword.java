@@ -3,9 +3,6 @@ package org.ocpsoft.keywords;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.lang.invoke.SwitchPoint;
-
-import javax.persistence.criteria.CriteriaBuilder.Case;
 
 public class VerifyObjectPropertyKeyword implements Keyword {
 

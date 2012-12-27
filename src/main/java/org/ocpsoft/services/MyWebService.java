@@ -191,7 +191,9 @@ public class MyWebService {
 	
 	//TODO: This is a hack, find a better way of passing these "bad chars"
 	private String decodeURLForBadChars(String url){
-		return url.replace("&&&***", "//");
+		String returnVal = url.replace("&&&***", "//");
+		returnVal = returnVal.replace("&**&", "/");
+		return returnVal;
 	}
 	
 	private static String copyAndOverrideFile(File sourceFile, File destFile)
