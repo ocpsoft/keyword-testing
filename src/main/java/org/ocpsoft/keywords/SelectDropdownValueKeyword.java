@@ -3,6 +3,7 @@ package org.ocpsoft.keywords;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class SelectDropdownValueKeyword implements Keyword {
 
@@ -12,8 +13,7 @@ public class SelectDropdownValueKeyword implements Keyword {
 	}
 
 	@Override
-	public String addInstruction(String testPath, String dropdownID, String textToSelect,
-			String desc3, String desc4, String value) {
+	public String addInstruction(String testPath, ArrayList<String> inputValues) {
 		try{
 			File f = new File(testPath);
 			if(!f.exists()) { 
@@ -23,7 +23,7 @@ public class SelectDropdownValueKeyword implements Keyword {
 				PrintStream writetoTest = new PrintStream(
 					     new FileOutputStream(testPath, true)); 
 				writetoTest.append("\n" +
-									"\t\tbrowser.select(\"id=" + dropdownID + "\", \"label=" + textToSelect + "\");\n");
+									"\t\tbrowser.select(\"id=" + inputValues.get(0) + "\", \"label=" + inputValues.get(1) + "\");\n");
 				writetoTest.close();
 				return "SUCCESS";
 			}

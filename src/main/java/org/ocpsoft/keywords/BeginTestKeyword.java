@@ -3,6 +3,7 @@ package org.ocpsoft.keywords;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class BeginTestKeyword implements Keyword {
 
@@ -12,8 +13,7 @@ public class BeginTestKeyword implements Keyword {
 	}
 
 	@Override
-	public String addInstruction(String testPath, String desc1, String desc2,
-			String desc3, String desc4, String value) {
+	public String addInstruction(String testPath, ArrayList<String> inputValues) {
 		try{
 			File f = new File(testPath);
 			if(!f.exists()) { 
@@ -24,7 +24,7 @@ public class BeginTestKeyword implements Keyword {
 						new FileOutputStream(testPath, true)); 
 				writetoTest.append("\n" +
 						"\t@Test\n" +
-						"\tpublic void "+ desc1 +"() throws InterruptedException {//Begin Test Case\n");
+						"\tpublic void "+ inputValues.get(0) +"() throws InterruptedException {//Begin Test Case\n");
 				
 				writetoTest.close();
 				System.out.println("\nSUCCESS - Test now has beginning!!!");

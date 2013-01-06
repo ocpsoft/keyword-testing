@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
@@ -164,29 +166,27 @@ public class MyWebService {
 	}
 	
 	@POST
-	@Path("/NewInstruction/{keyword}/{className}/{input1}/{input2}/{input3}/{input4}")
+	@Path("/NewInstruction/{keyword}/{className}/{inputArray}")
 	public String processNewInstruction(
 			@PathParam("keyword") String keywordkey,
 			@PathParam("className") String className,
-			@PathParam("input1") String input1,
-			@PathParam("input2") String input2,
-			@PathParam("input3") String input3,
-			@PathParam("input4") String input4) {
+			@PathParam("inputArray") String[] inputArray) {
+		
+		String[] actualInputArray = inputArray[0].split(",");//For some reason, REST is passing the inputArray as [array], need to treat element(0) as the actual inputArray
 		try {
-			input1 = decodeURLForBadChars(input1);
-			input2 = decodeURLForBadChars(input2);
-			input3 = decodeURLForBadChars(input3);
-			input4 = decodeURLForBadChars(input4);
+			for (int i = 0; i < actualInputArray.length; i++) {
+				actualInputArray[i] = decodeURLForBadChars(actualInputArray[i]);
+			}
 		} catch (Exception e) {
 			System.out.println("ERROR: Exception in Encoding URL inputs!");
 		}
 		System.out.println("Processing New Instruction - Keyword: " + keywordkey
-				+ ", input1: " + input1 + ", input2: " + input2 + ", className=" + className);
-		String value = "";
+				+ ", inputArray: " + inputArray + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
 		String testPath = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/" + className + ".java";
-		return keyword.addInstruction(testPath, input1, input2, input3, input4, value);
+		
+		return keyword.addInstruction(testPath, new ArrayList(Arrays.asList(actualInputArray)));
 	}
 	
 	//TODO: This is a hack, find a better way of passing these "bad chars"

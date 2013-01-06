@@ -2,6 +2,7 @@ package org.ocpsoft.keywords;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.core.api.annotation.Inject;
@@ -16,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.services.MyWebService;
 
+import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.constants.InputConstants.KEYWORD_KEYS;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
@@ -26,9 +29,9 @@ public class MySuiteTest {//Begin Class
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "KeywordApp.war")
-						.addClasses(MyWebService.class)
+						.addClasses(MyWebService.class, InputConstants.class)
 						.addAsResource("META-INF/persistence.xml")
-						.addAsWebResource(new File(WEBAPP_SRC, "index.html"))
+						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
 						.addAsWebResource(new File(WEBAPP_SRC, "myLink.html"))
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
@@ -55,14 +58,13 @@ private String getValue(String objectType, String objectXPath){
 	}
 }
 
-
 	@Test
 	public void testButtonClicks() throws InterruptedException {//Begin Test Case
 		/* This test covers the [Clear Divs] and [Delete Suite] buttons 
 		 * Also tests Text (TODO:needs to do innerHTML) of Div elements.
 		 */
 		
-		browser.open(deploymentURL + "index.html");
+		browser.open(deploymentURL + "index.jsp");
 
 		value = getValue("div", "//div[@id='testSuite']");
 		Assert.assertTrue("Value should be blank",
@@ -83,7 +85,6 @@ private String getValue(String objectType, String objectXPath){
 		
 		value = getValue("div", "//div[@id='testSuite']");
 		expected = "";
-		System.out.println("Check 2 - Value = [" + value + "]");
 		Assert.assertTrue("value should be [blank]",
 				expected.equals(value));		
 	}//End Test Case
@@ -98,7 +99,7 @@ private String getValue(String objectType, String objectXPath){
 		 * tests VerifyObjectIsNotDislayed - input.
 		 */
 		
-		browser.open(deploymentURL + "index.html");
+		browser.open(deploymentURL + "index.jsp");
 
 		browser.click("link=Click to go to myLink");
 
@@ -125,16 +126,16 @@ private String getValue(String objectType, String objectXPath){
 
 
 	@Test
-	public void testKeywordDropdown() throws InterruptedException {//Begin Test Case
+	public void testKeywordDropdownInputs() throws InterruptedException {//Begin Test Case
 		/* This test covers selecting dropdown values
 		 * tests properties of dropdowns. 
 		 * tests properties of inputs.
 		 * tests properties of divs (Text only, not innerHTML).
 		 */
 		
-		String valToSelect = "Begin New Suite";
+		String valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		//BEGIN NEW SUITE
-		browser.open(deploymentURL + "index.html");
+		browser.open(deploymentURL + "index.jsp");
 
 		value = getValue("select", "//select[@id='keyword']");
 		String expected = valToSelect;
@@ -142,7 +143,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "MySuiteTest";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -157,7 +158,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//BEGIN NEW TEST
-		valToSelect = "Begin New Test";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
@@ -166,12 +167,12 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "testName";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = "with Test Name of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.BeginTest).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -181,7 +182,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//OPEN BROWSER
-		valToSelect = "Open Browser";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
@@ -190,12 +191,12 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "index.html";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = "with Starting Webpage of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.OpenBrowser).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -205,21 +206,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//CLICK WEB ELEMENT
-		valToSelect = "Click Web Element";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "Click Web Element";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input3']");
-		expected = "myInfo.html";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.ClickElement).get(2);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = "and desired element key of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.ClickElement).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -229,21 +230,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//ENTER TEXT IN BOX
-		valToSelect = "Enter Text in Box";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "Enter Text in Box";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "//input[@id='className']";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.EnterTextInInput).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = "and Text to enter:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.EnterTextInInput).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -253,64 +254,64 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//VERIFY OBJECT PROPERTY
-		valToSelect = "Verify Object Property";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "Verify Object Property";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "Selected Value should be Begin New Suite";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectProperty).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = "with object Type of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectProperty).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input4Desc']");
-		expected = "with value to verify of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectProperty).get(3);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 		
 		//END TEST SUITE
-		valToSelect = "End Test Suite";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "End Test Suite";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "assigned_null";
+		expected = "";
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = "Input 1";
+		expected = "";
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 		
 		//VERIFY OBJECT IS DISPLAYED
-		valToSelect = "Verify Object Is Displayed";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "Verify Object Is Displayed";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input2']");
-		expected = "div[@id='myFBdata']";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = "with Verification Message of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectIsDisplayed).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -320,21 +321,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//VERIFY OBJECT IS NOT DISPLAYED
-		valToSelect = "Verify Object Is NOT Displayed";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "Verify Object Is NOT Displayed";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "User should NOT see message [Error: invalid action]!";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = "with XPath property to verify of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -344,21 +345,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//SELECT DROPDOWN VALUE
-		valToSelect = "Select Dropdown Value";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "Select Dropdown Value";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input2']");
-		expected = "Begin New Suite";
+		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.SelectDropdownValue).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = "with Dropdown object's ID of:";
+		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.SelectDropdownValue).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -368,23 +369,60 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//END CURRENT TEST
-		valToSelect = "End Current Test";
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = "End Current Test";
+		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = "assigned_null";
+		expected = "";
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = "Input 1";
+		expected = "";
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 	}//End Test Case
 
+	@Test
+	public void testBuildingASuiteAndRunning() throws InterruptedException {//Begin Test Case
+		/* This test builds a new suite via the app.
+		 * Once constructed, it will click the [Run Tests] button to kick it off.
+		 * 		NOT CURRENTLY KICKING OFF TEST SUITE.  Need to do something with port number, or other fix, see below.
+		 */
+		
+		browser.open(deploymentURL + "index.jsp");
+
+		browser.click("id=deleteSuite");
+		String valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		//The Default
+		browser.click("id=AddInstruction");
+
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+
+		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		
+		//browser.click("id=RunTests");
+		//Can run tests, but can't have Selenium start up ANOTHER Selenium server, so build will Fail.
+		//Assert.assertTrue("Build Success", browser.isTextPresent("BUILD SUCCESS"));
+	}//End Test Case
+
+
+	
 }//End Class

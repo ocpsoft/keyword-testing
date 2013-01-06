@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
    <head>
        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -6,9 +8,72 @@
    </head>
    <body>
 
+		<%-- scriptlets --%>
+		<%@ page import="com.ocpsoft.constants.InputConstants" %>
+
+		<%--
+		For Each loop: VERIFY_OBJECT_PROPERTY<BR />
+		<%
+		for (String desc : KeywordInputDescriptionConstants.VERIFY_OBJECT_PROPERTY) {
+			%><%=desc %><br /><%
+		}
+		%><P /> --%>
+		Here are all the descriptions<BR />
+		<script type="text/javascript">
+    		var curKeyword = "";
+    		var keywordDescMap = {};
+    		var keywordValueMap = {};
+    	</script>
+		<%
+		for (Map.Entry<InputConstants.KEYWORD_KEYS, List<String>> keywordDesc : InputConstants.KEYWORD_DESCRIPTIONS.entrySet()) {
+			InputConstants.KEYWORD_KEYS keyword = keywordDesc.getKey();
+			    List<String> descriptions = keywordDesc.getValue();
+		%><P />Keyword: <%=keyword %><BR />
+	    	<script type="text/javascript">
+	    		var curDescList = "";
+	    		curKeyword = "<%=keyword%>";
+	    	</script>
+		    <%
+		    for (int i = 0; i < descriptions.size(); i++) {
+		    	%><%=i%>: <%=descriptions.get(i)%><BR />
+		    	<script type="text/javascript">
+		    		curDescList = curDescList + "<%=descriptions.get(i)%>" + ", ";
+		    	</script>		    	
+		    	<%
+		    }
+			%>
+	    	<script type="text/javascript">
+	    		keywordDescMap[curKeyword] = curDescList.substring(0, curDescList.length - 2);
+		   	</script>
+	   		<%		    
+		}
+		%><P />Here are all the values<BR /><%
+		for (Map.Entry<InputConstants.KEYWORD_KEYS, List<String>> keywordValue : InputConstants.KEYWORD_VALUES.entrySet()) {
+			InputConstants.KEYWORD_KEYS keyword = keywordValue.getKey();
+		    List<String> values = keywordValue.getValue();
+		%><P />Keyword: <%=keyword %><BR />
+	    	<script type="text/javascript">
+	    		var curValueList = "";
+	    		curKeyword = "<%=keyword%>";
+	    	</script>
+		    <%
+		    for (int i = 0; i < values.size(); i++) {
+		    	%><%=i%>: <%=values.get(i)%><BR />
+		    	<script type="text/javascript">
+		    		curValueList = curValueList + "<%=values.get(i)%>" + ", ";
+		    	</script>		    	
+		    	<%
+		    }
+			%>
+	    	<script type="text/javascript">
+	    	keywordValueMap[curKeyword] = curValueList.substring(0, curDescList.length - 2);
+		   	</script>
+	   		<%		    
+		}
+		%>
+		<hr><P />
+	
        <center>
-       <H1>THIS PAGE IS NOW DEPRICATED... USE Index.jsp</H1>
-       <hr /><BR /><P />
        <H1>Welcome to The Keyword Framework</H1><P />
        <a href="myLink.html">Click to go to myLink</a><BR />
        Current Suite is: <input type="text" id="className" />
@@ -18,17 +83,13 @@
        </center>
        The User will 
        	<select id="keyword" onchange="instruction_Selected()">
-			<option value="BeginClass">Begin New Suite</option>
-			<option value="BeginTest">Begin New Test</option>
-			<option value="OpenBrowser">Open Browser</option>
-			<option value="ClickElement">Click Web Element</option>
-			<option value="EnterTextInInput">Enter Text in Box</option>
-			<option value="VerifyObjectProperty">Verify Object Property</option>
-			<option value="VerifyObjectIsDisplayed">Verify Object Is Displayed</option>			
-			<option value="VerifyObjectIsNotDisplayed">Verify Object Is NOT Displayed</option>
-			<option value="SelectDropdownValue">Select Dropdown Value</option>
-			<option value="EndTest">End Current Test</option>
-			<option value="EndClass">End Test Suite</option>
+       		<%
+       		for (Map.Entry<InputConstants.KEYWORD_KEYS, String> keywordOption : InputConstants.KEYWORD_LONGNAMES.entrySet()) {
+    			%>
+    			<option value="<%=keywordOption.getKey().toString()%>"><%=keywordOption.getValue()%></option>
+    			<%
+    		}
+       		%>
 		</select>
 		<P />
        <div id='entireInput1'>
@@ -63,125 +124,9 @@
 
 		function instruction_Selected(){
 			var dropdown = document.getElementById("keyword");
-			var keyword = dropdown.options[dropdown.selectedIndex].text;
-			var input1Desc = document.getElementById("input1Desc");
-			var input1 = document.getElementById("Input1");
-			var input2Desc = document.getElementById("input2Desc");
-			var input2 = document.getElementById("Input2");
-			var input3Desc = document.getElementById("input3Desc");
-			var input3 = document.getElementById("Input3");
-			var input4Desc = document.getElementById("input4Desc");
-			var input4 = document.getElementById("Input4");
-
+			var keyword = dropdown.options[dropdown.selectedIndex].value;
 			hideAllInputs();
-			
-			switch (keyword)
-			{
-			case "Begin New Suite":
-				showInputsForBeginTestSuite();
-				break;
-			case "Begin New Test":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with Test Name of:";
-			  	input1.value = "testName";
-
-			  	hideSpecificInput("2");
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			case "Open Browser":
-				showSpecificInput("1");
-				input1Desc.innerHTML = "with Starting Webpage of:";
-				input1.value = "index.html";
-
-			  	hideSpecificInput("2");
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			case "Click Web Element":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with Identifyer [link/id/name/css/xpath] of:";
-			  	input1.value = "link";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "and desired element key of:";
-			  	input2.value = "Get Your Info Here";
-			  	showSpecificInput("3");
-			  	input3Desc.innerHTML = "and desired Destination Path of (FOR Identifyers of link ONLY):";
-			  	input3.value = "myInfo.html";
-			  	
-			  	hideSpecificInput("4");
-			  break;
-			case "Enter Text in Box":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with xPath of Input:";
-			  	input1.value = "//input[@id='className']";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "and Text to enter:";
-			  	input2.value = "Assigning Input Text";
-				  	
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;			  
-			case "Verify Object Property":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with Verification Message of:";
-			  	input1.value = "Selected Value should be Begin New Suite";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "with object Type of:";
-			  	input2.value = "select";
-			  	showSpecificInput("3");
-			  	input3Desc.innerHTML = "with XPath property to verify of:";
-			  	input3.value = "//select[@id='keyword']";
-			  	showSpecificInput("4");
-			  	input4Desc.innerHTML = "with value to verify of:";
-			  	input4.value = "Begin New Suite";
-			  break;			  
-			case "Verify Object Is Displayed":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with Verification Message of:";
-			  	input1.value = "User should be on MyInfo Page!";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "with XPath property to verify of:";
-			  	input2.value = "div[@id='myFBdata']";
-				  	
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			case "Verify Object Is NOT Displayed":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with Verification Message of:";
-			  	input1.value = "User should NOT see message [Error: invalid action]!";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "with XPath property to verify of:";
-			  	input2.value = "div[@id='myFBdata']";
-				  	
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			case "Select Dropdown Value":
-				showSpecificInput("1");
-			  	input1Desc.innerHTML = "with Dropdown object's ID of:";
-			  	input1.value = "keyword";
-			  	showSpecificInput("2");
-			  	input2Desc.innerHTML = "selecting the value of:";
-			  	input2.value = "Begin New Suite";
-				  	
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			case "End Current Test":
-				hideSpecificInput("1");
-			  	hideSpecificInput("2");
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			case "End Test Suite":
-				hideSpecificInput("1");
-			  	hideSpecificInput("2");
-			  	hideSpecificInput("3");
-			  	hideSpecificInput("4");
-			  break;
-			} 
+			showAllNecessaryInputs(keyword);
 		}
 
 		function hideAllInputs(){
@@ -210,19 +155,27 @@
 			input.value = "assigned_null";	
 		}
 
-		function showInputsForBeginTestSuite(){
-			var input1Desc = document.getElementById("input1Desc");
-			var input1 = document.getElementById("Input1");
-			var input2 = document.getElementById("Input2");
-			var input3 = document.getElementById("Input3");
-			var input4 = document.getElementById("Input4");
-			showSpecificInput("1");
-		  	input1Desc.innerHTML = "with Suite Name of:";
-		  	input1.value = "MySuiteTest";
 
-		  	hideSpecificInput("2");
-		  	hideSpecificInput("3");
-		  	hideSpecificInput("4");
+		function showAllNecessaryInputs(keyword){
+			//First clear all input fields
+			for (var i=1; i < 5; i++){
+				hideSpecificInput(i);
+			}
+
+			//Now Display all input Descriptions based on the InputConstants Map
+			//And Also Display all input default Values based on the InputConstants Map
+			//Note: We have a JUnit to confirm that the arrays will always match up in numbers (Desc and Value),
+					//So we can just use the same index for each of the arrays here.
+			var keywordDescs = keywordDescMap[keyword].split(",");
+			var keywordVals = keywordValueMap[keyword].split(",");
+			for (var i=0; i < keywordDescs.length; i++){
+				showSpecificInput(i+1);
+				document.getElementById("input" + (i+1) + "Desc").innerHTML = keywordDescs[i];
+				document.getElementById("Input" + (i+1)).value = keywordVals[i];
+			}
+
+			
+			
 		}
 
 		function doGET(GetURL){
@@ -380,7 +333,8 @@
 		}
 
 		hideAllInputs();
-		showInputsForBeginTestSuite();
+		showAllNecessaryInputs("BeginClass");
+		document.getElementById("Input1").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
 		document.getElementById("className").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
 		</script>
        

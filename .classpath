@@ -10,5 +10,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/fife/workspace/libs/taglibs-unstandard.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

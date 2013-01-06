@@ -3,6 +3,7 @@ package org.ocpsoft.keywords;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class EnterTextInInputKeyword implements Keyword {
 
@@ -12,8 +13,7 @@ public class EnterTextInInputKeyword implements Keyword {
 	}
 
 	@Override
-	public String addInstruction(String testPath, String xPathOfInput, String inputTextValue,
-			String desc3, String desc4, String value) {
+	public String addInstruction(String testPath, ArrayList<String> inputValues) {
 		try{
 			File f = new File(testPath);
 			if(!f.exists()) { 
@@ -23,7 +23,7 @@ public class EnterTextInInputKeyword implements Keyword {
 				PrintStream writetoTest = new PrintStream(
 					     new FileOutputStream(testPath, true)); 
 				writetoTest.append("\n" +
-									"\t\tbrowser.type(\"" + xPathOfInput + "\", \"" + inputTextValue + "\");\n");
+									"\t\tbrowser.type(\"" + inputValues.get(0) + "\", \"" + inputValues.get(1) + "\");\n");
 				writetoTest.close();
 				return "SUCCESS";
 			}

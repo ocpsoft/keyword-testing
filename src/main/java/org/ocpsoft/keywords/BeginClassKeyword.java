@@ -2,6 +2,7 @@ package org.ocpsoft.keywords;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class BeginClassKeyword implements Keyword {
 
@@ -11,7 +12,7 @@ public class BeginClassKeyword implements Keyword {
 	}
 
 	@Override
-	public String addInstruction(String testPath, String desc1, String desc2, String desc3, String desc4, String value) {
+	public String addInstruction(String testPath, ArrayList<String> inputValues) {
 		try{
 			PrintStream writetoTest = new PrintStream(
 				     new FileOutputStream(testPath)); 
@@ -34,7 +35,7 @@ public class BeginClassKeyword implements Keyword {
 			writetoTest.println("import com.thoughtworks.selenium.DefaultSelenium;");
 			writetoTest.println();
 			writetoTest.println("@RunWith(Arquillian.class)");
-			writetoTest.println("public class " + desc1 + " {//Begin Class");
+			writetoTest.println("public class " + inputValues.get(0) + " {//Begin Class");
 			writetoTest.println();
 			writetoTest.println("   private static final String WEBAPP_SRC = \"src/main/webapp\";");
 			writetoTest.println("   @Deployment(testable = false) // testable = false to run as a client");
