@@ -8,12 +8,27 @@ import java.util.ArrayList;
 public class EndTestKeyword implements Keyword {
 
 	@Override
-	public String getType() {
+	public String getShortName() {
 		return "EndTest";
 	}
 
 	@Override
-	public String addInstruction(String testPath, ArrayList<String> inputValues) {
+	public KEYWORD_PROCESS_TYPES getProcessType(){
+		return KEYWORD_PROCESS_TYPES.DirectProcess;
+	}
+
+	@Override
+	public String getAdditionalInputParams(){
+		return "";
+	}
+	
+	@Override
+	public String createKeywordHelperMethod(PrintStream writetoTest){
+		return "";
+	}
+	
+	@Override
+	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		try{
 			File f = new File(testPath);
 			if(!f.exists()) { 
@@ -22,7 +37,7 @@ public class EndTestKeyword implements Keyword {
 			else{
 				PrintStream writetoTest = new PrintStream(
 					     new FileOutputStream(testPath, true)); 
-				writetoTest.append("\t}//End Test Case\n");
+				writetoTest.append("\n\t}//End Test Case\n");
 				writetoTest.close();
 				return "SUCCESS";
 			}

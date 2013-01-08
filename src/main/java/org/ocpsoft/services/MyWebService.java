@@ -6,11 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
@@ -23,7 +23,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.ocpsoft.keywords.Keyword;
+import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordFactory;
+
+import com.ocpsoft.constants.InputConstants;
 
 @Path("/webService")
 @Stateful
@@ -120,9 +123,25 @@ public class MyWebService {
 	@POST
 	@Path("/DeleteTestSuite/{className}")
 	public String deleteTestSuite(@PathParam("className") String className) {
-		String rootPath = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+		String rootPath = InputConstants.FILE_LOCATION;
 		System.out.println("Deleting Test Suite: " + rootPath + className);
 
+		File helperFile = new File(rootPath + "Helper.java");
+		try{
+			if(!helperFile.exists()){
+				System.out.println("Helper.java does NOT exist.");
+			}
+			if(helperFile.delete()){
+				System.out.println(helperFile.getName() + " is deleted!");
+			}else{
+				System.out.println("Delete operation is failed.");
+				return "<font color='red'>ERROR: Delete operation has failed.  The file [" + rootPath + "Helper.java" + "] might still exist.</font>";
+			}
+	
+		}catch(Exception e){
+			e.printStackTrace();
+			return "<font color='red'>ERROR in the delete process.  System error: " + e + "</font>";
+		}
 		File file = new File(rootPath + className);
 		try{
 			if(!file.exists()){
@@ -165,6 +184,7 @@ public class MyWebService {
 		}
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@POST
 	@Path("/NewInstruction/{keyword}/{className}/{inputArray}")
 	public String processNewInstruction(
@@ -172,7 +192,7 @@ public class MyWebService {
 			@PathParam("className") String className,
 			@PathParam("inputArray") String[] inputArray) {
 		
-		String[] actualInputArray = inputArray[0].split(",");//For some reason, REST is passing the inputArray as [array], need to treat element(0) as the actual inputArray
+		String[] actualInputArray = inputArray[0].split(", ");//For some reason, REST is passing the inputArray as [array], need to treat element(0) as the actual inputArray
 		try {
 			for (int i = 0; i < actualInputArray.length; i++) {
 				actualInputArray[i] = decodeURLForBadChars(actualInputArray[i]);
@@ -181,12 +201,45 @@ public class MyWebService {
 			System.out.println("ERROR: Exception in Encoding URL inputs!");
 		}
 		System.out.println("Processing New Instruction - Keyword: " + keywordkey
-				+ ", inputArray: " + inputArray + ", className=" + className);
+				+ ", inputArray: " + actualInputArray + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
-		String testPath = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/" + className + ".java";
+		String testPath = InputConstants.FILE_LOCATION + className + ".java";
 		
-		return keyword.addInstruction(testPath, new ArrayList(Arrays.asList(actualInputArray)));
+		//Some Keywords are now Direct Process, and some get added via Method Calls
+		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
+			System.out.println("\nDirectly Processing " + keyword.getShortName());
+			return keyword.performKeyword(testPath, new ArrayList(Arrays.asList(actualInputArray)));
+		}
+		else{
+			String inputArrayString = printOutArrayListAsList(actualInputArray);
+			try{
+				PrintStream writetoTest = new PrintStream(
+						new FileOutputStream(testPath, true)); 
+				writetoTest.append("\n\t\tHelper." + keyword.getShortName() + "(browser, " + inputArrayString + keyword.getAdditionalInputParams() + ");");
+				System.out.println("\nSUCCESS - Added method call for " + keyword.getShortName());
+				return "SUCCESS";
+			}
+			catch (Exception e) {
+				System.err.println("Failure in doBeginTest: " + e);
+				return "FAILURE in Beginning Class Instruction: " + e;
+			}
+		}
+	}
+	
+	private String printOutArrayListAsList(String[] list){
+		String returnVal = "Arrays.asList(";
+		for (String element : list) {
+			//TODO:Find a better way of passing variables, for now, do it with a simple
+			if(element.startsWith(InputConstants.VARIABLE_INPUT_PREFIX)){
+				//This is a variable, we want to preserve it with no quotes
+				returnVal = returnVal + element.substring(InputConstants.VARIABLE_INPUT_PREFIX.length()) + ", ";
+			}
+			else {
+				returnVal = returnVal + "\"" + element + "\", ";
+			}
+		}
+		return returnVal.substring(0, returnVal.length() - 2) + ")";
 	}
 	
 	//TODO: This is a hack, find a better way of passing these "bad chars"

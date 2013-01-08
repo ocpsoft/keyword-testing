@@ -166,8 +166,8 @@
 			//And Also Display all input default Values based on the InputConstants Map
 			//Note: We have a JUnit to confirm that the arrays will always match up in numbers (Desc and Value),
 					//So we can just use the same index for each of the arrays here.
-			var keywordDescs = keywordDescMap[keyword].split(",");
-			var keywordVals = keywordValueMap[keyword].split(",");
+			var keywordDescs = keywordDescMap[keyword].split(", ");
+			var keywordVals = keywordValueMap[keyword].split(", ");
 			for (var i=0; i < keywordDescs.length; i++){
 				showSpecificInput(i+1);
 				document.getElementById("input" + (i+1) + "Desc").innerHTML = keywordDescs[i];

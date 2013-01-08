@@ -2,10 +2,8 @@ package org.ocpsoft.keywords;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collections;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;

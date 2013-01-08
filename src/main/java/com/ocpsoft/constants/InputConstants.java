@@ -9,6 +9,9 @@ import java.util.Map;
 
 public class InputConstants {
 	
+	public static final String FILE_LOCATION = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
+	
 	public static enum KEYWORD_KEYS
 	{
 		BeginClass, BeginTest, ClickElement, EndClass, EndTest, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 
@@ -78,32 +81,23 @@ public class InputConstants {
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginTest, Arrays.asList("testName"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.ClickElement, Arrays.asList("link",
-											    		 "Get Your Info Here", 
-														 "myInfo.html"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.ClickElement, Arrays.asList("link","Get Your Info Here","myInfo.html"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.EndClass, new ArrayList<String>());
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.EndTest, new ArrayList<String>());
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("//input[@id='className']",
-				   											 "Assigning Input Text"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("//input[@id='className']","Assigning Input Text"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.OpenBrowser, Arrays.asList("index.jsp"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.SelectDropdownValue, Arrays.asList("keyword",
-				 												"Begin New Suite"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.SelectDropdownValue, Arrays.asList("keyword","Begin New Suite"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectIsDisplayed, Arrays.asList("User should be on MyInfo Page!",
-				  													"div[@id='myFBdata']"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectIsDisplayed, Arrays.asList("User should be on MyInfo Page!","div[@id='myFBdata']"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, Arrays.asList("User should NOT see message [Error: invalid action]!",
-				  													   "div[@id='myFBdata']"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, Arrays.asList("User should NOT see message [Error: invalid action]!","div[@id='myFBdata']"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite",
-																	   "select",
-																	   "//select[@id='keyword']",
-																	   "Begin New Suite"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordValues() {

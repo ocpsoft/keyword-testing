@@ -1,34 +1,40 @@
 package org.ocpsoft.keywords;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class VerifyObjectPropertyKeyword implements Keyword {
 
 	@Override
-	public String getType() {
+	public String getShortName() {
 		return "VerifyObjectProperty";
 	}
 
 	@Override
-	public String addInstruction(String testPath, ArrayList<String> inputValues) {
+	public KEYWORD_PROCESS_TYPES getProcessType(){
+		return KEYWORD_PROCESS_TYPES.MethodCall;
+	}
+
+	@Override
+	public String getAdditionalInputParams(){
+		return "";
+	}
+	
+	@Override
+	public String performKeyword(String testPath, ArrayList<String> inputValues) {
+		return "";
+	}
+	
+	@Override
+	public String createKeywordHelperMethod(PrintStream writetoTest) {
 		try{
-			File f = new File(testPath);
-			if(!f.exists()) { 
-				return "FAILURE: ClassFile does not exist, can not add instruction.  Fix path of: " + testPath;
-			}
-			else{
-				PrintStream writetoTest = new PrintStream(
-					     new FileOutputStream(testPath, true)); 
-				writetoTest.append("\n\t\t" + "value = getValue(\"" + inputValues.get(1) + "\", \"" + inputValues.get(2) + "\");");
-				writetoTest.append("\n" +
-						"\t\tAssert.assertTrue(\"" + inputValues.get(0) + "\",\n" +
-						"\t\t\t\"" + inputValues.get(3) + "\".equals(value));\n");
-				writetoTest.close();
-				return "SUCCESS";
-			}
+			writetoTest.append("\n\tpublic static void VerifyObjectProperty(DefaultSelenium browser, List<String> inputValues) {");
+			writetoTest.append("\n\t\t" + "value = getValue(browser, inputValues.get(1), inputValues.get(2));");
+			writetoTest.append("\n" +
+					"\t\tAssert.assertTrue(inputValues.get(0),\n" +
+					"\t\t\tinputValues.get(3).equals(value));");
+			writetoTest.append("\n\t}");
+			return "SUCCESS";
 		}
 		catch (Exception e) {
 			System.err.println("Failure in doVerify: " + e);

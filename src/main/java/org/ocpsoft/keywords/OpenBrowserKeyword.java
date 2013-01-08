@@ -1,31 +1,37 @@
 package org.ocpsoft.keywords;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class OpenBrowserKeyword implements Keyword {
 
 	@Override
-	public String getType() {
+	public String getShortName() {
 		return "OpenBrowser";
 	}
 
 	@Override
-	public String addInstruction(String testPath, ArrayList<String> inputValues) {
+	public KEYWORD_PROCESS_TYPES getProcessType(){
+		return KEYWORD_PROCESS_TYPES.MethodCall;
+	}
+
+	@Override
+	public String getAdditionalInputParams(){
+		return ", deploymentURL";
+	}
+	
+	@Override
+	public String performKeyword(String testPath, ArrayList<String> inputValues) {
+		return "";
+	}
+	
+	@Override
+	public String createKeywordHelperMethod(PrintStream writetoTest){
 		try{
-			File f = new File(testPath);
-			if(!f.exists()) { 
-				return "FAILURE: ClassFile does not exist, can not add instruction.  Fix path of: " + testPath;
-			}
-			else{
-				PrintStream writetoTest = new PrintStream(
-					     new FileOutputStream(testPath, true)); 
-				writetoTest.append("\t\tbrowser.open(deploymentURL + \"" + inputValues.get(0) + "\");\n");
-				writetoTest.close();
-				return "SUCCESS";
-			}
+			writetoTest.append("\n\tpublic static void OpenBrowser(DefaultSelenium browser, List<String> inputValues, URL deploymentURL) {");
+			writetoTest.append("\n\t\tbrowser.open(deploymentURL + inputValues.get(0));\n");
+			writetoTest.append("\n\t}");
+			return "SUCCESS";
 		}
 		catch (Exception e) {
 			System.err.println("Failure in doOpenBrowser: " + e);
