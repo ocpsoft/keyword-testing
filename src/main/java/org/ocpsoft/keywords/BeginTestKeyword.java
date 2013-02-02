@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.SyntaxError;
+import org.jboss.forge.parser.java.Visibility;
+import org.junit.Test;
 
 public class BeginTestKeyword implements Keyword {
 
@@ -14,20 +20,36 @@ public class BeginTestKeyword implements Keyword {
 
 	@Override
 	public KEYWORD_PROCESS_TYPES getProcessType(){
-		return KEYWORD_PROCESS_TYPES.DirectProcess;
+		return KEYWORD_PROCESS_TYPES.MethodCall;
 	}
 	
 	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest){
+	@Deprecated
+	public String getAdditionalInputParams(){
 		return "";
 	}
 
 	@Override
-	public String getAdditionalInputParams(){
-		return "";
+	public void createKeywordHelperMethod(JavaClass helperClass){
+		helperClass.addMethod()
+          .setName("BeginTest")
+          .setStatic(true)
+          .setVisibility(Visibility.PUBLIC)
+          .setBody( "JavaClass testClass = JavaParser.parse(new File(InputConstants.FILE_LOCATION + inputValues.get(1)));\n" +
+	      		  	"testClass.addMethod()\n" + 
+	  		  		".setName(inputValues.get(0))\n" +
+	  		  		".setVisibility(Visibility.PUBLIC)\n" +
+	  		  		".setReturnTypeVoid()\n" +
+	  		  		".addThrows(InterruptedException.class);"
+        		  )
+        		  .setReturnTypeVoid()
+          .setParameters("DefaultSelenium browser, List inputValues")
+          .addAnnotation(Test.class);
 	}
+
 	
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		try{
 			File f = new File(testPath);

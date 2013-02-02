@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
+import org.jboss.forge.parser.java.JavaClass;
+
 public class EndTestKeyword implements Keyword {
 
 	@Override
@@ -18,16 +20,16 @@ public class EndTestKeyword implements Keyword {
 	}
 
 	@Override
+	@Deprecated
 	public String getAdditionalInputParams(){
 		return "";
 	}
 	
-	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest){
-		return "";
+	public void createKeywordHelperMethod(JavaClass helperClass){
 	}
 	
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		try{
 			File f = new File(testPath);

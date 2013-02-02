@@ -26,7 +26,7 @@ public class MySuiteTest {//Begin Class
    
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
-		return ShrinkWrap.create(WebArchive.class, "KeywordApp.war")
+		return ShrinkWrap.create(WebArchive.class, "MainTestSuite.war")
 						.addClasses(MyWebService.class, InputConstants.class)
 						.addAsResource("META-INF/persistence.xml")
 						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
@@ -420,7 +420,6 @@ private String getValue(String objectType, String objectXPath){
 		//Can run tests, but can't have Selenium start up ANOTHER Selenium server, so build will Fail.
 		//Assert.assertTrue("Build Success", browser.isTextPresent("BUILD SUCCESS"));
 	}//End Test Case
-
 
 	
 }//End Class

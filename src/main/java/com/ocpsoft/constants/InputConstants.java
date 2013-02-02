@@ -40,7 +40,8 @@ public class InputConstants {
     static {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginClass, Arrays.asList("with Suite Name of:"));
     	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginTest, Arrays.asList("with Test Name of:"));
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginTest, Arrays.asList("with Test Name of:",
+    															"in the Suite of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.ClickElement, Arrays.asList("with Identifyer [link/id/name/css/xpath] of:",
 											    			   "and desired element key of:", 
@@ -79,7 +80,7 @@ public class InputConstants {
     static {
     	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginClass, Arrays.asList("MySuiteTest"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginTest, Arrays.asList("testName"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginTest, Arrays.asList("testName", "MySuiteTest"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.ClickElement, Arrays.asList("link","Get Your Info Here","myInfo.html"));
     	

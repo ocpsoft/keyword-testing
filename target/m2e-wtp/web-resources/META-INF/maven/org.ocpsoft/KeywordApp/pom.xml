@@ -37,6 +37,11 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
+    	<dependency>
+			<groupId>org.jboss.forge</groupId>
+			<artifactId>forge-parser-java</artifactId>
+			<version>1.2.1-SNAPSHOT</version>
+		</dependency>	
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -71,49 +76,49 @@
 			<groupId>org.ocpsoft.common</groupId>
 			<artifactId>common-api</artifactId>
 			<version>1.0.4.Final</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		   <dependency>
 		      <groupId>junit</groupId>
 		      <artifactId>junit</artifactId>
 		      <version>${version.junit}</version>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 		    <dependency>
 		      <groupId>org.jboss.arquillian.junit</groupId>
 		      <artifactId>arquillian-junit-container</artifactId>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 		    <dependency>
 		      <groupId>com.google.code.gson</groupId>
 		      <artifactId>gson</artifactId>
 		      <version>2.1</version>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 		    <dependency>
 		      <groupId>org.jboss.arquillian.extension</groupId>
 		      <artifactId>arquillian-drone-impl</artifactId>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 		    <dependency>
 		      <groupId>org.jboss.arquillian.extension</groupId>
 		      <artifactId>arquillian-drone-selenium</artifactId>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 		    <dependency>
 		      <groupId>org.jboss.arquillian.extension</groupId>
 		      <artifactId>arquillian-drone-selenium-server</artifactId>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 		    <dependency>
 		      <groupId>org.seleniumhq.selenium</groupId>
 		      <artifactId>selenium-java</artifactId>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		    </dependency>
 			<dependency>
 		      <groupId>org.seleniumhq.selenium</groupId>
 		      <artifactId>selenium-server</artifactId>
-		      <scope>test</scope>
+		      <scope>compile</scope>
 		      <exclusions>
 		        <exclusion>
 		          <artifactId>servlet-api-2.5</artifactId>

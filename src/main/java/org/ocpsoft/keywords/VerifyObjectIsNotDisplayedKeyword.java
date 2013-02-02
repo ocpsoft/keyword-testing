@@ -1,7 +1,9 @@
 package org.ocpsoft.keywords;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
+
+import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.Visibility;
 
 public class VerifyObjectIsNotDisplayedKeyword implements Keyword {
 
@@ -16,29 +18,28 @@ public class VerifyObjectIsNotDisplayedKeyword implements Keyword {
 	}
 
 	@Override
+	@Deprecated
 	public String getAdditionalInputParams(){
 		return "";
 	}
 	
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		return "";
 	}
 	
 	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest) {
-		try{
-			writetoTest.append("\n\tpublic static void VerifyObjectIsNotDisplayed(DefaultSelenium browser, List<String> inputValues) {");
-			writetoTest.append("\n" +
-					"\t\tAssert.assertFalse(inputValues.get(0),\n" +
-					"\t\t\tbrowser.isElementPresent(\"xpath=//\" + inputValues.get(1)));");
-			writetoTest.append("\n\t}");
-			return "SUCCESS";
-		}
-		catch (Exception e) {
-			System.err.println("Failure in doVerify: " + e);
-			return "FAILURE in Verify Instruction: " + e;
-		}
+	public void createKeywordHelperMethod(JavaClass helperClass){
+		helperClass.addMethod()
+          .setName("VerifyObjectIsNotDisplayed")
+          .setStatic(true)
+          .setVisibility(Visibility.PUBLIC)
+          .setReturnTypeVoid()
+          .setParameters("DefaultSelenium browser, List inputValues")
+          .setBody( "Assert.assertFalse(inputValues.get(0)," + 
+        		  		"browser.isElementPresent(\"xpath=//\" + inputValues.get(1)));"
+        		  );
 	}
 
 	/* EXAMPLE:

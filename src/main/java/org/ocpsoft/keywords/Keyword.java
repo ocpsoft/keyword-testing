@@ -1,7 +1,8 @@
 package org.ocpsoft.keywords;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
+
+import org.jboss.forge.parser.java.JavaClass;
 
 public interface Keyword {
 	
@@ -17,7 +18,7 @@ public interface Keyword {
 	//TODO: This is kind of a hack right now.  We're putting 2 methods into each keyword, but each will implement
 	//One and only One of them.  Should really break this out into 2 different objects.
 	//For now seperate them to know which is which via KEYWORD_PROCESS_TYPES to know which method below to use:
-	String createKeywordHelperMethod(PrintStream writetoTest);
+	void createKeywordHelperMethod(JavaClass helperClass);
 	String performKeyword(String testPath, ArrayList<String> inputValues);
 	
 	/*NOTE: For creating new keywords, you must:

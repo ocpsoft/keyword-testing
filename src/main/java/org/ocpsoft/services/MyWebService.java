@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
@@ -23,10 +20,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.ocpsoft.keywords.Keyword;
-import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordFactory;
 
 import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.projectStarter.HelperFileCreator;
 
 @Path("/webService")
 @Stateful
@@ -126,22 +123,6 @@ public class MyWebService {
 		String rootPath = InputConstants.FILE_LOCATION;
 		System.out.println("Deleting Test Suite: " + rootPath + className);
 
-		File helperFile = new File(rootPath + "Helper.java");
-		try{
-			if(!helperFile.exists()){
-				System.out.println("Helper.java does NOT exist.");
-			}
-			if(helperFile.delete()){
-				System.out.println(helperFile.getName() + " is deleted!");
-			}else{
-				System.out.println("Delete operation is failed.");
-				return "<font color='red'>ERROR: Delete operation has failed.  The file [" + rootPath + "Helper.java" + "] might still exist.</font>";
-			}
-	
-		}catch(Exception e){
-			e.printStackTrace();
-			return "<font color='red'>ERROR in the delete process.  System error: " + e + "</font>";
-		}
 		File file = new File(rootPath + className);
 		try{
 			if(!file.exists()){
@@ -184,6 +165,35 @@ public class MyWebService {
 		}
 	}
 	
+	@POST
+	@Path("StartNewProject")
+	public String startNewProject(){
+		//TODO: This should really create a totally new project, for now we'll just keep re-using AppUnderTest
+		String rootPath = InputConstants.FILE_LOCATION;
+		File helperFile = new File(rootPath + "Helper.java");
+		
+		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
+		try{
+			if(!helperFile.exists()){
+				System.out.println("Helper.java does NOT exist, nothing to clear out.");
+			}
+			else{
+				if(helperFile.delete()){
+					System.out.println(helperFile.getName() + " is deleted!  We just made room to create a fresh one");
+				}else{
+					System.out.println("Delete operation is failed.");
+					return "<font color='red'>ERROR: Delete operation of Helper.java has failed.  The file [" + rootPath + "Helper.java" + "] might still exist.  New project NOT setup/created!!!</font>";
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return "<font color='red'>ERROR in the delete process of original Helper.java file.  System error: " + e + "</font>";
+		}
+		
+		HelperFileCreator.createHelperClassViaParser(rootPath, "com.example.domain");
+		return "SUCCESS";
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@POST
 	@Path("/NewInstruction/{keyword}/{className}/{inputArray}")
@@ -206,12 +216,20 @@ public class MyWebService {
 		Keyword keyword = factory.createKeyword(keywordkey);
 		String testPath = InputConstants.FILE_LOCATION + className + ".java";
 		
+		//Nothing should be Direct Process anymore:
 		//Some Keywords are now Direct Process, and some get added via Method Calls
-		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
-			System.out.println("\nDirectly Processing " + keyword.getShortName());
-			return keyword.performKeyword(testPath, new ArrayList(Arrays.asList(actualInputArray)));
-		}
-		else{
+//		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
+//			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass.toString())){
+//				System.out.println("\nProcessing via Parser: " + keyword.getShortName());
+//				BeginClassKeyword bckey = (BeginClassKeyword) keyword;
+//				return bckey.performViaParser(testPath, new ArrayList(Arrays.asList(actualInputArray)));
+//			}
+//			else{
+//				System.out.println("\nDirectly Processing " + keyword.getShortName());
+//				return keyword.performKeyword(testPath, new ArrayList(Arrays.asList(actualInputArray)));
+//			}
+//		}
+//		else{
 			String inputArrayString = printOutArrayListAsList(actualInputArray);
 			try{
 				PrintStream writetoTest = new PrintStream(
@@ -224,7 +242,7 @@ public class MyWebService {
 				System.err.println("Failure in doBeginTest: " + e);
 				return "FAILURE in Beginning Class Instruction: " + e;
 			}
-		}
+//		}
 	}
 	
 	private String printOutArrayListAsList(String[] list){

@@ -4,8 +4,9 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import org.jboss.forge.parser.JavaParser;
+import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.Visibility;
 
 import com.ocpsoft.constants.InputConstants;
 
@@ -18,23 +19,97 @@ public class BeginClassKeyword implements Keyword {
 	
 	@Override
 	public KEYWORD_PROCESS_TYPES getProcessType(){
-		return KEYWORD_PROCESS_TYPES.DirectProcess;
+		return KEYWORD_PROCESS_TYPES.MethodCall;
 	}
 	
 	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest){
-		return "";
-	}
-	
-	@Override
+	@Deprecated
 	public String getAdditionalInputParams(){
 		return "";
 	}
 	
-	@Inject
-	Instance<Keyword> allKeywords;
+	@Override
+	public void createKeywordHelperMethod(JavaClass helperClass){
+		String methodBody = "JavaClass testClass = JavaParser.create(JavaClass.class);" +
+		  		  "testClass" + 
+		  				".setName(inputValues.get(0))" +
+		  				".setPackage(\"com.example.domain\")" +
+		  				".addAnnotation(RunWith.class)" +
+		  				".setLiteralValue(Arquillian.class.getSimpleName() + \".class\")" +
+		  				".getOrigin().addImport(Arquillian.class);" +
+		  				
+				  "testClass" + 
+				  		".addField().setPrivate()" +
+				  		".setStatic(true).setFinal(true)" +
+				  		".setType(String.class)" +
+				  		".setName(\"WEBAPP_SRC\");" +
+
+				  "testClass.getField(\"WEBAPP_SRC\")" +
+				  		".setLiteralInitializer(\"\\\"src/main/webapp\\\"\");" +
+
+				  "testClass.addMethod()" +
+				  		".setName(\"createDeployment\")" +
+				  		".setStatic(true)" +
+				  		".setVisibility(Visibility.PUBLIC)" +
+				  		".setReturnType(WebArchive.class)" +
+				  		".setBody(\"return ShrinkWrap.create(WebArchive.class, \\\"FBTutorialDemo.war\\\")\" +" +
+				  				"\".addAsResource(\\\"META-INF/persistence.xml\\\")\" +" +
+				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"index.html\\\"))\" +" +
+				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"index2.html\\\"))\" +" +
+				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"myInfo.html\\\"))\" +" +
+				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"friendsInfo.html\\\"))\" +" +
+				  				"\".addAsWebInfResource(EmptyAsset.INSTANCE, \\\"beans.xml\\\");\")" +
+				  		".addAnnotation(Deployment.class)" +
+				  		".getOrigin().addImport(File.class);" +
+				  "testClass.addImport(WebArchive.class);" +
+				  "testClass.addImport(ShrinkWrap.class);" +
+				  "testClass.addImport(EmptyAsset.class);" +
+				  "testClass.addImport(DefaultSelenium.class);" +
+
+				  "testClass" +
+				  		".addField().setType(DefaultSelenium.class)" +
+				  		".setName(\"browser\").addAnnotation(Drone.class)" +
+				  		".getOrigin().addImport(DefaultSelenium.class);" +
+				  "testClass.addImport(Drone.class);" +
+
+				  "testClass" +
+				  		".addField().setType(URL.class)" +
+				  		".setName(\"deploymentURL\").addAnnotation(ArquillianResource.class)" +
+				  		".getOrigin().addImport(URL.class);" +
+				  "testClass.addImport(ArquillianResource.class);" +
+
+				  "testClass.addImport(PrintStream.class);" + 
+				  "testClass.addImport(FileOutputStream.class);" +
+				  "testClass.addImport(Formatter.class);";
+		
+		String methodBody2 =
+				  "try{" +
+				  		"PrintStream writetoTest = new PrintStream(" +
+				  			"new FileOutputStream(testPath)); " +
+				  		"writetoTest.print(Formatter.format(testClass));" +
+				  		"writetoTest.close();" +
+				  "}" +
+				  "catch (Exception e) {" +
+				  		"System.err.println(\"\\\"Failure in createTestClassViaParser: \\\" + e\");" +
+				  "}";
+		helperClass.addMethod()
+			.setName("BeginClass")
+        	.setStatic(true)
+        	.setVisibility(Visibility.PUBLIC)
+        	.setReturnTypeVoid()
+        	.setParameters("DefaultSelenium browser, List inputValues")
+        	//TODO: Parser is not liking the try catch block right now.
+        	.setBody( methodBody
+      		  );
+		
+		helperClass.addImport(JavaClass.class);
+		helperClass.addImport(JavaParser.class);
+		
+		
+	}
 
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		try{
 			PrintStream writetoTest = new PrintStream(
@@ -116,15 +191,15 @@ public class BeginClassKeyword implements Keyword {
 			writetoTest.println();
 
 			//Go through every keyword and add each method for the MethodLoad Keywords to the Helper file
-			String returnVal = "";
-			for (Keyword keyword : allKeywords) {
-				if(keyword.getProcessType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
-					returnVal = keyword.createKeywordHelperMethod(writetoTest);
-					if(!returnVal.contains("SUCCESS")){
-						return returnVal; //There was an error, stop here and return it.
-					}
-				}
-			}
+//			String returnVal = "";
+//			for (Keyword keyword : allKeywords) {
+//				if(keyword.getProcessType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
+//					returnVal = keyword.createKeywordHelperMethod(writetoTest);
+//					if(!returnVal.contains("SUCCESS")){
+//						return returnVal; //There was an error, stop here and return it.
+//					}
+//				}
+//			}
 			
 			//End the Helper class
 			writetoTest.println("\n}");

@@ -1,7 +1,12 @@
 package org.ocpsoft.keywords;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.Visibility;
+
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class EnterTextInInputKeyword implements Keyword {
 
@@ -16,27 +21,27 @@ public class EnterTextInInputKeyword implements Keyword {
 	}
 
 	@Override
+	@Deprecated
 	public String getAdditionalInputParams(){
 		return "";
 	}
 	
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		return "";
 	}
 	
 	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest){
-		try{
-			writetoTest.append("\n\tpublic static void EnterTextInInput(DefaultSelenium browser, List<String> inputValues) {");
-			writetoTest.append("\n\t\tbrowser.type(inputValues.get(0), inputValues.get(1));");
-			writetoTest.append("\n\t}");
-			return "SUCCESS";
-		}
-		catch (Exception e) {
-			System.err.println("Failure in doClick: " + e);
-			return "FAILURE in Click Instruction: " + e;
-		}
+	public void createKeywordHelperMethod(JavaClass helperClass){
+		helperClass.addMethod()
+          .setName("EnterTextInInput")
+          .setStatic(true)
+          .setVisibility(Visibility.PUBLIC)
+          .setReturnTypeVoid()
+          .setParameters("DefaultSelenium browser, List inputValues")
+          .setBody("browser.type(inputValues.get(0), inputValues.get(1));"
+        		  );
 	}
 
 	/* EXAMPLE:

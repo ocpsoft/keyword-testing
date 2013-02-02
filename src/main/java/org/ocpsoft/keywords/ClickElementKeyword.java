@@ -1,7 +1,12 @@
 package org.ocpsoft.keywords;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.Visibility;
+
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class ClickElementKeyword implements Keyword {
 
@@ -16,30 +21,30 @@ public class ClickElementKeyword implements Keyword {
 	}
 	
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		return "";
 	}
 
 	@Override
+	@Deprecated
 	public String getAdditionalInputParams(){
 		return "";
 	}
 	
-	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest) {
-		try{
-			writetoTest.append("\n\tpublic static void ClickElement(DefaultSelenium browser, List<String> inputValues) {");
-			writetoTest.append("\n\t\tbrowser.click(inputValues.get(0) + \"=\" + inputValues.get(1));");
-			writetoTest.append("\n\t\tif(inputValues.get(0).equals(\"link\")){");
-			writetoTest.append("\n\t\t\tbrowser.waitForFrameToLoad(inputValues.get(2), \"15000\");");
-			writetoTest.append("\n\t\t}");
-			writetoTest.append("\n\t}");
-			return "SUCCESS";
-		}
-		catch (Exception e) {
-			System.err.println("Failure in doClick: " + e);
-			return "FAILURE in Click Instruction: " + e;
-		}
+	public void createKeywordHelperMethod(JavaClass helperClass){
+		helperClass.addMethod()
+          .setName("ClickElement")
+          .setStatic(true)
+          .setVisibility(Visibility.PUBLIC)
+          .setReturnTypeVoid()
+          .setParameters("DefaultSelenium browser, List inputValues")
+          .setBody(	"browser.click(inputValues.get(0) + \"=\" + inputValues.get(1));" +
+					"if(inputValues.get(0).equals(\"link\")){" +
+						"browser.waitForFrameToLoad(inputValues.get(2), \"15000\");" +
+					"}"
+        		  );
+
 	}
 
 	/* EXAMPLE:

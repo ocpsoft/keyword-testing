@@ -1,7 +1,12 @@
 package org.ocpsoft.keywords;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.Visibility;
+
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class OpenBrowserKeyword implements Keyword {
 
@@ -21,22 +26,21 @@ public class OpenBrowserKeyword implements Keyword {
 	}
 	
 	@Override
+	@Deprecated
 	public String performKeyword(String testPath, ArrayList<String> inputValues) {
 		return "";
 	}
 	
 	@Override
-	public String createKeywordHelperMethod(PrintStream writetoTest){
-		try{
-			writetoTest.append("\n\tpublic static void OpenBrowser(DefaultSelenium browser, List<String> inputValues, URL deploymentURL) {");
-			writetoTest.append("\n\t\tbrowser.open(deploymentURL + inputValues.get(0));\n");
-			writetoTest.append("\n\t}");
-			return "SUCCESS";
-		}
-		catch (Exception e) {
-			System.err.println("Failure in doOpenBrowser: " + e);
-			return "FAILURE in OpenBrowser Instruction: " + e;
-		}
+	public void createKeywordHelperMethod(JavaClass helperClass){
+		helperClass.addMethod()
+          .setName("OpenBrowser")
+          .setStatic(true)
+          .setVisibility(Visibility.PUBLIC)
+          .setReturnTypeVoid()
+          .setParameters("DefaultSelenium browser, List inputValues, URL deploymentURL")
+          .setBody("browser.open(deploymentURL + inputValues.get(0));"
+        		  );
 	}
 	
 	/* EXAMPLE:

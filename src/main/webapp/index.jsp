@@ -76,8 +76,9 @@
        <center>
        <H1>Welcome to The Keyword Framework</H1><P />
        <a href="myLink.html">Click to go to myLink</a><BR />
+	   <P />
+	   <input type="submit" value="Begin New Project" onClick='startNewProject()'><P />
        Current Suite is: <input type="text" id="className" />
-       
        <input type="submit" value="LoadSuite" onClick='getTestSuite()'/><P />
        <P />
        </center>
@@ -267,6 +268,12 @@
 		function runTests() {
 			var GETurl = 'rest/webService/RunBuild';
 			var returnVal = doGET(GETurl);
+			return returnVal;
+		}
+
+		function startNewProject() {
+			var POSTurl = 'rest/webService/StartNewProject';
+			var returnVal = doPOST(POSTurl);
 			return returnVal;
 		}
 
