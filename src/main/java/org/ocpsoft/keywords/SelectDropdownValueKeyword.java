@@ -25,7 +25,7 @@ public class SelectDropdownValueKeyword implements Keyword {
 	
 	@Override
 	@Deprecated
-	public String performKeyword(String testPath, ArrayList<String> inputValues) {
+	public String performKeyword(JavaClass testClass, ArrayList<String> inputValues) {
 		return "";
 	}
 	

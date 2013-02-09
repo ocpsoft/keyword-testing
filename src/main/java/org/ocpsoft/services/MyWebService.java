@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
@@ -19,10 +20,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.jboss.forge.parser.JavaParser;
+import org.jboss.forge.parser.java.JavaClass;
 import org.ocpsoft.keywords.Keyword;
+import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordFactory;
 
 import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.constants.InputConstants.KEYWORD_KEYS;
 import com.ocpsoft.projectStarter.HelperFileCreator;
 
 @Path("/webService")
@@ -194,7 +199,6 @@ public class MyWebService {
 		return "SUCCESS";
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@POST
 	@Path("/NewInstruction/{keyword}/{className}/{inputArray}")
 	public String processNewInstruction(
@@ -202,50 +206,90 @@ public class MyWebService {
 			@PathParam("className") String className,
 			@PathParam("inputArray") String[] inputArray) {
 		
-		String[] actualInputArray = inputArray[0].split(", ");//For some reason, REST is passing the inputArray as [array], need to treat element(0) as the actual inputArray
-		try {
-			for (int i = 0; i < actualInputArray.length; i++) {
-				actualInputArray[i] = decodeURLForBadChars(actualInputArray[i]);
-			}
-		} catch (Exception e) {
-			System.out.println("ERROR: Exception in Encoding URL inputs!");
-		}
+		ArrayList<String> inputs = filterInputArrayIntoArraList(inputArray);
 		System.out.println("Processing New Instruction - Keyword: " + keywordkey
-				+ ", inputArray: " + actualInputArray + ", className=" + className);
+				+ ", inputArray: " + inputs + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
 		String testPath = InputConstants.ROOT_FILE_PATH + className + ".java";
 		
-		//Nothing should be Direct Process anymore:
 		//Some Keywords are now Direct Process, and some get added via Method Calls
-//		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
-//			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass.toString())){
-//				System.out.println("\nProcessing via Parser: " + keyword.getShortName());
-//				BeginClassKeyword bckey = (BeginClassKeyword) keyword;
-//				return bckey.performViaParser(testPath, new ArrayList(Arrays.asList(actualInputArray)));
-//			}
-//			else{
-//				System.out.println("\nDirectly Processing " + keyword.getShortName());
-//				return keyword.performKeyword(testPath, new ArrayList(Arrays.asList(actualInputArray)));
-//			}
-//		}
-//		else{
-			String inputArrayString = printOutArrayListAsList(actualInputArray);
-			try{
-				PrintStream writetoTest = new PrintStream(
-						new FileOutputStream(testPath, true)); 
-				writetoTest.append("\n\t\tHelper." + keyword.getShortName() + "(browser, " + inputArrayString + keyword.getAdditionalInputParams() + ");");
-				System.out.println("\nSUCCESS - Added method call for " + keyword.getShortName());
-				return "SUCCESS";
+		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
+			JavaClass testClass = null;
+			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass.toString())){
+				//BeginClass will Create a new testClass, so it shouldn't exist yet, clear it out if it does
+				//TODO: If it exists already, we should throw up a warning and ask the user if they want it cleared/overriden or left as is.
+				File file = new File(testPath);
+				try{
+					if(!file.exists()){
+						//We're good in this case.  File does not exist, BeginClass will create it
+					}
+					else if(file.delete()){
+						//For now, auto delete the class if it already exists.
+						System.out.println("We already had a test class called [" + className + "], we just removed it so we could make a new one.");
+					}else{
+						System.out.println("ERROR: We already had a test class called [" + className + "], we TRIED to remove it, but found an error.  Old class may still exist.");
+						return "ERROR: Could not delete existing class named [" + className + "], could therefore not create the new class.";
+					}
+				} catch(Exception e){
+					System.out.println("ERROR: In determining if New Test Suite named [" + className + "] existed, and/or if we deleted it.");
+					return "ERROR: Could not create new class.";
+				}
 			}
-			catch (Exception e) {
-				System.err.println("Failure in doBeginTest: " + e);
-				return "FAILURE in Beginning Class Instruction: " + e;
+			else {
+				//Any other DirectProcess besides BeginClass will need the file to already exist!
+				try {
+					File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java"); //NOTE: File Name must be spot 0 for any DirectProcess Keywords
+					testClass = (JavaClass) JavaParser.parse(testClassFile);
+				} catch (Exception e) {
+					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
+					System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: " + e);
+					return "ERROR - Did not process keyword: " + keyword.getShortName();
+				}
 			}
-//		}
+			
+			return keyword.performKeyword(testClass, inputs);
+		}
+		else{
+			//All other Keywords get processed by adding a call to their HelperClassMethods into the test itself
+			
+			//TODO: Next up is updating the UI to pass in the Test Name with each step.
+			//Then we can update this code to get the method from the testClass object and add the next step into the body.
+			
+			//THIS IS THE OLD - Non-Parser way of doing things
+//			try{
+//				PrintStream writetoTest = new PrintStream(
+//						new FileOutputStream(testPath, true)); 
+//				writetoTest.append("\n\t\tHelper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");");
+//				System.out.println("\nSUCCESS - Added method call for " + keyword.getShortName());
+//				return "SUCCESS";
+//			}
+//			catch (Exception e) {
+//				System.err.println("Failure in doBeginTest: " + e);
+//				return "FAILURE in Beginning Class Instruction: " + e;
+//			}
+		}
 	}
 	
-	private String printOutArrayListAsList(String[] list){
+	private ArrayList<String> filterInputArrayIntoArraList(String[] inputArray){
+		//For some reason, REST is passing the inputArray as [array], need to treat element(0) as the actual inputArray
+		String[] tempArray = inputArray[0].split(", ");
+		try {
+			for (int i = 0; i < tempArray.length; i++) {
+				tempArray[i] = decodeURLForBadChars(tempArray[i]);
+			}
+		} catch (Exception e) {
+			System.out.println("ERROR: Exception in Encoding URL inputs!");
+		}
+		ArrayList<String> inputs = new ArrayList<String>(tempArray.length);
+		for (String s : tempArray) {  
+			inputs.add(s);  
+		}
+		
+		return inputs;
+	}
+		
+	private String printOutArrayListAsList(ArrayList<String> list){
 		String returnVal = "Arrays.asList(";
 		for (String element : list) {
 			//TODO:Find a better way of passing variables, for now, do it with a simple

@@ -1,13 +1,26 @@
 package org.ocpsoft.keywords;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
+import org.jboss.forge.parser.java.util.Formatter;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.runner.RunWith;
 
 import com.ocpsoft.constants.InputConstants;
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class BeginClassKeyword implements Keyword {
 
@@ -18,7 +31,7 @@ public class BeginClassKeyword implements Keyword {
 	
 	@Override
 	public KEYWORD_PROCESS_TYPES getProcessType(){
-		return KEYWORD_PROCESS_TYPES.MethodCall;
+		return KEYWORD_PROCESS_TYPES.DirectProcess;
 	}
 	
 	@Override
@@ -106,8 +119,60 @@ public class BeginClassKeyword implements Keyword {
 
 	@Override
 	@Deprecated
-	public String performKeyword(String testPath, ArrayList<String> inputValues) {
-		try{
+	public String performKeyword(JavaClass nullClass, ArrayList<String> inputValues) {
+		JavaClass testClass = JavaParser.create(JavaClass.class);
+		testClass.setName(inputValues.get(0)).setPackage("com.example.domain")
+				.addAnnotation(RunWith.class)
+				.setLiteralValue(Arquillian.class.getSimpleName() + ".class")
+				.getOrigin().addImport(Arquillian.class);
+		testClass.addField().setPrivate().setStatic(true).setFinal(true)
+				.setType(String.class).setName("WEBAPP_SRC");
+		testClass.getField("WEBAPP_SRC").setLiteralInitializer(
+				"\"src/main/webapp\"");
+		testClass
+				.addMethod()
+				.setName("createDeployment")
+				.setStatic(true)
+				.setVisibility(Visibility.PUBLIC)
+				.setReturnType(WebArchive.class)
+				.setBody(
+						"return ShrinkWrap.create(WebArchive.class, \"FBTutorialDemo.war\")"
+								+ ".addAsResource(\"META-INF/persistence.xml\")"
+								+ ".addAsWebResource(new File(WEBAPP_SRC, \"index.html\"))"
+								+ ".addAsWebResource(new File(WEBAPP_SRC, \"index2.html\"))"
+								+ ".addAsWebResource(new File(WEBAPP_SRC, \"myInfo.html\"))"
+								+ ".addAsWebResource(new File(WEBAPP_SRC, \"friendsInfo.html\"))"
+								+ ".addAsWebInfResource(EmptyAsset.INSTANCE, \"beans.xml\");")
+				.addAnnotation(Deployment.class).getOrigin()
+				.addImport(File.class);
+		testClass.addImport(WebArchive.class);
+		testClass.addImport(Deployment.class);
+		testClass.addImport(ShrinkWrap.class);
+		testClass.addImport(EmptyAsset.class);
+		testClass.addImport(DefaultSelenium.class);
+		testClass.addField().setType(DefaultSelenium.class).setName("browser")
+				.addAnnotation(Drone.class).getOrigin()
+				.addImport(DefaultSelenium.class);
+		testClass.addImport(Drone.class);
+		testClass.addField().setType(URL.class).setName("deploymentURL")
+				.addAnnotation(ArquillianResource.class).getOrigin()
+				.addImport(URL.class);
+		testClass.addImport(ArquillianResource.class);
+		try {
+			PrintStream writetoTest = new PrintStream(new FileOutputStream(
+					InputConstants.ROOT_FILE_PATH + inputValues.get(0) + ".java"));
+			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
+			writetoTest.close();
+		} catch (Exception e) {
+			System.err.println("Failure in create new TestClass: " + e);
+			return "ERROR: Could not create new Class.";
+		}
+		
+		System.out.println("SUCCESS: New Class [" + inputValues.get(0) + "] created successfully.");
+		return "SUCCESS: New Class [" + inputValues.get(0) + "] created successfully.";
+		
+		/*OLD, NON-Parser way
+		 * try{
 			PrintStream writetoTest = new PrintStream(
 				     new FileOutputStream(testPath)); 
 			writetoTest.println("package com.example.domain;");
@@ -172,7 +237,7 @@ public class BeginClassKeyword implements Keyword {
 			writetoTest.println();
 			writetoTest.println("public class Helper {\n\n");
 			//Add any generic helper functions here:
-			writetoTest.println("/*HELPER Methods and vars for other Keywords*/");
+			writetoTest.println("//HELPER Methods and vars for other Keywords");
 			writetoTest.println("\tprivate static String value = \"\";");
 			writetoTest.println("\tprivate static String getValue(DefaultSelenium browser, String objectType, String objectXPath){");
 			writetoTest.println("\t\tif(objectType.equals(\"select\")) {");
@@ -206,6 +271,6 @@ public class BeginClassKeyword implements Keyword {
 			System.err.println("Failure in doBeginTest: " + e);
 			return "FAILURE in Beginning Class Instruction - Creating Helper.java file: " + e;
 		}
-		
+		*/
 	}
 }

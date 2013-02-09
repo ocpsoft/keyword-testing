@@ -40,35 +40,34 @@ public class InputConstants {
     static {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginClass, Arrays.asList("with Suite Name of:"));
     	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginTest, Arrays.asList("with Test Name of:",
-    															"in the Suite of:"));
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginTest, Arrays.asList("with Test Name of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.ClickElement, Arrays.asList("with Identifyer [link/id/name/css/xpath] of:",
-											    			   "and desired element key of:", 
-															   "and desired Destination Path of (FOR Identifyers of link ONLY):"));
+											    			   	"and desired element key of:", 
+															   	"and desired Destination Path of (FOR Identifyers of link ONLY):"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EndClass, new ArrayList<String>());
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EndTest, new ArrayList<String>());
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("with xPath of Input:",
-				   												   "and Text to enter:"));
+				   												"and Text to enter:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.OpenBrowser, Arrays.asList("with Starting Webpage of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.SelectDropdownValue, Arrays.asList("with Dropdown object's ID of:",
-				 													  "selecting the value of:"));
+				 												"selecting the value of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.VerifyObjectIsDisplayed, Arrays.asList("with Verification Message of:",
-				  														  "with XPath property to verify of:"));
+				  												"with XPath property to verify of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, Arrays.asList("with Verification Message of:",
-				  															 "with XPath property to verify of:"));
+				  												"with XPath property to verify of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("with Verification Message of:",
-																	   "with object Type of:",
-																	   "with XPath property to verify of:",
-																	   "with value to verify of:"));
+																"with object Type of:",
+																"with XPath property to verify of:",
+																"with value to verify of:"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordDescriptions() {
@@ -80,7 +79,7 @@ public class InputConstants {
     static {
     	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginClass, Arrays.asList("MySuiteTest"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginTest, Arrays.asList("testName", "MySuiteTest"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginTest, Arrays.asList("testName"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.ClickElement, Arrays.asList("link","Get Your Info Here","myInfo.html"));
     	

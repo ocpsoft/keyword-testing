@@ -1,12 +1,15 @@
 package org.ocpsoft.keywords;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
+import org.jboss.forge.parser.java.util.Formatter;
+import org.junit.Test;
+
+import com.ocpsoft.constants.InputConstants;
 
 public class BeginTestKeyword implements Keyword {
 
@@ -17,7 +20,7 @@ public class BeginTestKeyword implements Keyword {
 
 	@Override
 	public KEYWORD_PROCESS_TYPES getProcessType(){
-		return KEYWORD_PROCESS_TYPES.MethodCall;
+		return KEYWORD_PROCESS_TYPES.DirectProcess;
 	}
 	
 	@Override
@@ -54,9 +57,29 @@ public class BeginTestKeyword implements Keyword {
 
 	
 	@Override
-	@Deprecated
-	public String performKeyword(String testPath, ArrayList<String> inputValues) {
-		try{
+	public String performKeyword(JavaClass testClass, ArrayList<String> inputValues) {
+		
+		testClass.addMethod().setName(inputValues.get(0))
+				.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()
+				.addThrows(InterruptedException.class)
+				.addAnnotation(Test.class);
+		
+		try {
+			PrintStream writetoTest = new PrintStream(new FileOutputStream(
+					InputConstants.ROOT_FILE_PATH + testClass.getName() + ".java"));
+			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
+			writetoTest.close();
+		} catch (Exception e) {
+			System.err.println("Failure in create new Test Case: " + e);
+			return "ERROR: Could not create new Test.";
+		}
+		
+		System.out.println("SUCCESS: New Test [" + inputValues.get(0) + "] created successfully.");
+		return "SUCCESS: New Test [" + inputValues.get(0) + "] created successfully.";
+		
+		
+		/*OLD - NON-Parser way
+		 * try{
 			File f = new File(testPath);
 			if(!f.exists()) { 
 				return "FAILURE: ClassFile does not exist, can not add instruction.  Fix path of: " + testPath;
@@ -77,6 +100,7 @@ public class BeginTestKeyword implements Keyword {
 			System.err.println("Failure in doBeginTest: " + e);
 			return "FAILURE in Beginning Class Instruction: " + e;
 		}
+		*/
 	}
 
 }

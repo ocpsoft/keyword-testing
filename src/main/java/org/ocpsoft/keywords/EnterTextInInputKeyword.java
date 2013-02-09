@@ -1,12 +1,9 @@
 package org.ocpsoft.keywords;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
-
-import com.thoughtworks.selenium.DefaultSelenium;
 
 public class EnterTextInInputKeyword implements Keyword {
 
@@ -28,7 +25,7 @@ public class EnterTextInInputKeyword implements Keyword {
 	
 	@Override
 	@Deprecated
-	public String performKeyword(String testPath, ArrayList<String> inputValues) {
+	public String performKeyword(JavaClass testClass, ArrayList<String> inputValues) {
 		return "";
 	}
 	
