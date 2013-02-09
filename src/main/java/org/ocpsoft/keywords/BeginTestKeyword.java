@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.jboss.forge.parser.java.JavaClass;
-import org.jboss.forge.parser.java.SyntaxError;
 import org.jboss.forge.parser.java.Visibility;
-import org.junit.Test;
 
 public class BeginTestKeyword implements Keyword {
 
@@ -35,16 +32,24 @@ public class BeginTestKeyword implements Keyword {
           .setName("BeginTest")
           .setStatic(true)
           .setVisibility(Visibility.PUBLIC)
-          .setBody( "JavaClass testClass = JavaParser.parse(new File(InputConstants.FILE_LOCATION + inputValues.get(1)));\n" +
-	      		  	"testClass.addMethod()\n" + 
-	  		  		".setName(inputValues.get(0))\n" +
-	  		  		".setVisibility(Visibility.PUBLIC)\n" +
-	  		  		".setReturnTypeVoid()\n" +
-	  		  		".addThrows(InterruptedException.class);"
+          .setBody( "JavaClass testClass;" +
+//        			"try{" +
+//        			"	File testClassFile = new File(rootPath" +
+//        			"			+ inputValues.get(1));" +
+//        			"	testClass = (JavaClass) JavaParser.parse(testClassFile);" +
+//        			"}" +
+//        			"catch (Exception e) {" +
+//        			"	System.out.println(\"Error in trying to get the testClass File - e:\" + e);" +
+//        			"	return;" +
+//        			"}" +
+        			"testClass.addMethod().setName(inputValues.get(0))" +
+        			"	.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()" +
+        			"	.addThrows(InterruptedException.class)" +
+        			"	.addAnnotation(Test.class);"
         		  )
-        		  .setReturnTypeVoid()
-          .setParameters("DefaultSelenium browser, List inputValues")
-          .addAnnotation(Test.class);
+        		  
+          .setReturnTypeVoid()
+          .setParameters("DefaultSelenium browser, List inputValues");		
 	}
 
 	

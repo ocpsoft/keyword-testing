@@ -120,7 +120,7 @@ public class MyWebService {
 	@POST
 	@Path("/DeleteTestSuite/{className}")
 	public String deleteTestSuite(@PathParam("className") String className) {
-		String rootPath = InputConstants.FILE_LOCATION;
+		String rootPath = InputConstants.ROOT_FILE_PATH;
 		System.out.println("Deleting Test Suite: " + rootPath + className);
 
 		File file = new File(rootPath + className);
@@ -169,7 +169,7 @@ public class MyWebService {
 	@Path("StartNewProject")
 	public String startNewProject(){
 		//TODO: This should really create a totally new project, for now we'll just keep re-using AppUnderTest
-		String rootPath = InputConstants.FILE_LOCATION;
+		String rootPath = InputConstants.ROOT_FILE_PATH;
 		File helperFile = new File(rootPath + "Helper.java");
 		
 		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
@@ -214,7 +214,7 @@ public class MyWebService {
 				+ ", inputArray: " + actualInputArray + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
-		String testPath = InputConstants.FILE_LOCATION + className + ".java";
+		String testPath = InputConstants.ROOT_FILE_PATH + className + ".java";
 		
 		//Nothing should be Direct Process anymore:
 		//Some Keywords are now Direct Process, and some get added via Method Calls

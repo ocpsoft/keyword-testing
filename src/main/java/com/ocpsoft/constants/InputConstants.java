@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class InputConstants {
 	
-	public static final String FILE_LOCATION = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+	public static final String ROOT_FILE_PATH = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
 	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
 	
 	public static enum KEYWORD_KEYS

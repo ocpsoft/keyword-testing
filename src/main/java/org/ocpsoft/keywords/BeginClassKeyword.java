@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
 
@@ -62,6 +61,7 @@ public class BeginClassKeyword implements Keyword {
 				  		".addAnnotation(Deployment.class)" +
 				  		".getOrigin().addImport(File.class);" +
 				  "testClass.addImport(WebArchive.class);" +
+				  "testClass.addImport(Deployment.class);" +
 				  "testClass.addImport(ShrinkWrap.class);" +
 				  "testClass.addImport(EmptyAsset.class);" +
 				  "testClass.addImport(DefaultSelenium.class);" +
@@ -80,18 +80,19 @@ public class BeginClassKeyword implements Keyword {
 
 				  "testClass.addImport(PrintStream.class);" + 
 				  "testClass.addImport(FileOutputStream.class);" +
-				  "testClass.addImport(Formatter.class);";
+				  "testClass.addImport(Formatter.class);"; //Note, this is a current workaround for Parser Errors with Try-Catch block.  Gets replaced later.
 		
-		String methodBody2 =
-				  "try{" +
-				  		"PrintStream writetoTest = new PrintStream(" +
-				  			"new FileOutputStream(testPath)); " +
-				  		"writetoTest.print(Formatter.format(testClass));" +
-				  		"writetoTest.close();" +
-				  "}" +
-				  "catch (Exception e) {" +
-				  		"System.err.println(\"\\\"Failure in createTestClassViaParser: \\\" + e\");" +
-				  "}";
+//		String methodBody2 =
+//				  "try{" +
+//				  		"PrintStream writetoTest = new PrintStream(" +
+//				  			"new FileOutputStream(rootPath + inputValues.get(0))); " +
+//				  		"writetoTest.print(Formatter.format(testClass));" +
+//				  		"writetoTest.close();" +
+//				  "}" +
+//				  "catch (Exception e) {" +
+//				  		"System.err.println(\"Failure in createTestClassViaParser: \" + e);" +
+//				  "}";		
+
 		helperClass.addMethod()
 			.setName("BeginClass")
         	.setStatic(true)
@@ -99,12 +100,7 @@ public class BeginClassKeyword implements Keyword {
         	.setReturnTypeVoid()
         	.setParameters("DefaultSelenium browser, List inputValues")
         	//TODO: Parser is not liking the try catch block right now.
-        	.setBody( methodBody
-      		  );
-		
-		helperClass.addImport(JavaClass.class);
-		helperClass.addImport(JavaParser.class);
-		
+        	.setBody( methodBody );
 		
 	}
 
@@ -162,7 +158,7 @@ public class BeginClassKeyword implements Keyword {
 			return "FAILURE in Beginning Class Instruction: " + e;
 		}
 		
-		testPath = InputConstants.FILE_LOCATION + "Helper.java";
+		testPath = InputConstants.ROOT_FILE_PATH + "Helper.java";
 		//Create the Helper file so we can call a simple method for each keyword for each step in every test
 		try{
 			PrintStream writetoTest = new PrintStream(

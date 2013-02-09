@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.List;
 
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -17,6 +18,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
@@ -38,7 +40,6 @@ public class HelperFileCreator {
 	      helperClass.addImport(DefaultSelenium.class);
 	      helperClass.addImport(URL.class);
 	      helperClass.addImport(Assert.class);
-	      helperClass.addImport(InputConstants.class);
 	      helperClass.addImport(Visibility.class);
 	      helperClass.addImport(File.class);
 	      helperClass.addImport(Arquillian.class);
@@ -48,13 +49,19 @@ public class HelperFileCreator {
 	      helperClass.addImport(ShrinkWrap.class);
 	      helperClass.addImport(EmptyAsset.class);
 	      helperClass.addImport(Drone.class);
+	      helperClass.addImport(Test.class);
 	      helperClass.addImport(PrintStream.class);
 	      helperClass.addImport(FileOutputStream.class);
 	      helperClass.addImport(Formatter.class);
+	      helperClass.addImport(Deployment.class);
+	      helperClass.addImport(JavaClass.class);
+	      helperClass.addImport(JavaParser.class);
 
 	      helperClass
 	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("value").setLiteralInitializer("");
 
+	      helperClass
+	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("rootPath").setStringInitializer(InputConstants.ROOT_FILE_PATH);
 	      helperClass.addMethod()
 	               .setName("getValue")
 	               .setStatic(true)
@@ -83,12 +90,49 @@ public class HelperFileCreator {
 			try{
 				PrintStream writetoTest = new PrintStream(
 					     new FileOutputStream(filePath + "Helper.java")); 
-				writetoTest.print(Formatter.format(helperClass));
+				writetoTest.print(resolveParserIssuesAndFormat(helperClass));
 				writetoTest.close();
 				System.out.println("Successfully created Helper.java file in " + packageName);
 			}
 			catch (Exception e) {
 				System.err.println("Failure in doBeginTest: " + e);
 			}
+	}
+	
+	//TODO: Currently a number of issues with JavaParser.  We're going to hardcode replace statements to get around them for the time being.
+	private static String resolveParserIssuesAndFormat(JavaClass helperClass){
+		
+		//TODO: Note, Formatting should be this easy, but for some reason it's not working
+		//We'll have to come back to this later, this is a low priority
+		String returnVal = Formatter.format(helperClass); 
+		
+		returnVal = returnVal.replaceAll("List inputValues", "List<String> inputValues");
+		
+		String beginClassMethodBody2 =
+				  "testClass.addImport(Formatter.class);" +
+				  "try{" +
+				  		"PrintStream writetoTest = new PrintStream(" +
+				  			"new FileOutputStream(rootPath + inputValues.get(0))); " +
+				  		"writetoTest.print(Formatter.format(testClass));" +
+				  		"writetoTest.close();" +
+				  "}" +
+				  "catch (Exception e) {" +
+				  		"System.err.println(\"Failure in createTestClassViaParser: \" + e);" +
+				  "}";
+		returnVal = returnVal.replace("testClass.addImport(Formatter.class);", beginClassMethodBody2);
+		
+		String beginTestMethodBody2 = "JavaClass testClass;" +
+    			"try{" +
+    			"	File testClassFile = new File(rootPath" +
+    			"			+ inputValues.get(1));" +
+    			"	testClass = (JavaClass) JavaParser.parse(testClassFile);" +
+    			"}" +
+    			"catch (Exception e) {" +
+    			"	System.out.println(\"Error in trying to get the testClass File - e:\" + e);" +
+    			"	return;" +
+    			"}";
+		returnVal = returnVal.replace("JavaClass testClass;", beginTestMethodBody2);
+		
+		return returnVal; 
 	}
 }

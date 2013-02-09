@@ -53,8 +53,8 @@ public class ParserExampleTest
 	@Test
 	public void testParser() throws InterruptedException {
 		String className = "ParseTest";
-		removeClassFile(InputConstants.FILE_LOCATION + className + ".java");
-		createTestClassViaParser(InputConstants.FILE_LOCATION + className + ".java", className);
+		removeClassFile(InputConstants.ROOT_FILE_PATH + className + ".java");
+		createTestClassViaParser(InputConstants.ROOT_FILE_PATH + className + ".java", className);
 	}
 	
 	private void createTestClassViaParser(String testPath, String className) {
