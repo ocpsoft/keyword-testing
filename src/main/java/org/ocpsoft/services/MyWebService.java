@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ import javax.ws.rs.Produces;
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
+import org.jboss.forge.parser.java.Method;
+import org.jboss.forge.parser.java.util.Formatter;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordFactory;
@@ -228,10 +231,11 @@ public class MyWebService {
 	}
 	
 	@POST
-	@Path("/NewInstruction/{keyword}/{className}/{inputArray}")
+	@Path("/NewInstruction/{keyword}/{className}/{testCaseName}/{inputArray}")
 	public String processNewInstruction(
 			@PathParam("keyword") String keywordkey,
 			@PathParam("className") String className,
+			@PathParam("testCaseName") String testCaseName,
 			@PathParam("inputArray") String[] inputArray) {
 		
 		ArrayList<String> inputs = filterInputArrayIntoArraList(inputArray);
@@ -240,10 +244,11 @@ public class MyWebService {
 
 		Keyword keyword = factory.createKeyword(keywordkey);
 		String testPath = InputConstants.ROOT_FILE_PATH + className + ".java";
+		JavaClass testClass = null;
+		String error = "";
 		
 		//Some Keywords are now Direct Process, and some get added via Method Calls
 		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
-			JavaClass testClass = null;
 			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass.toString())){
 				//BeginClass will Create a new testClass, so it shouldn't exist yet, clear it out if it does
 				//TODO: If it exists already, we should throw up a warning and ask the user if they want it cleared/overriden or left as is.
@@ -266,12 +271,10 @@ public class MyWebService {
 			}
 			else {
 				//Any other DirectProcess besides BeginClass will need the file to already exist!
-				try {
-					File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java");
-					testClass = (JavaClass) JavaParser.parse(testClassFile);
-				} catch (Exception e) {
+				testClass = javaClassExists(testClass, className);
+				if(testClass == null)
+				{
 					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
-					System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: " + e);
 					return "ERROR - Did not process keyword: " + keyword.getShortName();
 				}
 			}
@@ -283,6 +286,36 @@ public class MyWebService {
 			
 			//TODO: Next up is updating the UI to pass in the Test Name with each step.
 			//Then we can update this code to get the method from the testClass object and add the next step into the body.
+			testClass = javaClassExists(testClass, className);
+			if(testClass != null) {
+				Method<JavaClass> currentMethod = testClass.getMethod(testCaseName);
+				if(currentMethod == null){
+					System.out.println("Could not find current testCaseName method: " + testCaseName + ", keyword NOT processed");
+					return "ERROR - Did not find the testCase Named: " + testCaseName + ", we could not process your last keyword: " + keyword.getShortName();
+				}
+				
+				String newStep = "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
+				currentMethod.setBody(currentMethod.getBody() + newStep);
+				
+				//Now re-write the actual File with the updates to the class file
+				try {
+					PrintStream writetoTest = new PrintStream(new FileOutputStream(
+							InputConstants.ROOT_FILE_PATH + className + ".java"));
+					writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
+					writetoTest.close();
+				} catch (Exception e) {
+					System.err.println("Failure in writing out the new file for processing this keyword.  Error: " + e);
+					return "ERROR: Could not process the last keyword.";
+				}
+				System.out.println("SUCCESS - Added method call for " + keyword.getShortName());
+				return "SUCCESS";
+			}
+			else{
+				System.out.println("Error in trying to get the testClass File for a MethodCall keyword.");
+				System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: " + error);
+				return "ERROR - Did not process keyword: " + keyword.getShortName();
+			}
+			
 			
 			//THIS IS THE OLD - Non-Parser way of doing things
 //			try{
@@ -296,8 +329,18 @@ public class MyWebService {
 //				System.err.println("Failure in doBeginTest: " + e);
 //				return "FAILURE in Beginning Class Instruction: " + e;
 //			}
-			return "This is old code";
 		}
+	}
+	
+	private JavaClass javaClassExists(JavaClass testClass, String className){
+		try {
+			File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java");
+			testClass = (JavaClass) JavaParser.parse(testClassFile);
+		} catch (Exception e) {
+			System.out.println("Error in trying to get the testClass File for Processing a keyword: " + e);
+			return null;
+		}
+		return testClass;
 	}
 	
 	private ArrayList<String> filterInputArrayIntoArraList(String[] inputArray){

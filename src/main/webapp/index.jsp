@@ -19,8 +19,7 @@
 		}
 		%><P /> --%>
 		
-		<%-- 
-		Here are all the descriptions<BR />
+		<!-- Here are all the descriptions<BR /> -->
 		<script type="text/javascript">
     		var curKeyword = "";
     		var keywordDescMap = {};
@@ -30,14 +29,14 @@
 		for (Map.Entry<InputConstants.KEYWORD_KEYS, List<String>> keywordDesc : InputConstants.KEYWORD_DESCRIPTIONS.entrySet()) {
 			InputConstants.KEYWORD_KEYS keyword = keywordDesc.getKey();
 			    List<String> descriptions = keywordDesc.getValue();
-		%><P />Keyword: <%=keyword %><BR />
+		%><%-- <P />Keyword: <%=keyword %><BR />--%>
 	    	<script type="text/javascript">
 	    		var curDescList = "";
 	    		curKeyword = "<%=keyword%>";
 	    	</script>
 		    <%
 		    for (int i = 0; i < descriptions.size(); i++) {
-		    	%><%=i%>: <%=descriptions.get(i)%><BR />
+		    	%><%-- <%=i%>: <%=descriptions.get(i)%><BR /> --%>
 		    	<script type="text/javascript">
 		    		curDescList = curDescList + "<%=descriptions.get(i)%>" + ", ";
 		    	</script>		    	
@@ -49,18 +48,18 @@
 		   	</script>
 	   		<%		    
 		}
-		%><P />Here are all the values<BR /><%
+		%><!-- <P />Here are all the values<BR /> --><%
 		for (Map.Entry<InputConstants.KEYWORD_KEYS, List<String>> keywordValue : InputConstants.KEYWORD_VALUES.entrySet()) {
 			InputConstants.KEYWORD_KEYS keyword = keywordValue.getKey();
 		    List<String> values = keywordValue.getValue();
-		%><P />Keyword: <%=keyword %><BR />
+		%><%-- <P />Keyword: <%=keyword %><BR /> --%>
 	    	<script type="text/javascript">
 	    		var curValueList = "";
 	    		curKeyword = "<%=keyword%>";
 	    	</script>
 		    <%
 		    for (int i = 0; i < values.size(); i++) {
-		    	%><%=i%>: <%=values.get(i)%><BR />
+		    	%><%-- <%=i%>: <%=values.get(i)%><BR /> --%>
 		    	<script type="text/javascript">
 		    		curValueList = curValueList + "<%=values.get(i)%>" + ", ";
 		    	</script>		    	
@@ -73,8 +72,6 @@
 	   		<%		    
 		}
 		%>
-		<hr><P />
---%>
 	
        <center>
        <H1>Welcome to The Keyword Framework</H1><P />
@@ -301,9 +298,14 @@
 
 		function postInstruction(keyword, input1, input2, input3, input4){
 			var className = document.getElementById("className").value;
+			var testCaseSelectObj = document.getElementById("testCaseName");
+			try{
+				var testCaseName = testCaseSelectObj.options[testCaseSelectObj.selectedIndex].text;
+			}
+			catch(err){ testCaseName = "assigned_null"; }
 			var inputArray = input1 + ", " + input2 + ", " + input3 + ", " + input4;
 			var POSTurl = 'rest/webService/NewInstruction/' + 
-				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + 
+				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + encodeURLComp(testCaseName) + '/' +
 				encodeURLComp(inputArray);
 			var returnVal = doPOST(POSTurl, "", false);
 			if(keyword == "BeginTest"){

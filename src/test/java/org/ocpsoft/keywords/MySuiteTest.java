@@ -10,6 +10,8 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +28,25 @@ public class MySuiteTest {//Begin Class
    
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
-		return ShrinkWrap.create(WebArchive.class, "MainTestSuite.war")
-						.addClasses(MyWebService.class, InputConstants.class)
+	   MavenDependencyResolver resolver = DependencyResolvers.use(
+			   MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
+		return ShrinkWrap.create(WebArchive.class, "KeywordApp.war")
+						.addClasses(MyWebService.class, InputConstants.class, Keyword.class, KeywordFactory.class)
 						.addAsResource("META-INF/persistence.xml")
 						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
 						.addAsWebResource(new File(WEBAPP_SRC, "myLink.html"))
+						.addAsLibraries(resolver.artifacts("org.jboss.forge:forge-parser-java")
+								.resolveAsFiles())
+						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-java")
+								.resolveAsFiles())
+						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-server")
+								.resolveAsFiles())									
+						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-impl")
+								.resolveAsFiles())									
+						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium")
+								.resolveAsFiles())									
+						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium-server")
+								.resolveAsFiles())
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 

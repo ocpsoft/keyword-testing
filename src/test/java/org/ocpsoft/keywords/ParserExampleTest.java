@@ -21,7 +21,6 @@ import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.ocpsoft.constants.InputConstants;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
@@ -52,9 +51,11 @@ public class ParserExampleTest
 	   
 	@Test
 	public void testParser() throws InterruptedException {
+		String rootPath = "/home/fife/workspace/KeywordApp/src/test/java/com/ocpsoft/keywords/";
 		String className = "ParseTest";
-		removeClassFile(InputConstants.ROOT_FILE_PATH + className + ".java");
-		createTestClassViaParser(InputConstants.ROOT_FILE_PATH + className + ".java", className);
+		removeClassFile(rootPath + className + ".java");
+		createTestClassViaParser(rootPath + className + ".java", className);
+		removeClassFile(rootPath + className + ".java");
 	}
 	
 	private void createTestClassViaParser(String testPath, String className) {
@@ -80,7 +81,7 @@ public class ParserExampleTest
 	               .setStatic(true)
 	               .setVisibility(Visibility.PUBLIC)
 	               .setReturnType(WebArchive.class)
-	               .setBody("return ShrinkWrap.create(WebArchive.class, \"FBTutorialDemo.war\")\n" +
+	               .setBody("return ShrinkWrap.create(WebArchive.class)\n" +
 						"\t.addAsResource(\"META-INF/persistence.xml\")\n" +
 						"\t.addAsWebResource(new File(WEBAPP_SRC, \"index.html\"))\n" +
 						"\t.addAsWebResource(new File(WEBAPP_SRC, \"index2.html\"))\n" +
@@ -117,7 +118,7 @@ public class ParserExampleTest
 			}
 	}
 	
-	public void removeClassFile(String filePath){
+	public static void removeClassFile(String filePath){
 		File classFile = new File(filePath);
 		try{
 			if(!classFile.exists()){

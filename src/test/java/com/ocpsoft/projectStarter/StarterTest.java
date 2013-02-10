@@ -16,6 +16,7 @@ import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.KeywordFactory;
+import org.ocpsoft.keywords.ParserExampleTest;
 import org.ocpsoft.services.MyWebService;
 
 import com.ocpsoft.constants.InputConstants;
@@ -23,8 +24,6 @@ import com.ocpsoft.constants.InputConstants;
 @RunWith(Arquillian.class)
 public class StarterTest {//Begin Class
 
-   private static final String WEBAPP_SRC = "src/main/webapp";
-   
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
 	   MavenDependencyResolver resolver = DependencyResolvers.use(
@@ -32,18 +31,25 @@ public class StarterTest {//Begin Class
 		return ShrinkWrap.create(WebArchive.class, "Startup.war")
 						.addClasses(MyWebService.class, InputConstants.class)
 						.addClasses(KeywordFactory.class, Keyword.class, JavaClass.class, ServiceLoader.class, Iterators.class)
-						.addAsLibraries(resolver.artifacts("org.jboss.forge:forge-parser-java")
-									.resolveAsFiles())
-						.addAsLibraries(resolver.artifacts("org.ocpsoft.common:common-api")
-									.resolveAsFiles())									
 						.addAsResource("META-INF/persistence.xml")
-						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
+						.addAsLibraries(resolver.artifacts("org.jboss.forge:forge-parser-java")
+								.resolveAsFiles())
+						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-java")
+								.resolveAsFiles())
+						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-server")
+								.resolveAsFiles())									
+						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-impl")
+								.resolveAsFiles())									
+						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium")
+								.resolveAsFiles())									
+						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium-server")
+								.resolveAsFiles())
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
 	@Test
 	public void testSetupHelperFile() throws InterruptedException {//Begin Test Case
-		/* This test removes (if any) Helper.java file,
+		/* This test removes (if any) Helper.java file (in the current KeywordApp project,
 		 * Then creates a new one.  We simply verify that a file was created successfully.
 		 */
 		
@@ -68,6 +74,7 @@ public class StarterTest {//Begin Class
 		}
 		
 		HelperFileCreator.createHelperClassViaParser(rootPath, "com.ocpsoft.projectStarter");	
+		ParserExampleTest.removeClassFile(rootPath + "Helper.java");
 	}//End Test Case
 
 }//End Class

@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -158,6 +159,7 @@ public class BeginClassKeyword implements Keyword {
 				.addAnnotation(ArquillianResource.class).getOrigin()
 				.addImport(URL.class);
 		testClass.addImport(ArquillianResource.class);
+		testClass.addImport(Arrays.class);
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
 					InputConstants.ROOT_FILE_PATH + inputValues.get(0) + ".java"));
