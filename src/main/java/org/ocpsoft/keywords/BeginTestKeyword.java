@@ -62,6 +62,7 @@ public class BeginTestKeyword implements Keyword {
 		testClass.addMethod().setName(inputValues.get(0))
 				.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()
 				.addThrows(InterruptedException.class)
+				.setBody("")
 				.addAnnotation(Test.class);
 		
 		try {

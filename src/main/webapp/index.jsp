@@ -18,6 +18,8 @@
 			%><%=desc %><br /><%
 		}
 		%><P /> --%>
+		
+		<%-- 
 		Here are all the descriptions<BR />
 		<script type="text/javascript">
     		var curKeyword = "";
@@ -72,6 +74,7 @@
 		}
 		%>
 		<hr><P />
+--%>
 	
        <center>
        <H1>Welcome to The Keyword Framework</H1><P />
@@ -82,6 +85,11 @@
        <input type="submit" value="LoadSuite" onClick='getTestSuite()'/><P />
        <P />
        </center>
+       <div id="testCaseDiv">
+       Current Test Case is: 
+       <select id="testCaseName"></select>
+		</div>
+		<BR />
        The User will 
        	<select id="keyword" onchange="instruction_Selected()">
        		<%
@@ -127,6 +135,9 @@
 			var dropdown = document.getElementById("keyword");
 			var keyword = dropdown.options[dropdown.selectedIndex].value;
 			hideAllInputs();
+			if(keyword == "BeginClass"){
+				updateTestCaseNames("NewClass", null);
+			}
 			showAllNecessaryInputs(keyword);
 		}
 
@@ -174,9 +185,6 @@
 				document.getElementById("input" + (i+1) + "Desc").innerHTML = keywordDescs[i];
 				document.getElementById("Input" + (i+1)).value = keywordVals[i];
 			}
-
-			
-			
 		}
 
 		function doGET(GetURL){
@@ -279,7 +287,14 @@
 
 		function getTestSuite() {
 			var className = document.getElementById("className").value;
-			var GETurl = 'rest/webService/TestSuite/' + className + '.java';
+			var GETurl = 'rest/webService/TestSuite/' + className;
+			var returnVal = doGET(GETurl);
+			return returnVal;
+		}
+
+		function getTestCaseNames() {
+			var className = document.getElementById("className").value;
+			var GETurl = 'rest/webService/ListOfTestMethodNames/' + className;
 			var returnVal = doGET(GETurl);
 			return returnVal;
 		}
@@ -291,9 +306,88 @@
 				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + 
 				encodeURLComp(inputArray);
 			var returnVal = doPOST(POSTurl, "", false);
+			if(keyword == "BeginTest"){
+				updateTestCaseNames("NewTest", input1);
+			}
 			return returnVal;
 		}
 
+		function updateTestCaseNames(action, newTestName){
+			selectDiv = document.getElementById('testCaseDiv');
+			selectObject = document.getElementById('testCaseName');
+			if(action == "NewClass"){
+				selectDiv.style.visibility = 'hidden';				
+			}
+			else if(action == "NewTest"){
+				selectDiv.style.visibility = 'visible';		
+				var className = document.getElementById("className").value;
+				var GETurl = 'rest/webService/ListOfTestMethodNames/' + className;
+				doGETwithCallback(GETurl, performTestCaseSelectOptionUpdate, newTestName);
+			}
+		}
+
+		function performTestCaseSelectOptionUpdate(newOptions, newTestName){
+			var methodList = newOptions.split(",");
+			selectObject.options.length = methodList.length;
+			for (var i=0; i < methodList.length; i++){
+				selectObject.options[i] = new Option(methodList[i],i);
+			}
+			//Now select the new one by default
+			for (var i=0; i < methodList.length; i++){
+				if(methodList[i] == newTestName){
+					selectObject.selectedIndex = i;
+				}
+			}
+		}
+
+		function doGETwithCallback(GetURL, callbackFunction, newTestName){
+			var myObj = null;
+			var xmlhttp = null;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+				if ( typeof xmlhttp.overrideMimeType != 'undefined') {
+					xmlhttp.overrideMimeType('text/json');
+				}
+			} else if (window.ActiveXObject) {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			} else {
+				alert('Your browser does not support xmlhttprequests. Sorry.');
+			}
+
+			xmlhttp.open('GET', GetURL, true);
+			xmlhttp.setRequestHeader('Content-Type', 'application/json');
+			xmlhttp.send(null);
+
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == 4) {
+					if(xmlhttp.status == 200) {
+						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
+						myObj = xmlhttp.responseText;
+						if(GetURL.indexOf("/CopyTestIntoProject/") != -1){
+							//Update the element on the page
+							document.getElementById('TestsCopied').innerHTML = myObj;
+						}
+						else if(GetURL.indexOf("/RunBuild") != -1){
+							document.getElementById('RunTests').innerHTML = myObj;
+						}
+						else if(GetURL.indexOf("/TestSuite") != -1){
+							document.getElementById('testSuite').innerHTML = myObj;
+						}
+						callbackFunction(myObj, newTestName);
+					}
+					else {
+						if(isDEBUG){
+							alert("GET Fail - status: " + xmlhttp.status + " - " + xmlhttp.responseText);
+						}
+					}
+				} else {
+					// wait for the call to complete
+				}
+			};
+		return null;
+		}//doGET
+		
+		
 		function encodeURLComp(component){
 			//TODO: For some reason encodeURIComponent isn't working for WebService, seems like Java is Decoding it before the @Path takes a look, don't know why...
 			var newString
@@ -330,6 +424,7 @@
 			if(keyword == "BeginClass"){
 				document.getElementById("className").value = document.getElementById("Input1").value;
 			}
+			
 			if(typeof(document.getElementById("className").value) === 'undefined' || document.getElementById("className").value == ''){
 				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
 			}
@@ -340,6 +435,7 @@
 		}
 
 		hideAllInputs();
+		document.getElementById('testCaseDiv').style.visibility = 'hidden';	
 		showAllNecessaryInputs("BeginClass");
 		document.getElementById("Input1").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
 		document.getElementById("className").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass

@@ -6,9 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
@@ -22,6 +22,7 @@ import javax.ws.rs.Produces;
 
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
+import org.jboss.forge.parser.java.Member;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordFactory;
@@ -97,10 +98,10 @@ public class MyWebService {
 	@GET
 	@Path("/TestSuite/{className}")
 	public String getTestSuite(@PathParam("className") String className) {
-		String rootPath = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
-		System.out.println("Getting Test Suite: " + rootPath + className);
+		String classPath = InputConstants.ROOT_FILE_PATH + className + ".java";
+		System.out.println("Getting Test Suite: " + classPath);
 
-		File file = new File(rootPath + className);
+		File file = new File(classPath);
 		if(file.exists()) { 
 			int ch;
 			StringBuffer strContent = new StringBuffer("");
@@ -120,6 +121,33 @@ public class MyWebService {
 			System.out.println("ERROR:Requested Class does not exist!!!");
 			return "<font color='red'>ERROR: No such file Exists.  Could not grab Test Suite: " + className + "</font>";
 		}
+	}
+
+	@GET
+	@Path("/ListOfTestMethodNames/{className}")
+	public String getListOfTestMethodNames(@PathParam("className") String className) {
+		String classPath = InputConstants.ROOT_FILE_PATH + className + ".java";
+		System.out.println("Getting List of all Tests in Suite: " + classPath);
+
+		try{
+			File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java");
+			JavaClass testClass = (JavaClass) JavaParser.parse(testClassFile);
+			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
+			String returnVal = "";
+			for (Member<JavaClass, ?> member : allMembers) {
+				//TODO: Get a better definition of what makes a function name, for now just say it's anything that has "()" in the method
+				if(member.toString().contains("()") && !member.toString().contains("createDeployment")){
+					returnVal+= member.getName() + ",";
+				}
+				else {/*It's probably a variable or something, not an actual method, we don't want that*/}
+			}
+			return returnVal.substring(0, returnVal.length() - 1); //Remove the last ","
+		}
+		catch (Exception e) {
+			System.out.println("ERROR: Could not find file: " + className + ", Could not get list of Tests!");
+			return "";
+		}
+		
 	}
 
 	@POST
@@ -239,7 +267,7 @@ public class MyWebService {
 			else {
 				//Any other DirectProcess besides BeginClass will need the file to already exist!
 				try {
-					File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java"); //NOTE: File Name must be spot 0 for any DirectProcess Keywords
+					File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java");
 					testClass = (JavaClass) JavaParser.parse(testClassFile);
 				} catch (Exception e) {
 					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
@@ -268,6 +296,7 @@ public class MyWebService {
 //				System.err.println("Failure in doBeginTest: " + e);
 //				return "FAILURE in Beginning Class Instruction: " + e;
 //			}
+			return "This is old code";
 		}
 	}
 	
