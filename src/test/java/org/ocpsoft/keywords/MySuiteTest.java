@@ -17,8 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.services.MyWebService;
 
-import com.ocpsoft.constants.InputConstants;
-import com.ocpsoft.constants.InputConstants.KEYWORD_KEYS;
+import com.ocpsoft.utils.Constants;
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
@@ -31,7 +31,7 @@ public class MySuiteTest {//Begin Class
 	   MavenDependencyResolver resolver = DependencyResolvers.use(
 			   MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
 		return ShrinkWrap.create(WebArchive.class, "KeywordApp.war")
-						.addClasses(MyWebService.class, InputConstants.class, Keyword.class, KeywordFactory.class)
+						.addClasses(MyWebService.class, Constants.class, Keyword.class, KeywordFactory.class)
 						.addAsResource("META-INF/persistence.xml")
 						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
 						.addAsWebResource(new File(WEBAPP_SRC, "myLink.html"))
@@ -147,7 +147,7 @@ private String getValue(String objectType, String objectXPath){
 		 * tests properties of divs (Text only, not innerHTML).
 		 */
 		
-		String valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		//BEGIN NEW SUITE
 		browser.open(deploymentURL + "index.jsp");
 
@@ -157,7 +157,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -172,7 +172,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//BEGIN NEW TEST
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
@@ -181,12 +181,12 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.BeginTest).get(0);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.BeginTest).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -196,7 +196,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//OPEN BROWSER
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
@@ -205,12 +205,12 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.OpenBrowser).get(0);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.OpenBrowser).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -220,21 +220,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//CLICK WEB ELEMENT
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input3']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.ClickElement).get(2);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.ClickElement).get(2);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.ClickElement).get(1);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.ClickElement).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -244,21 +244,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//ENTER TEXT IN BOX
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.EnterTextInInput).get(0);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.EnterTextInInput).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.EnterTextInInput).get(1);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.EnterTextInInput).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -268,35 +268,35 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//VERIFY OBJECT PROPERTY
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectProperty).get(0);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectProperty).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectProperty).get(1);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectProperty).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input4Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectProperty).get(3);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectProperty).get(3);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 		
 		//END TEST SUITE
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -311,21 +311,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 		
 		//VERIFY OBJECT IS DISPLAYED
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input2']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed).get(1);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectIsDisplayed).get(0);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectIsDisplayed).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -335,21 +335,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//VERIFY OBJECT IS NOT DISPLAYED
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input1']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(0);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input2Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -359,21 +359,21 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//SELECT DROPDOWN VALUE
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("input", "//input[@id='Input2']");
-		expected = InputConstants.KEYWORD_VALUES.get(KEYWORD_KEYS.SelectDropdownValue).get(1);
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.SelectDropdownValue).get(1);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
 		value = getValue("div", "//div[@id='input1Desc']");
-		expected = InputConstants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.SelectDropdownValue).get(0);
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.SelectDropdownValue).get(0);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -383,11 +383,11 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));
 
 		//END CURRENT TEST
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 
 		value = getValue("select", "//select[@id='keyword']");
-		expected = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
 
@@ -412,23 +412,23 @@ private String getValue(String objectType, String objectXPath){
 		browser.open(deploymentURL + "index.jsp");
 
 		browser.click("id=deleteSuite");
-		String valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		//The Default
 		browser.click("id=AddInstruction");
 
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
 		
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
 
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
 
-		valToSelect = InputConstants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
 		

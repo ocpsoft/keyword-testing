@@ -1,4 +1,4 @@
-package com.ocpsoft.constants;
+package com.ocpsoft.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InputConstants {
+public class Constants {
 	
 	public static final String ROOT_FILE_PATH = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
 	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";

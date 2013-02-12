@@ -9,7 +9,7 @@ import org.jboss.forge.parser.java.Visibility;
 import org.jboss.forge.parser.java.util.Formatter;
 import org.junit.Test;
 
-import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.utils.Constants;
 
 public class BeginTestKeyword implements Keyword {
 
@@ -67,7 +67,7 @@ public class BeginTestKeyword implements Keyword {
 		
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
-					InputConstants.ROOT_FILE_PATH + testClass.getName() + ".java"));
+					Constants.ROOT_FILE_PATH + testClass.getName() + ".java"));
 			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 			writetoTest.close();
 		} catch (Exception e) {

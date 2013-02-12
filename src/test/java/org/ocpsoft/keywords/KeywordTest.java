@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
 
-import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.utils.Constants;
 
 public class KeywordTest {
 
@@ -17,7 +17,7 @@ public class KeywordTest {
 		 */		
 		List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
 		Assert.assertFalse(keywords.isEmpty());
-		Assert.assertTrue(keywords.size() == InputConstants.KEYWORD_KEYS.values().length);
+		Assert.assertTrue(keywords.size() == Constants.KEYWORD_KEYS.values().length);
 	}
 	
 	@Test
@@ -26,13 +26,13 @@ public class KeywordTest {
 		 * We must guarantee that each map has the same number of keys to descriptions to values to longNames.
 		 */
 		Assert.assertTrue("Keys are same size as LongNames", 
-				InputConstants.KEYWORD_KEYS.values().length == InputConstants.KEYWORD_LONGNAMES.size());
+				Constants.KEYWORD_KEYS.values().length == Constants.KEYWORD_LONGNAMES.size());
 		
 		Assert.assertTrue("LongNames is same size as Descriptions", 
-				InputConstants.KEYWORD_LONGNAMES.size() == InputConstants.KEYWORD_DESCRIPTIONS.size());
+				Constants.KEYWORD_LONGNAMES.size() == Constants.KEYWORD_DESCRIPTIONS.size());
 
 		Assert.assertTrue("Descriptions is same size as Values", 
-				InputConstants.KEYWORD_DESCRIPTIONS.size() == InputConstants.KEYWORD_VALUES.size());
+				Constants.KEYWORD_DESCRIPTIONS.size() == Constants.KEYWORD_VALUES.size());
 	}//End Test Case
 	
 }

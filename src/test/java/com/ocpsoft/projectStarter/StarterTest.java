@@ -19,7 +19,7 @@ import org.ocpsoft.keywords.KeywordFactory;
 import org.ocpsoft.keywords.ParserExampleTest;
 import org.ocpsoft.services.MyWebService;
 
-import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.utils.Constants;
 
 @RunWith(Arquillian.class)
 public class StarterTest {//Begin Class
@@ -29,7 +29,7 @@ public class StarterTest {//Begin Class
 	   MavenDependencyResolver resolver = DependencyResolvers.use(
 			   MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
 		return ShrinkWrap.create(WebArchive.class, "Startup.war")
-						.addClasses(MyWebService.class, InputConstants.class)
+						.addClasses(MyWebService.class, Constants.class)
 						.addClasses(KeywordFactory.class, Keyword.class, JavaClass.class, ServiceLoader.class, Iterators.class)
 						.addAsResource("META-INF/persistence.xml")
 						.addAsLibraries(resolver.artifacts("org.jboss.forge:forge-parser-java")

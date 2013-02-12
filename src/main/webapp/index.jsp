@@ -9,7 +9,7 @@
    <body>
 
 		<%-- scriptlets --%>
-		<%@ page import="com.ocpsoft.constants.InputConstants" %>
+		<%@ page import="com.ocpsoft.utils.Constants" %>
 
 		<%--
 		For Each loop: VERIFY_OBJECT_PROPERTY<BR />
@@ -26,8 +26,8 @@
     		var keywordValueMap = {};
     	</script>
 		<%
-		for (Map.Entry<InputConstants.KEYWORD_KEYS, List<String>> keywordDesc : InputConstants.KEYWORD_DESCRIPTIONS.entrySet()) {
-			InputConstants.KEYWORD_KEYS keyword = keywordDesc.getKey();
+			for (Map.Entry<Constants.KEYWORD_KEYS, List<String>> keywordDesc : Constants.KEYWORD_DESCRIPTIONS.entrySet()) {
+			Constants.KEYWORD_KEYS keyword = keywordDesc.getKey();
 			    List<String> descriptions = keywordDesc.getValue();
 		%><%-- <P />Keyword: <%=keyword %><BR />--%>
 	    	<script type="text/javascript">
@@ -35,43 +35,43 @@
 	    		curKeyword = "<%=keyword%>";
 	    	</script>
 		    <%
-		    for (int i = 0; i < descriptions.size(); i++) {
-		    	%><%-- <%=i%>: <%=descriptions.get(i)%><BR /> --%>
+		    	for (int i = 0; i < descriptions.size(); i++) {
+		    %><%-- <%=i%>: <%=descriptions.get(i)%><BR /> --%>
 		    	<script type="text/javascript">
 		    		curDescList = curDescList + "<%=descriptions.get(i)%>" + ", ";
 		    	</script>		    	
 		    	<%
-		    }
-			%>
+		    			    		}
+		    			    	%>
 	    	<script type="text/javascript">
 	    		keywordDescMap[curKeyword] = curDescList.substring(0, curDescList.length - 2);
 		   	</script>
-	   		<%		    
-		}
-		%><!-- <P />Here are all the values<BR /> --><%
-		for (Map.Entry<InputConstants.KEYWORD_KEYS, List<String>> keywordValue : InputConstants.KEYWORD_VALUES.entrySet()) {
-			InputConstants.KEYWORD_KEYS keyword = keywordValue.getKey();
-		    List<String> values = keywordValue.getValue();
-		%><%-- <P />Keyword: <%=keyword %><BR /> --%>
+	   		<%
+	   			}
+	   		%><!-- <P />Here are all the values<BR /> --><%
+	   			for (Map.Entry<Constants.KEYWORD_KEYS, List<String>> keywordValue : Constants.KEYWORD_VALUES.entrySet()) {
+	   			Constants.KEYWORD_KEYS keyword = keywordValue.getKey();
+	   				    List<String> values = keywordValue.getValue();
+	   		%><%-- <P />Keyword: <%=keyword %><BR /> --%>
 	    	<script type="text/javascript">
 	    		var curValueList = "";
 	    		curKeyword = "<%=keyword%>";
 	    	</script>
 		    <%
-		    for (int i = 0; i < values.size(); i++) {
-		    	%><%-- <%=i%>: <%=values.get(i)%><BR /> --%>
+		    	for (int i = 0; i < values.size(); i++) {
+		    %><%-- <%=i%>: <%=values.get(i)%><BR /> --%>
 		    	<script type="text/javascript">
 		    		curValueList = curValueList + "<%=values.get(i)%>" + ", ";
 		    	</script>		    	
 		    	<%
-		    }
-			%>
+		    			    		}
+		    			    	%>
 	    	<script type="text/javascript">
 	    	keywordValueMap[curKeyword] = curValueList.substring(0, curDescList.length - 2);
 		   	</script>
-	   		<%		    
-		}
-		%>
+	   		<%
+	   			}
+	   		%>
 	
        <center>
        <H1>Welcome to The Keyword Framework</H1><P />
@@ -90,8 +90,8 @@
        The User will 
        	<select id="keyword" onchange="instruction_Selected()">
        		<%
-       		for (Map.Entry<InputConstants.KEYWORD_KEYS, String> keywordOption : InputConstants.KEYWORD_LONGNAMES.entrySet()) {
-    			%>
+       			for (Map.Entry<Constants.KEYWORD_KEYS, String> keywordOption : Constants.KEYWORD_LONGNAMES.entrySet()) {
+       		%>
     			<option value="<%=keywordOption.getKey().toString()%>"><%=keywordOption.getValue()%></option>
     			<%
     		}

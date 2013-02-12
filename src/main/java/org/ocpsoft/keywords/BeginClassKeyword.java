@@ -20,7 +20,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
-import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.utils.Constants;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 public class BeginClassKeyword implements Keyword {
@@ -162,7 +162,7 @@ public class BeginClassKeyword implements Keyword {
 		testClass.addImport(Arrays.class);
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
-					InputConstants.ROOT_FILE_PATH + inputValues.get(0) + ".java"));
+					Constants.ROOT_FILE_PATH + inputValues.get(0) + ".java"));
 			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 			writetoTest.close();
 		} catch (Exception e) {

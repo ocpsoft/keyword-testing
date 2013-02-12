@@ -3,6 +3,7 @@ package org.ocpsoft.services;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,9 +31,10 @@ import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordFactory;
 
-import com.ocpsoft.constants.InputConstants;
-import com.ocpsoft.constants.InputConstants.KEYWORD_KEYS;
 import com.ocpsoft.projectStarter.HelperFileCreator;
+import com.ocpsoft.utils.Constants;
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+import com.ocpsoft.utils.Utility;
 
 @Path("/webService")
 @Stateful
@@ -101,48 +103,46 @@ public class MyWebService {
 	@GET
 	@Path("/TestSuite/{className}")
 	public String getTestSuite(@PathParam("className") String className) {
-		String classPath = InputConstants.ROOT_FILE_PATH + className + ".java";
+		String classPath = Constants.ROOT_FILE_PATH + className + ".java";
 		System.out.println("Getting Test Suite: " + classPath);
-
+		
 		File file = new File(classPath);
-		if(file.exists()) { 
-			int ch;
-			StringBuffer strContent = new StringBuffer("");
-			FileInputStream fin = null;
-			try {
-				fin = new FileInputStream(file);
-				while ((ch = fin.read()) != -1)
-					strContent.append((char) ch);
-				fin.close();
-			} catch (Exception e) {
-				System.out.println(e);
+		//We want to take the file and using the parser display something user friendly back to the page
+		//User's don't care about the code under it all, they just want to see keywords in steps.
+		try {
+			JavaClass testClass = (JavaClass) JavaParser.parse(file);
+			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
+			String returnVal = "<font color='green'>Test Suite Named: " + className + "</font>";
+			for (Member<JavaClass, ?> member : allMembers) {
+				if(Utility.memberIsATestCase(member)){
+					returnVal += "<P /><BR />" + Utility.generateUserReadableStepsFromMethod(member);
+				}
+				else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
 			}
-			System.out.println(strContent.toString());
-			return "<pre>" + strContent.toString() + "</pre>";
-		}
-		else {
+			return returnVal;
+		} catch (FileNotFoundException e1) {
 			System.out.println("ERROR:Requested Class does not exist!!!");
 			return "<font color='red'>ERROR: No such file Exists.  Could not grab Test Suite: " + className + "</font>";
 		}
+			
 	}
 
 	@GET
 	@Path("/ListOfTestMethodNames/{className}")
 	public String getListOfTestMethodNames(@PathParam("className") String className) {
-		String classPath = InputConstants.ROOT_FILE_PATH + className + ".java";
+		String classPath = Constants.ROOT_FILE_PATH + className + ".java";
 		System.out.println("Getting List of all Tests in Suite: " + classPath);
 
 		try{
-			File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java");
+			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
 			JavaClass testClass = (JavaClass) JavaParser.parse(testClassFile);
 			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
 			String returnVal = "";
 			for (Member<JavaClass, ?> member : allMembers) {
-				//TODO: Get a better definition of what makes a function name, for now just say it's anything that has "()" in the method
-				if(member.toString().contains("()") && !member.toString().contains("createDeployment")){
-					returnVal+= member.getName() + ",";
+				if(Utility.memberIsATestCase(member)){
+					returnVal+= Utility.getTestCaseName(member) + ",";
 				}
-				else {/*It's probably a variable or something, not an actual method, we don't want that*/}
+				else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
 			}
 			return returnVal.substring(0, returnVal.length() - 1); //Remove the last ","
 		}
@@ -150,13 +150,12 @@ public class MyWebService {
 			System.out.println("ERROR: Could not find file: " + className + ", Could not get list of Tests!");
 			return "";
 		}
-		
 	}
 
 	@POST
 	@Path("/DeleteTestSuite/{className}")
 	public String deleteTestSuite(@PathParam("className") String className) {
-		String rootPath = InputConstants.ROOT_FILE_PATH;
+		String rootPath = Constants.ROOT_FILE_PATH;
 		System.out.println("Deleting Test Suite: " + rootPath + className);
 
 		File file = new File(rootPath + className);
@@ -205,7 +204,7 @@ public class MyWebService {
 	@Path("StartNewProject")
 	public String startNewProject(){
 		//TODO: This should really create a totally new project, for now we'll just keep re-using AppUnderTest
-		String rootPath = InputConstants.ROOT_FILE_PATH;
+		String rootPath = Constants.ROOT_FILE_PATH;
 		File helperFile = new File(rootPath + "Helper.java");
 		
 		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
@@ -243,7 +242,7 @@ public class MyWebService {
 				+ ", inputArray: " + inputs + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
-		String testPath = InputConstants.ROOT_FILE_PATH + className + ".java";
+		String testPath = Constants.ROOT_FILE_PATH + className + ".java";
 		JavaClass testClass = null;
 		String error = "";
 		
@@ -283,9 +282,6 @@ public class MyWebService {
 		}
 		else{
 			//All other Keywords get processed by adding a call to their HelperClassMethods into the test itself
-			
-			//TODO: Next up is updating the UI to pass in the Test Name with each step.
-			//Then we can update this code to get the method from the testClass object and add the next step into the body.
 			testClass = javaClassExists(testClass, className);
 			if(testClass != null) {
 				Method<JavaClass> currentMethod = testClass.getMethod(testCaseName);
@@ -300,7 +296,7 @@ public class MyWebService {
 				//Now re-write the actual File with the updates to the class file
 				try {
 					PrintStream writetoTest = new PrintStream(new FileOutputStream(
-							InputConstants.ROOT_FILE_PATH + className + ".java"));
+							Constants.ROOT_FILE_PATH + className + ".java"));
 					writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 					writetoTest.close();
 				} catch (Exception e) {
@@ -315,26 +311,12 @@ public class MyWebService {
 				System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: " + error);
 				return "ERROR - Did not process keyword: " + keyword.getShortName();
 			}
-			
-			
-			//THIS IS THE OLD - Non-Parser way of doing things
-//			try{
-//				PrintStream writetoTest = new PrintStream(
-//						new FileOutputStream(testPath, true)); 
-//				writetoTest.append("\n\t\tHelper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");");
-//				System.out.println("\nSUCCESS - Added method call for " + keyword.getShortName());
-//				return "SUCCESS";
-//			}
-//			catch (Exception e) {
-//				System.err.println("Failure in doBeginTest: " + e);
-//				return "FAILURE in Beginning Class Instruction: " + e;
-//			}
 		}
 	}
 	
 	private JavaClass javaClassExists(JavaClass testClass, String className){
 		try {
-			File testClassFile = new File(InputConstants.ROOT_FILE_PATH + className + ".java");
+			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
 			testClass = (JavaClass) JavaParser.parse(testClassFile);
 		} catch (Exception e) {
 			System.out.println("Error in trying to get the testClass File for Processing a keyword: " + e);
@@ -364,10 +346,10 @@ public class MyWebService {
 	private String printOutArrayListAsList(ArrayList<String> list){
 		String returnVal = "Arrays.asList(";
 		for (String element : list) {
-			//TODO:Find a better way of passing variables, for now, do it with a simple
-			if(element.startsWith(InputConstants.VARIABLE_INPUT_PREFIX)){
+			//TODO:Find a better way of passing variables, for now, do it with a simple replace
+			if(element.startsWith(Constants.VARIABLE_INPUT_PREFIX)){
 				//This is a variable, we want to preserve it with no quotes
-				returnVal = returnVal + element.substring(InputConstants.VARIABLE_INPUT_PREFIX.length()) + ", ";
+				returnVal = returnVal + element.substring(Constants.VARIABLE_INPUT_PREFIX.length()) + ", ";
 			}
 			else {
 				returnVal = returnVal + "\"" + element + "\", ";

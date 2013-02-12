@@ -13,7 +13,7 @@ import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 
-import com.ocpsoft.constants.InputConstants;
+import com.ocpsoft.utils.Constants;
 
 public class HelperFileCreator {
 
@@ -29,7 +29,7 @@ public class HelperFileCreator {
 	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("value").setLiteralInitializer("");
 
 	      helperClass
-	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("rootPath").setStringInitializer(InputConstants.ROOT_FILE_PATH);
+	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("rootPath").setStringInitializer(Constants.ROOT_FILE_PATH);
 	      helperClass.addMethod()
 	               .setName("getValue")
 	               .setStatic(true)
