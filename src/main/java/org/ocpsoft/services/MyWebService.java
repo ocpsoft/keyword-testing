@@ -111,22 +111,65 @@ public class MyWebService {
 		//User's don't care about the code under it all, they just want to see keywords in steps.
 		try {
 			JavaClass testClass = (JavaClass) JavaParser.parse(file);
-			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
-			String returnVal = "<font color='green'>Test Suite Named: " + className + "</font>";
-			for (Member<JavaClass, ?> member : allMembers) {
-				if(Utility.memberIsATestCase(member)){
-					returnVal += "<P /><BR />" + Utility.generateUserReadableStepsFromMethod(member);
-				}
-				else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
-			}
-			return returnVal;
+			return Utility.generateTestSuiteOutput(testClass, className);
 		} catch (FileNotFoundException e1) {
 			System.out.println("ERROR:Requested Class does not exist!!!");
 			return "<font color='red'>ERROR: No such file Exists.  Could not grab Test Suite: " + className + "</font>";
 		}
-			
 	}
 
+	@POST
+	@Path("/MoveTestStep/{className}/{testCaseName}/{stepNumber}/{direction}")
+	public String moveTestStep(@PathParam("className") String className,
+			@PathParam("testCaseName") String testCaseName,
+			@PathParam("stepNumber") int stepNumber,
+			@PathParam("direction") String direction) {
+		String completePath = Constants.ROOT_FILE_PATH + className + ".java";
+		System.out.println("Moving Step [" + stepNumber + "] in test {" + testCaseName + "} dirction: " + direction);
+
+		File file = new File(completePath);
+		try {
+			JavaClass testClass = (JavaClass) JavaParser.parse(file);
+			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
+			for (Member<JavaClass, ?> member : allMembers) {
+				if(Utility.doesMemberMatchTestCaseName(member, testCaseName)){
+					String[] steps = Utility.getStepsFromMethod(member);
+					if(direction.equalsIgnoreCase("down")){
+						if(stepNumber >= steps.length - 1){
+							return "ERROR: Can not move the last step down.";
+						}
+						String tempStep = steps[stepNumber + 1];
+						steps[stepNumber+1] = steps[stepNumber];
+						steps[stepNumber] = tempStep;
+					}
+					else if(direction.equalsIgnoreCase("up")){
+						if(stepNumber <= 0){
+							return "ERROR: Can not move the first step up.";
+						}
+						String tempStep = steps[stepNumber - 1];
+						steps[stepNumber-1] = steps[stepNumber];
+						steps[stepNumber] = tempStep;
+					}
+					String newBody = "";
+					for (String step : steps) {
+						newBody+=step + ";";
+					}
+					testClass.getMethod(Utility.getTestCaseName(member))
+						.setBody(newBody);
+					Utility.rewriteFile(testClass, completePath);
+					
+					//Lastly, return the output for the newly updated file
+					return Utility.generateTestSuiteOutput(testClass, className);
+				}
+			}
+			
+			return "ERROR: Could not find TestCase with Name: " + testCaseName + ", so we could not move the step.";
+		} catch (FileNotFoundException e1) {
+			System.out.println("ERROR:Requested Class does not exist!!!");
+			return "<font color='red'>ERROR: No such file Exists.  Could not move the step!</font>";
+		}
+	}
+	
 	@GET
 	@Path("/ListOfTestMethodNames/{className}")
 	public String getListOfTestMethodNames(@PathParam("className") String className) {

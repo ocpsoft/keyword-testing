@@ -1,9 +1,12 @@
 package com.ocpsoft.utils;
 
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
+import org.jboss.forge.parser.java.util.Formatter;
 
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
@@ -24,17 +27,47 @@ public class Utility {
 		return null;
 	}
 	
+	public static boolean doesMemberMatchTestCaseName(Member<JavaClass, ?> member, String testCaseName){
+		if(memberIsATestCase(member)){
+			return getTestCaseName(member).equalsIgnoreCase(testCaseName);
+		}
+		return false;
+	}
+	
 	public static String generateUserReadableStepsFromMethod(Member<JavaClass, ?> member){
 		String returnVal = "";
-		returnVal+= "<B>" + Utility.getTestCaseName(member) + "</B><BR />";
-		String[] steps  = member.getOrigin().getMethod(getTestCaseName(member)).getBody().split(";");
+		String testName = Utility.getTestCaseName(member);
+		returnVal+= "<B>" + testName + "</B><BR />";
+		String[] steps  = getStepsFromMethod(member);
+		int index = 0;
 		for (String step : steps) {
-			step = clearNewLinesOutOfString(step);
 			if(!isEmptyStep(step)){
-				returnVal+= "- - " + reverseTranslateStep(step) + "<BR />";
+				returnVal+= generateMoveButton(testName, index, "up") + " " + 
+						    generateMoveButton(testName, index, "down") + " " + 
+						    reverseTranslateStep(step) + "<BR />";
 			}
+			index++;
 		}
 		return returnVal;
+	}
+	
+	public static String generateMoveButton(String testName, int index, String direction){
+		if(direction.equalsIgnoreCase("up")){
+			return "<a href='#top' onClick=\"moveTestStep('" + testName + "', " + index + ", '" + direction + "')\">|UP|</a>";
+		}
+		else if(direction.equalsIgnoreCase("down")){
+			return "<a href='#top' onClick=\"moveTestStep('" + testName + "', " + index + ", '" + direction + "')\">|DOWN|</a>";
+		}
+		return "ERROR: Invalid direction";
+	}
+	
+	public static String[] getStepsFromMethod(Member<JavaClass, ?> member){
+		String[] steps = member.getOrigin().getMethod(getTestCaseName(member)).getBody().split(";");
+		String[] returnArray = new String[ steps.length - 1 ];  //Last line is always just a newline
+		for (int i = 0; i < returnArray.length; i++) {
+			returnArray[i] = clearNewLinesOutOfString(steps[i]);
+		}
+		return returnArray;
 	}
 	
 	public static String reverseTranslateStep(String step){
@@ -91,7 +124,41 @@ public class Utility {
 	public static String clearNewLinesOutOfString(String string){
 		String returnVal = string.replaceAll("\n ", "");
 		returnVal = returnVal.replaceAll("\n", "");
+		if(returnVal.equals("")){
+			return null;
+		}
 		return returnVal;
 	}
+	
+	public static void rewriteFile(JavaClass testClass, String completePath){
+		try{
+			PrintStream writetoTest = new PrintStream(
+				     new FileOutputStream(completePath)); 
+			writetoTest.print(testClass);
+			writetoTest.close();
+			System.out.println("Successfully re-wrote file: " + completePath);
+		}
+		catch (Exception e) {
+			System.err.println("Failure in trying to re-write file: " + e);
+		}
+	}
+
+	public static String generateTestSuiteOutput(JavaClass testClass, String className){
+		List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
+		String returnVal = "<font color='green'>Test Suite Named: <B>" + className + "</B></font>";
+		for (Member<JavaClass, ?> member : allMembers) {
+			if(Utility.memberIsATestCase(member)){
+				returnVal += "<P /><BR />" + Utility.generateUserReadableStepsFromMethod(member);
+			}
+			else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
+		}
+		return returnVal;
+	}
+	
+	//TODO: This doesn't work right now, low priority, at least find a work around at some point.
+	public static String formatJavaClassFile(JavaClass classFile){
+		return Formatter.format(classFile);
+	}
+	
 	
 }

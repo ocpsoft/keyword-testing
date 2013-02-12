@@ -289,6 +289,13 @@
 			return returnVal;
 		}
 
+
+		function moveTestStep(testCaseName, stepNumber, direction) {
+			var POSTurl = 'rest/webService/MoveTestStep/' + document.getElementById("className").value +'/'+testCaseName+'/'+stepNumber+'/'+direction;
+			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
+			return returnVal;
+		}
+		
 		function getTestCaseNames() {
 			var className = document.getElementById("className").value;
 			var GETurl = 'rest/webService/ListOfTestMethodNames/' + className;
@@ -312,6 +319,10 @@
 				updateTestCaseNames("NewTest", input1);
 			}
 			return returnVal;
+		}
+
+		function updateTestSuiteDisplay(testSuiteText){
+			document.getElementById('testSuite').innerHTML = testSuiteText;
 		}
 
 		function updateTestCaseNames(action, newTestName){
@@ -389,6 +400,43 @@
 		return null;
 		}//doGET
 		
+
+		function doPOSTwithCallback(POSTURL, JSONInput, isAsync, callbackFunction){
+			var myObj = null;
+			var xmlhttp = null;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+				if ( typeof xmlhttp.overrideMimeType != 'undefined') {
+					xmlhttp.overrideMimeType('application/json');
+				}
+			} else if (window.ActiveXObject) {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			} else {
+				alert('Your browser does not support xmlhttprequests. Sorry.');
+			}
+
+			xmlhttp.open('POST', POSTURL, isAsync);
+			xmlhttp.setRequestHeader('Content-Type', 'application/json');
+			xmlhttp.send(JSONInput);
+			
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == 4) {
+					if(xmlhttp.status == 200) {
+						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
+						myObj = xmlhttp.responseText;
+						callbackFunction(myObj);
+					}
+					else {
+						if(isDEBUG){
+							alert("POST Fail - status: " + xmlhttp.status + " - " + xmlhttp.responseText);
+						}
+					}
+				} else {
+					// wait for the call to complete
+				}
+			};
+		return null;
+		}//doPOST
 		
 		function encodeURLComp(component){
 			//TODO: For some reason encodeURIComponent isn't working for WebService, seems like Java is Decoding it before the @Path takes a look, don't know why...
