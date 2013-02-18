@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Welcome to Tutorial Demo</title>
+</head>
+<body>
+
+<!-- This is how you would add permissions to your app for acess beyond default FB data
+<fb:login-button autologoutlink="true" perms="email,status_update,publish_stream">
+</fb:login-button></p>
+-->
+<fb:login-button autologoutlink="true">
+</fb:login-button>
+
+<div id="fb-root"></div>
+<script type="text/javascript">
+      </script>
+
+<center>
+<div id="welcome"><H1>Welcome to Tutorial Demo</H1></div>
+<P />
+
+<BR /> <a href='myInfo.html'>Get Your Info Here</a><BR />
+<a href='friendsInfo.html'>Get Your Friends Info Here</a><P />
+<a href="#top" id='linkToGame'>Click Here to play the game</a>
+<a href="index2.html">Go to Keyword Framework Page</a>
+<div id='current_points'>Current point total is:</div><div id='myPoints'></div>
+<div id='PlayerID' style='display:none'></div>
+       	<select id="keyword">
+			<option value="BeginClass">Begin New Suite</option>
+			<option value="BeginTest">Begin New Test</option>
+			<option value="OpenBrowser">Open Browser</option>
+			<option value="Click">Click Link</option>
+			<option value="Verify">Verify</option>
+			<option value="EndTest">End Current Test</option>
+			<option value="EndClass">End Test Suite</option>
+		</select>
+<BR /><div id='islocal'></div>
+</center>
+
+</body>
+</html>
