@@ -1,6 +1,7 @@
 package org.ocpsoft.keywords;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -22,8 +23,14 @@ import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
-public class MySuiteTest {//Begin Class
+public class MainSuiteTest {//Begin Class
 
+	/*NOTE: For best results:
+	 * 		Start up the server.
+	 * 		Do a full publish of the Keyword Application
+	 * 		Run the file as a JUnit Test with AS7_REMOTE container.
+	 */
+	
    private static final String WEBAPP_SRC = "src/main/webapp";
    
    @Deployment(testable = false) // testable = false to run as a client
@@ -103,7 +110,24 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));		
 	}//End Test Case
 
-
+	@Test
+	public void testUpdatingDomain() throws InterruptedException, MalformedURLException{//Begin Test Case
+		/* This test covers UpdatingTestDomain keyword
+		 * tests we can go to another URL and test that website
+		 * uses www.facebook.com
+		 */
+		
+		URL placeholderDeploymentURL = deploymentURL;
+		
+		deploymentURL = new URL("https://www.facebook.com");
+		browser.open(deploymentURL.toString());
+		Assert.assertTrue("User should be on Facebook.com",
+				browser.isElementPresent("xpath=//input[@id='email']"));
+		
+		deploymentURL = placeholderDeploymentURL;
+	}//End Test Case
+	
+	
 	@Test
 	public void testLinkClicks() throws InterruptedException {//Begin Test Case
 		/* This test covers clicking links
@@ -400,6 +424,26 @@ private String getValue(String objectType, String objectXPath){
 		expected = "";
 		Assert.assertTrue("value should be [" + expected + "]",
 				expected.equals(value));
+		
+		//UPDATE TEST DOMAIN
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
+		browser.select("id=keyword", "label=" + valToSelect);
+
+		value = getValue("select", "//select[@id='keyword']");
+		expected = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
+		Assert.assertTrue("value should be [" + expected + "]",
+				expected.equals(value));
+
+		value = getValue("input", "//input[@id='Input1']");
+		expected = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.UpdateTestDomain).get(0);
+		Assert.assertTrue("value should be [" + expected + "]",
+				expected.equals(value));
+
+		value = getValue("div", "//div[@id='input1Desc']");
+		expected = Constants.KEYWORD_DESCRIPTIONS.get(KEYWORD_KEYS.UpdateTestDomain).get(0);
+		Assert.assertTrue("value should be [" + expected + "]",
+				expected.equals(value));
+
 	}//End Test Case
 
 	@Test

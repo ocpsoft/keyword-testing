@@ -15,7 +15,7 @@ public class Constants {
 	public static enum KEYWORD_KEYS
 	{
 		BeginClass, BeginTest, ClickElement, EndClass, EndTest, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 
-		VerifyObjectIsNotDisplayed, VerifyObjectProperty 
+		VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain
 	}
 	public static final Map<KEYWORD_KEYS, String> KEYWORD_LONGNAMES = new LinkedHashMap<KEYWORD_KEYS, String>();
     static {
@@ -30,12 +30,13 @@ public class Constants {
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.SelectDropdownValue, "Select Dropdown Value");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.EndTest, "End Current Test");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.EndClass, "End Test Suite");
+    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.UpdateTestDomain, "Update Test Domain");
     }
 	public static Map<KEYWORD_KEYS, String> getKeywordLongnames() {
 		return KEYWORD_LONGNAMES;
 	}
 
-
+	//NOTE: You can not use commas in a description, it will get broken out into a new input assignment on the HTML side!
 	public static final Map<KEYWORD_KEYS, List<String>> KEYWORD_DESCRIPTIONS = new HashMap<KEYWORD_KEYS, List<String>>();
     static {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.BeginClass, Arrays.asList("with Suite Name of:"));
@@ -44,7 +45,7 @@ public class Constants {
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.ClickElement, Arrays.asList("with Identifyer [link/id/name/css/xpath] of:",
 											    			   	"and desired element key of:", 
-															   	"and desired Destination Path of (FOR Identifyers of link ONLY):"));
+															   	"and desired Destination Path of (OPTIONAL FIELD - will wait for page to load):"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EndClass, new ArrayList<String>());
     	
@@ -53,7 +54,7 @@ public class Constants {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("with xPath of Input:",
 				   												"and Text to enter:"));
     	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.OpenBrowser, Arrays.asList("with Starting Webpage of:"));
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.OpenBrowser, Arrays.asList("with Webpage of test Domain plus (OPTIONAL FIELD - if adding onto end of the domain):"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.SelectDropdownValue, Arrays.asList("with Dropdown object's ID of:",
 				 												"selecting the value of:"));
@@ -68,6 +69,8 @@ public class Constants {
 																"with object Type of:",
 																"with XPath property to verify of:",
 																"with value to verify of:"));
+    	
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("New test domain is:"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordDescriptions() {
@@ -98,6 +101,8 @@ public class Constants {
     	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, Arrays.asList("User should NOT see message [Error: invalid action]!","div[@id='myFBdata']"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));
+    	
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("http://www.facebook.com"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordValues() {

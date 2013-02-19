@@ -37,8 +37,11 @@ public class ClickElementKeyword implements Keyword {
           .setReturnTypeVoid()
           .setParameters("DefaultSelenium browser, List inputValues")
           .setBody(	"browser.click(inputValues.get(0) + \"=\" + inputValues.get(1));" +
-					"if(inputValues.get(0).equals(\"link\")){" +
-						"browser.waitForFrameToLoad(inputValues.get(2), \"15000\");" +
+					"if(inputValues.get(2) != null){" +
+					"	if(inputValues.get(2).equalsIgnoreCase(\"assigned_null\") == false){" +
+					"		/*wait for the  page to load*/" +
+					"		browser.waitForPageToLoad(Integer.toString(MAX_PAGE_LOAD_TIME_in_seconds * 1000));" +
+					"	}" +
 					"}"
         		  );
 
@@ -56,5 +59,14 @@ public class ClickElementKeyword implements Keyword {
      *  or
      *  browser.click("xpath=//input[@name=myButton' and @type='submit']");
 	 */
+	
+	/* 	browser.click(inputValues.get(0) + "=" + inputValues.get(1));
+		if(inputValues.get(2) != null){
+			if(inputValues.get(2).equalsIgnoreCase("assigned_null") == false){
+				//wait for the  page to load
+				browser.waitForPageToLoad(Integer.toString(MAX_PAGE_LOAD_TIME_in_seconds * 1000));
+				//browser.waitForFrameToLoad(inputValues.get(2), "3000");
+			}
+		} */
 	
 }

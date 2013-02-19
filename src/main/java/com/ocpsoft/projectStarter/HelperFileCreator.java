@@ -2,11 +2,13 @@ package com.ocpsoft.projectStarter;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.List;
 
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
+import org.junit.Assert;
 import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword;
@@ -14,6 +16,7 @@ import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Utility;
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class HelperFileCreator {
 
@@ -22,12 +25,16 @@ public class HelperFileCreator {
 
 	      helperClass
 	               .setName("Helper")
+	               .setPublic()
 	               .setPackage(packageName);
-	      helperClass.addImport(List.class);
 
 	      helperClass
 	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("value").setLiteralInitializer("");
-
+	      
+	      helperClass
+	      		.addField().setPrivate().setStatic(true).setFinal(true).setType(int.class).setName("MAX_PAGE_LOAD_TIME_in_seconds");//.setLiteralInitializer("10");
+	      //NOTE: Right now we have a MORE HACK in the Utility.java class to correct setting this variable to a value.
+	      
 	      helperClass
 	      		.addField().setPrivate().setStatic(true).setType(String.class).setName("rootPath").setStringInitializer(Constants.ROOT_FILE_PATH);
 	      helperClass.addMethod()
@@ -43,6 +50,11 @@ public class HelperFileCreator {
 							"} else {\n" +
 							"	return browser.getText(objectXPath);\n" +
 							"}");
+	      
+	      	helperClass.addImport(List.class);
+	      	helperClass.addImport(URL.class);
+	      	helperClass.addImport(DefaultSelenium.class);
+	      	helperClass.addImport(Assert.class);
 	      
 	      	//Go through every keyword and add each method for the MethodLoad Keywords to the Helper file
 	      	@SuppressWarnings("unchecked")

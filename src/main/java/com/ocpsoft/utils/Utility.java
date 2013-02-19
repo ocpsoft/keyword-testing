@@ -73,7 +73,7 @@ public class Utility {
 	public static String reverseTranslateStep(String step){
 		//Note: All the steps look the same, like: 
 		//Helper.OpenBrowser(browser,Arrays.asList("index.jsp","assigned_null","assigned_null","assigned_null"),deploymentURL);
-		String keywordName = step.substring(7, step.indexOf("("));
+		String keywordName = step.substring(step.indexOf("Helper.") + 7, step.indexOf("("));
 		String methodParams = step.substring(step.indexOf("(") + 1);
 		String inputArrayString = methodParams.substring(methodParams.indexOf("(") + 1, methodParams.indexOf(")"));
 		String[] inputArray = inputArrayString.split(",");
@@ -91,9 +91,14 @@ public class Utility {
 		
 		String returnVal = "<font color='blue'>" + keywordName + "</font>: ";
 		boolean removeLastChar = false;
+		String currInput = "";
 		for (int i = 0; i < inputArray.length; i++) {
-			if(!stringIsNullValue(inputArray[i])){
-				returnVal += thisKeywordsDescriptions.get(i) + " <em>" + inputArray[i] + "</em>, ";
+			currInput = inputArray[i];
+			if(currInput!=null && currInput.startsWith("\"") &&  currInput.endsWith("\"")){
+				currInput = currInput.substring(1, currInput.length() - 1);
+			}
+			if(!stringIsNullValue(currInput)){
+				returnVal += thisKeywordsDescriptions.get(i) + " <em><font color='purple'>" + currInput + "</font></em>, ";
 				removeLastChar = true;
 			}
 		}
@@ -108,7 +113,7 @@ public class Utility {
 	
 	public static boolean stringIsNullValue(String string){
 		if(string==null || string.equalsIgnoreCase("null") || string.equalsIgnoreCase("assigned_null") ||
-				string.equalsIgnoreCase("\"assigned_null\"")){
+				string.equalsIgnoreCase("\"assigned_null\"") || string.equals("")){
 			return true;
 		}
 		return false;
@@ -157,7 +162,14 @@ public class Utility {
 	
 	//TODO: This doesn't work right now, low priority, at least find a work around at some point.
 	public static String formatJavaClassFile(JavaClass classFile){
-		return Formatter.format(classFile);
+		String formattedText = Formatter.format(classFile);
+
+		//HACK: For right now, Parser will not accept List<String>, only List.  Do a find/replace as input params
+		formattedText = formattedText.replace("List inputValues", "List<String> inputValues");
+		
+		//MORE HACK: For the Helper file, we need to add a non-String initializer to an int field which the parser doesn't like
+		formattedText = formattedText.replace("private static final int MAX_PAGE_LOAD_TIME_in_seconds", "private static final int MAX_PAGE_LOAD_TIME_in_seconds = 10");
+		return formattedText;
 	}
 	
 	
