@@ -42,84 +42,85 @@ public class BeginClassKeyword implements Keyword {
 	}
 	
 	@Override
+	@Deprecated
 	public void createKeywordHelperMethod(JavaClass helperClass){
-		String methodBody = "JavaClass testClass = JavaParser.create(JavaClass.class);" +
-		  		  "testClass" + 
-		  				".setName(inputValues.get(0))" +
-		  				".setPackage(\"com.example.domain\")" +
-		  				".addAnnotation(RunWith.class)" +
-		  				".setLiteralValue(Arquillian.class.getSimpleName() + \".class\")" +
-		  				".getOrigin().addImport(Arquillian.class);" +
-		  				
-				  "testClass" + 
-				  		".addField().setPrivate()" +
-				  		".setStatic(true).setFinal(true)" +
-				  		".setType(String.class)" +
-				  		".setName(\"WEBAPP_SRC\");" +
-
-				  "testClass.getField(\"WEBAPP_SRC\")" +
-				  		".setLiteralInitializer(\"\\\"src/main/webapp\\\"\");" +
-
-				  "testClass.addMethod()" +
-				  		".setName(\"createDeployment\")" +
-				  		".setStatic(true)" +
-				  		".setVisibility(Visibility.PUBLIC)" +
-				  		".setReturnType(WebArchive.class)" +
-				  		".setBody(\"return ShrinkWrap.create(WebArchive.class, \\\"FBTutorialDemo.war\\\")\" +" +
-				  				"\".addAsResource(\\\"META-INF/persistence.xml\\\")\" +" +
-				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"index.html\\\"))\" +" +
-				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"index2.html\\\"))\" +" +
-				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"myInfo.html\\\"))\" +" +
-				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"friendsInfo.html\\\"))\" +" +
-				  				"\".addAsWebInfResource(EmptyAsset.INSTANCE, \\\"beans.xml\\\");\")" +
-				  		".addAnnotation(Deployment.class)" +
-				  		".getOrigin().addImport(File.class);" +
-				  "testClass.addImport(WebArchive.class);" +
-				  "testClass.addImport(Deployment.class);" +
-				  "testClass.addImport(ShrinkWrap.class);" +
-				  "testClass.addImport(EmptyAsset.class);" +
-				  "testClass.addImport(DefaultSelenium.class);" +
-
-				  "testClass" +
-				  		".addField().setType(DefaultSelenium.class)" +
-				  		".setName(\"browser\").addAnnotation(Drone.class)" +
-				  		".getOrigin().addImport(DefaultSelenium.class);" +
-				  "testClass.addImport(Drone.class);" +
-
-				  "testClass" +
-				  		".addField().setType(URL.class)" +
-				  		".setName(\"deploymentURL\").addAnnotation(ArquillianResource.class)" +
-				  		".getOrigin().addImport(URL.class);" +
-				  "testClass.addImport(ArquillianResource.class);" +
-
-				  "testClass.addImport(PrintStream.class);" + 
-				  "testClass.addImport(FileOutputStream.class);" +
-				  "testClass.addImport(Formatter.class);"; //Note, this is a current workaround for Parser Errors with Try-Catch block.  Gets replaced later.
-		
-//		String methodBody2 =
-//				  "try{" +
-//				  		"PrintStream writetoTest = new PrintStream(" +
-//				  			"new FileOutputStream(rootPath + inputValues.get(0))); " +
-//				  		"writetoTest.print(Formatter.format(testClass));" +
-//				  		"writetoTest.close();" +
-//				  "}" +
-//				  "catch (Exception e) {" +
-//				  		"System.err.println(\"Failure in createTestClassViaParser: \" + e);" +
-//				  "}";		
-
-		helperClass.addMethod()
-			.setName("BeginClass")
-        	.setStatic(true)
-        	.setVisibility(Visibility.PUBLIC)
-        	.setReturnTypeVoid()
-        	.setParameters("DefaultSelenium browser, List inputValues")
-        	//TODO: Parser is not liking the try catch block right now.
-        	.setBody( methodBody );
-		
+//		String methodBody = "JavaClass testClass = JavaParser.create(JavaClass.class);" +
+//		  		  "testClass" + 
+//		  				".setName(inputValues.get(0))" +
+//		  				".setPackage(\"com.example.domain\")" +
+//		  				".addAnnotation(RunWith.class)" +
+//		  				".setLiteralValue(Arquillian.class.getSimpleName() + \".class\")" +
+//		  				".getOrigin().addImport(Arquillian.class);" +
+//		  				
+//				  "testClass" + 
+//				  		".addField().setPrivate()" +
+//				  		".setStatic(true).setFinal(true)" +
+//				  		".setType(String.class)" +
+//				  		".setName(\"WEBAPP_SRC\");" +
+//
+//				  "testClass.getField(\"WEBAPP_SRC\")" +
+//				  		".setLiteralInitializer(\"\\\"src/main/webapp\\\"\");" +
+//
+//				  "testClass.addMethod()" +
+//				  		".setName(\"createDeployment\")" +
+//				  		".setStatic(true)" +
+//				  		".setVisibility(Visibility.PUBLIC)" +
+//				  		".setReturnType(WebArchive.class)" +
+//				  		".setBody(\"return ShrinkWrap.create(WebArchive.class, \\\"FBTutorialDemo.war\\\")\" +" +
+//				  				"\".addAsResource(\\\"META-INF/persistence.xml\\\")\" +" +
+//				  				"\".addClass(Helper.class)\" +" +
+//				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"index.html\\\"))\" +" +
+//				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"index2.html\\\"))\" +" +
+//				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"myInfo.html\\\"))\" +" +
+//				  				"\".addAsWebResource(new File(WEBAPP_SRC, \\\"friendsInfo.html\\\"))\" +" +
+//				  				"\".addAsWebInfResource(EmptyAsset.INSTANCE, \\\"beans.xml\\\");\")" +
+//				  		".addAnnotation(Deployment.class)" +
+//				  		".getOrigin().addImport(File.class);" +
+//				  "testClass.addImport(WebArchive.class);" +
+//				  "testClass.addImport(Deployment.class);" +
+//				  "testClass.addImport(ShrinkWrap.class);" +
+//				  "testClass.addImport(EmptyAsset.class);" +
+//				  "testClass.addImport(DefaultSelenium.class);" +
+//
+//				  "testClass" +
+//				  		".addField().setType(DefaultSelenium.class)" +
+//				  		".setName(\"browser\").addAnnotation(Drone.class)" +
+//				  		".getOrigin().addImport(DefaultSelenium.class);" +
+//				  "testClass.addImport(Drone.class);" +
+//
+//				  "testClass" +
+//				  		".addField().setType(URL.class)" +
+//				  		".setName(\"deploymentURL\").addAnnotation(ArquillianResource.class)" +
+//				  		".getOrigin().addImport(URL.class);" +
+//				  "testClass.addImport(ArquillianResource.class);" +
+//
+//				  "testClass.addImport(PrintStream.class);" + 
+//				  "testClass.addImport(FileOutputStream.class);" +
+//				  "testClass.addImport(Formatter.class);"; //Note, this is a current workaround for Parser Errors with Try-Catch block.  Gets replaced later.
+//		
+////		String methodBody2 =
+////				  "try{" +
+////				  		"PrintStream writetoTest = new PrintStream(" +
+////				  			"new FileOutputStream(rootPath + inputValues.get(0))); " +
+////				  		"writetoTest.print(Formatter.format(testClass));" +
+////				  		"writetoTest.close();" +
+////				  "}" +
+////				  "catch (Exception e) {" +
+////				  		"System.err.println(\"Failure in createTestClassViaParser: \" + e);" +
+////				  "}";		
+//
+//		helperClass.addMethod()
+//			.setName("BeginClass")
+//        	.setStatic(true)
+//        	.setVisibility(Visibility.PUBLIC)
+//        	.setReturnTypeVoid()
+//        	.setParameters("DefaultSelenium browser, List inputValues")
+//        	//TODO: Parser is not liking the try catch block right now.
+//        	.setBody( methodBody );
+//		
 	}
 
 	@Override
-	@Deprecated
 	public String performKeyword(JavaClass nullClass, ArrayList<String> inputValues) {
 		JavaClass testClass = JavaParser.create(JavaClass.class);
 		testClass.setName(inputValues.get(0)).setPackage("com.example.domain")
@@ -139,12 +140,13 @@ public class BeginClassKeyword implements Keyword {
 				.setBody(
 						"return ShrinkWrap.create(WebArchive.class, \"FBTutorialDemo.war\")"
 								+ ".addAsResource(\"META-INF/persistence.xml\")"
+								+ ".addClass(Helper.class)"
 								+ ".addAsWebResource(new File(WEBAPP_SRC, \"index.html\"))"
 								+ ".addAsWebResource(new File(WEBAPP_SRC, \"index2.html\"))"
 								+ ".addAsWebResource(new File(WEBAPP_SRC, \"myInfo.html\"))"
 								+ ".addAsWebResource(new File(WEBAPP_SRC, \"friendsInfo.html\"))"
 								+ ".addAsWebInfResource(EmptyAsset.INSTANCE, \"beans.xml\");")
-				.addAnnotation(Deployment.class).getOrigin()
+				.addAnnotation(Deployment.class).setLiteralValue("testable", "false").getOrigin() //TESTABLE = FALSE is KEY
 				.addImport(File.class);
 		testClass.addImport(WebArchive.class);
 		testClass.addImport(Deployment.class);
@@ -163,6 +165,7 @@ public class BeginClassKeyword implements Keyword {
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
 					Constants.ROOT_FILE_PATH + inputValues.get(0) + ".java"));
+			
 			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 			writetoTest.close();
 		} catch (Exception e) {

@@ -2,13 +2,11 @@ package org.ocpsoft.services;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,8 +70,7 @@ public class MyWebService {
 			Process p;
 			if(Constants.ROOT_FILE_PATH.startsWith("D:")){
 				//Currently on WINDOWS development
-				p = Runtime.getRuntime().exec(
-						"mvn test -PJBOSS_AS_REMOTE_7.X -f D:/_DEVELOPMENT_/projects/AppUnderTest/pom.xml");
+				p = Runtime.getRuntime().exec("cmd.exe /C mvn test -PJBOSS_AS_REMOTE_7.X -f D:/_DEVELOPMENT_/projects/AppUnderTest/pom.xml");
 			}
 			else {
 				//Currently on UNIX development
@@ -396,37 +393,4 @@ public class MyWebService {
 		return returnVal;
 	}
 	
-	private static String copyAndOverrideFile(File sourceFile, File destFile)
-			throws IOException {
-		if (!sourceFile.exists()) {
-			return "No Source File Found, No copy was done";
-		}
-		if (!destFile.exists()) {
-			destFile.createNewFile();
-		}
-		FileChannel source = null;
-		FileChannel destination = null;
-		FileInputStream fileInputStream = new FileInputStream(sourceFile);
-		source = fileInputStream.getChannel();
-		FileOutputStream fileOutputStream = new FileOutputStream(destFile);
-		destination = fileOutputStream.getChannel();
-		if (destination != null && source != null) {
-			destination.transferFrom(source, 0, source.size());
-		}
-		if (fileInputStream != null) {
-			fileInputStream.close();
-		}
-		if (fileOutputStream != null) {
-			fileOutputStream.close();
-		}
-		if (source != null) {
-			source.close();
-		}
-		if (destination != null) {
-			destination.close();
-		}
-
-		return "Success";
-	}
-
 }
