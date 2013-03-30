@@ -9,7 +9,14 @@ import java.util.Map;
 
 public class Constants {
 	
-	public static final String ROOT_FILE_PATH = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+	/***********************  UNIX FILE PATH *********************************************/
+	//public static final String ROOT_FILE_PATH = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+	//public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "/home/fife/workspace/KeywordApp/";
+	
+	/***********************  WINDOWWS FILE PATH *****************************************/
+	public static final String ROOT_FILE_PATH = "D:/_DEVELOPMENT_/projects/AppUnderTest/src/test/java/com/example/domain/";
+	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "D:/_DEVELOPMENT_/projects/keword-testing/";
+	
 	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
 	
 	public static enum KEYWORD_KEYS

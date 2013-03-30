@@ -21,6 +21,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.ocpsoft.utils.Constants;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
@@ -51,7 +52,7 @@ public class ParserExampleTest
 	   
 	@Test
 	public void testParser() throws InterruptedException {
-		String rootPath = "/home/fife/workspace/KeywordApp/src/test/java/com/ocpsoft/keywords/";
+		String rootPath = Constants.KEYWORD_PROJECT_ROOT_FILE_PATH + "src/test/java/com/ocpsoft/keywords/";
 		String className = "ParseTest";
 		removeClassFile(rootPath + className + ".java");
 		createTestClassViaParser(rootPath + className + ".java", className);

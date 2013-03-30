@@ -11,67 +11,84 @@
 		<%-- scriptlets --%>
 		<%@ page import="com.ocpsoft.utils.Constants" %>
 
-		<%--
-		For Each loop: VERIFY_OBJECT_PROPERTY<BR />
-		<%
-		for (String desc : KeywordInputDescriptionConstants.VERIFY_OBJECT_PROPERTY) {
-			%><%=desc %><br /><%
-		}
-		%><P /> --%>
 		
 		<!-- Here are all the descriptions<BR /> -->
 		<script type="text/javascript">
-    		var curKeyword = "";
-    		var keywordDescMap = {};
-    		var keywordValueMap = {};
+   		var curKeyword = "";
+   		var keywordDescMap = {};
+   		var keywordValueMap = {};
+   		var MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS = 0;
     	</script>
 		<%
-			for (Map.Entry<Constants.KEYWORD_KEYS, List<String>> keywordDesc : Constants.KEYWORD_DESCRIPTIONS.entrySet()) {
+		List<String> descriptions = null;
+		for (Map.Entry<Constants.KEYWORD_KEYS, List<String>> keywordDesc : Constants.KEYWORD_DESCRIPTIONS.entrySet()) {
 			Constants.KEYWORD_KEYS keyword = keywordDesc.getKey();
-			    List<String> descriptions = keywordDesc.getValue();
-		%><%-- <P />Keyword: <%=keyword %><BR />--%>
+			descriptions = keywordDesc.getValue();
+		%>
+			<!-- UNCOMMENT TO LIST ALL KEYWORDS -->
+			<%-- <P />Keyword: <%=keyword %><BR /> --%>
 	    	<script type="text/javascript">
-	    		var curDescList = "";
-	    		curKeyword = "<%=keyword%>";
+    		var curDescList = "";
+    		curKeyword = "<%=keyword%>";
 	    	</script>
 		    <%
-		    	for (int i = 0; i < descriptions.size(); i++) {
-		    %><%-- <%=i%>: <%=descriptions.get(i)%><BR /> --%>
+		    for (int i = 0; i < descriptions.size(); i++) {
+		    %>
 		    	<script type="text/javascript">
-		    		curDescList = curDescList + "<%=descriptions.get(i)%>" + ", ";
+		    	curDescList = curDescList + "<%=descriptions.get(i)%>" + ", ";
 		    	</script>		    	
-		    	<%
-		    			    		}
-		    			    	%>
-	    	<script type="text/javascript">
-	    		keywordDescMap[curKeyword] = curDescList.substring(0, curDescList.length - 2);
-		   	</script>
-	   		<%
-	   			}
-	   		%><!-- <P />Here are all the values<BR /> --><%
-	   			for (Map.Entry<Constants.KEYWORD_KEYS, List<String>> keywordValue : Constants.KEYWORD_VALUES.entrySet()) {
-	   			Constants.KEYWORD_KEYS keyword = keywordValue.getKey();
-	   				    List<String> values = keywordValue.getValue();
-	   		%><%-- <P />Keyword: <%=keyword %><BR /> --%>
-	    	<script type="text/javascript">
-	    		var curValueList = "";
-	    		curKeyword = "<%=keyword%>";
-	    	</script>
 		    <%
-		    	for (int i = 0; i < values.size(); i++) {
-		    %><%-- <%=i%>: <%=values.get(i)%><BR /> --%>
-		    	<script type="text/javascript">
-		    		curValueList = curValueList + "<%=values.get(i)%>" + ", ";
-		    	</script>		    	
-		    	<%
-		    			    		}
-		    			    	%>
+		    }
+		    %>
 	    	<script type="text/javascript">
-	    	keywordValueMap[curKeyword] = curValueList.substring(0, curDescList.length - 2);
+	    	keywordDescMap[curKeyword] = curDescList.substring(0, curDescList.length - 2);
 		   	</script>
-	   		<%
-	   			}
-	   		%>
+   		<%
+   		}
+   		%><!-- <P />Here are all the values<BR /> --><%
+ 		for (Map.Entry<Constants.KEYWORD_KEYS, List<String>> keywordValue : Constants.KEYWORD_VALUES.entrySet()) {
+ 			Constants.KEYWORD_KEYS keyword = keywordValue.getKey();
+ 			List<String> values = keywordValue.getValue();
+   		%>
+	    	<script type="text/javascript">
+    		var curValueList = "";
+    		curKeyword = "<%=keyword%>";
+    		var tempMaxKeywordDescriptions = 0;
+	    	</script>
+    	
+	    	<!-- UNCOMMENT TO LIST ALL KEYWORD INPUT VALUES -->
+	    	<%-- <P />Keyword: <%=keyword %><BR /> --%>
+    	
+	    	<%
+	    	for (int i = 0; i < values.size(); i++) {
+	    	%>
+		    
+			    <!-- UNCOMMENT TO LIST ALL KEYWORD INPUT VALUES -->
+			    <%-- <%=i%>: <script type="text/javascript">
+				var descList = keywordDescMap[curKeyword].split(",");
+			    document.write(descList[<%=i%>]);</script><BR />
+			    _______ <%=values.get(i)%><BR /> --%>
+		    
+		    
+		    	<script type="text/javascript">
+	    		curValueList = curValueList + "<%=values.get(i)%>" + ", ";
+	    		tempMaxKeywordDescriptions++;
+		    	</script>		    	
+	    	<%
+		    }
+		    %>
+	    	<script type="text/javascript">
+	    	keywordValueMap[curKeyword] = curValueList.substring(0, curValueList.length - 2); //Take off last ", "
+	    	if(MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS < tempMaxKeywordDescriptions){
+	    		MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS = tempMaxKeywordDescriptions
+	    	}
+		   	</script>
+   		<%
+   		}
+   		%>
+   		<!-- <script type="text/javascript">
+	    document.write('MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS : ' + MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS);
+		</script> -->
 	
        <center>
        <H1>Welcome to The Keyword Framework</H1><P />
@@ -121,7 +138,9 @@
        <div id="RunTests"></div><P />
        <BR /><P /><BR />
        </center>
-       <input type="submit" id="clearDivs" value="Clear Console" onClick='clearDivs()'/><input type="submit" id="deleteSuite" value="Delete Suite" onClick='deleteSuite()'/><br />
+       <input type="submit" id="clearDivs" value="Clear Console" onClick='clearDivs()'/>
+       <input type="submit" id="deleteSuite" onClick='deleteSuite()'/><br />
+       			
 		The test currently looks as follows:
 		<div id="testSuite"></div>
 
@@ -139,10 +158,9 @@
 		}
 
 		function hideAllInputs(){
-			var element;
-			for(var x=1; x<5; x++){
-				element = document.getElementById("entireInput" + x);
-				element.style.visibility = 'visible';
+			//Make sure you clear to +1 since we started the elements out at 1 (not 0)
+			for(var x=1; x < MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS +1; x++){
+				hideSpecificInput(x);
 			}
 		}
 
@@ -150,7 +168,7 @@
 			var entireInput = document.getElementById("entireInput" + inputNum);
 			var inputDesc = document.getElementById("input" + inputNum + "Desc");
 			var input = document.getElementById("Input" + inputNum);			
-			entireInput.style.visibility = 'visible';
+			entireInput.style.display = 'block';
 			inputDesc.style.visibility = 'visible';
 			input.style.visibility = 'visible';		
 		}
@@ -159,7 +177,7 @@
 			var entireInput = document.getElementById("entireInput" + inputNum);
 			var inputDesc = document.getElementById("input" + inputNum + "Desc");
 			var input = document.getElementById("Input" + inputNum);			
-			entireInput.style.visibility = 'visible';
+			entireInput.style.display = 'none';
 			inputDesc.innerHTML = "Input " + inputNum;
 			input.value = "assigned_null";	
 		}
@@ -167,9 +185,7 @@
 
 		function showAllNecessaryInputs(keyword){
 			//First clear all input fields
-			for (var i=1; i < 5; i++){
-				hideSpecificInput(i);
-			}
+			hideAllInputs();
 
 			//Now Display all input Descriptions based on the InputConstants Map
 			//And Also Display all input default Values based on the InputConstants Map
@@ -207,11 +223,7 @@
 					if(xmlhttp.status == 200) {
 						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
 						myObj = xmlhttp.responseText;
-						if(GetURL.indexOf("/CopyTestIntoProject/") != -1){
-							//Update the element on the page
-							document.getElementById('TestsCopied').innerHTML = myObj;
-						}
-						else if(GetURL.indexOf("/RunBuild") != -1){
+						if(GetURL.indexOf("/RunBuild") != -1){
 							document.getElementById('RunTests').innerHTML = myObj;
 						}
 						else if(GetURL.indexOf("/TestSuite") != -1){
@@ -286,6 +298,7 @@
 			var className = document.getElementById("className").value;
 			var GETurl = 'rest/webService/TestSuite/' + className;
 			var returnVal = doGET(GETurl);
+			document.getElementById("deleteSuite").value = "Delete Suite : " + document.getElementById("className").value;
 			return returnVal;
 		}
 
@@ -376,11 +389,7 @@
 					if(xmlhttp.status == 200) {
 						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
 						myObj = xmlhttp.responseText;
-						if(GetURL.indexOf("/CopyTestIntoProject/") != -1){
-							//Update the element on the page
-							document.getElementById('TestsCopied').innerHTML = myObj;
-						}
-						else if(GetURL.indexOf("/RunBuild") != -1){
+						if(GetURL.indexOf("/RunBuild") != -1){
 							document.getElementById('RunTests').innerHTML = myObj;
 						}
 						else if(GetURL.indexOf("/TestSuite") != -1){
@@ -489,6 +498,7 @@
 		showAllNecessaryInputs("BeginClass");
 		document.getElementById("Input1").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
 		document.getElementById("className").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
+	   	document.getElementById("deleteSuite").value = "Delete Suite : " + document.getElementById("className").value;
 		</script>
        
 </body>

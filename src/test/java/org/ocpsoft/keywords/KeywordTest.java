@@ -15,6 +15,7 @@ public class KeywordTest {
 	public void testAllKeywordsAreDefinedAndGetLoaded() {
 		/* Verify that we have a Keyword_Key defined in the Constants class for each Keyword Class we have
 		 */		
+		@SuppressWarnings("unchecked")
 		List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
 		Assert.assertFalse(keywords.isEmpty());
 		Assert.assertTrue(keywords.size() == Constants.KEYWORD_KEYS.values().length);

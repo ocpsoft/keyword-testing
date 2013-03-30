@@ -221,11 +221,7 @@
 					if(xmlhttp.status == 200) {
 						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
 						myObj = xmlhttp.responseText;
-						if(GetURL.indexOf("/CopyTestIntoProject/") != -1){
-							//Update the element on the page
-							document.getElementById('TestsCopied').innerHTML = myObj;
-						}
-						else if(GetURL.indexOf("/RunBuild") != -1){
+						if(GetURL.indexOf("/RunBuild") != -1){
 							document.getElementById('RunTests').innerHTML = myObj;
 						}
 						else if(GetURL.indexOf("/TestSuite") != -1){

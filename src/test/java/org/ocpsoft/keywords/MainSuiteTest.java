@@ -96,8 +96,8 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=deleteSuite");
 
 		value = getValue("div", "//div[@id='testSuite']");
-//		String expected = "<font color='orange'>WARNING: You tried to delete a file that does not exist. File [/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/MySampleSuiteTest.java] was already deleted.</font>";
-		String expected = "WARNING: You tried to delete a file that does not exist. File [/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/MySampleSuiteTest.java] was already deleted.";
+//		String expected = "<font color='orange'>WARNING: You tried to delete a file that does not exist. File [" + Constants.ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.</font>";
+		String expected = "WARNING: You tried to delete a file that does not exist. File [" + Constants.ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.";
 		System.out.println("Check 1 - Value = [" + value + "]");
 		Assert.assertTrue("value should be [Warning] text",
 				expected.equals(value));

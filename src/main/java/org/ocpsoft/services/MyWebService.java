@@ -69,8 +69,17 @@ public class MyWebService {
 		boolean isSuccessful = false;
 		String testLine = "";
 		try {
-			Process p = Runtime.getRuntime().exec(
-					"mvn test -PJBOSS_AS_REMOTE_7.X -f /home/fife/workspace/AppUnderTest/pom.xml");
+			Process p;
+			if(Constants.ROOT_FILE_PATH.startsWith("D:")){
+				//Currently on WINDOWS development
+				p = Runtime.getRuntime().exec(
+						"mvn test -PJBOSS_AS_REMOTE_7.X -f D:/_DEVELOPMENT_/projects/AppUnderTest/pom.xml");
+			}
+			else {
+				//Currently on UNIX development
+				p = Runtime.getRuntime().exec(
+						"mvn test -PJBOSS_AS_REMOTE_7.X -f /home/fife/workspace/AppUnderTest/pom.xml");
+			}
 			p.waitFor();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					p.getInputStream()));
@@ -219,27 +228,6 @@ public class MyWebService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return "<font color='red'>ERROR in the delete process.  System error: " + e + "</font>";
-		}
-	}
-	
-	@Deprecated
-	@GET
-	@Path("/CopyTestIntoProject/{sourceFilePath}/{projectPath}/{testClass}")
-	public String copyTestIntoProject(
-			@PathParam("sourceFilePath") String sourceFilePath,
-			@PathParam("projectPath") String projectPath,
-			@PathParam("testClass") String testClass) {
-		String rootPath = "/home/fife/workspace/";
-		System.out.println("Moving TestClass: " + rootPath + testClass
-				+ " into Project: " + rootPath + projectPath);
-		File sourceFile = new File(rootPath + sourceFilePath);
-		File destFile = new File(rootPath + projectPath
-				+ "/src/test/java/com/example/domain/" + testClass);
-		try {
-			return copyAndOverrideFile(sourceFile, destFile);
-		} catch (Exception e) {
-			System.err.println("Failure in CopyTestIntoProject: " + e);
-			return "Failure";
 		}
 	}
 	
@@ -418,10 +406,18 @@ public class MyWebService {
 		}
 		FileChannel source = null;
 		FileChannel destination = null;
-		source = new FileInputStream(sourceFile).getChannel();
-		destination = new FileOutputStream(destFile).getChannel();
+		FileInputStream fileInputStream = new FileInputStream(sourceFile);
+		source = fileInputStream.getChannel();
+		FileOutputStream fileOutputStream = new FileOutputStream(destFile);
+		destination = fileOutputStream.getChannel();
 		if (destination != null && source != null) {
 			destination.transferFrom(source, 0, source.size());
+		}
+		if (fileInputStream != null) {
+			fileInputStream.close();
+		}
+		if (fileOutputStream != null) {
+			fileOutputStream.close();
 		}
 		if (source != null) {
 			source.close();

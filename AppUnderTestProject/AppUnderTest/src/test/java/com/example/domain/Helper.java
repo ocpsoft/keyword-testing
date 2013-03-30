@@ -2,6 +2,8 @@ package com.example.domain;
 
 import java.util.List;
 import java.net.URL;
+
+import com.ocpsoft.utils.Constants;
 import com.thoughtworks.selenium.DefaultSelenium;
 import org.junit.Assert;
 import java.net.MalformedURLException;
@@ -10,7 +12,7 @@ public class Helper {
 
 	private static String value;
 	private static final int MAX_PAGE_LOAD_TIME_in_seconds = 10;
-	private static String rootPath = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+	private static String rootPath = Constants.ROOT_FILE_PATH;
 
 	static public String getValue(DefaultSelenium browser, String objectType,
 			String objectXPath) {

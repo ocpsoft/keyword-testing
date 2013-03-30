@@ -6,13 +6,14 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import com.ocpsoft.utils.Constants;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 public class Helper_manuallyCreated {
 
 	private static String value;
 	private static final int MAX_PAGE_LOAD_TIME_in_seconds = 10;
-	private static String rootPath = "/home/fife/workspace/AppUnderTest/src/test/java/com/example/domain/";
+	private static String rootPath = Constants.ROOT_FILE_PATH;
 
 	static public String getValue(DefaultSelenium browser, String objectType,
 			String objectXPath) {

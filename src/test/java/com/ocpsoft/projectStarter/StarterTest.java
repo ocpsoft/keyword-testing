@@ -53,7 +53,7 @@ public class StarterTest {//Begin Class
 		 * Then creates a new one.  We simply verify that a file was created successfully.
 		 */
 		
-		String rootPath = "/home/fife/workspace/KeywordApp/src/test/java/com/ocpsoft/projectStarter/";
+		String rootPath = Constants.KEYWORD_PROJECT_ROOT_FILE_PATH + "src/test/java/com/ocpsoft/projectStarter/";
 		File helperFile = new File(rootPath + "Helper.java");
 		
 		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
