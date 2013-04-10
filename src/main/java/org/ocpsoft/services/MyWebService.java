@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.Stateful;
@@ -193,7 +194,11 @@ public class MyWebService {
 				}
 				else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
 			}
-			return returnVal.substring(0, returnVal.length() - 1); //Remove the last ","
+			if(returnVal.equals("")){
+				return "";
+			} else {
+				return returnVal.substring(0, returnVal.length() - 1); //Remove the last ","
+			}
 		}
 		catch (Exception e) {
 			System.out.println("ERROR: Could not find file: " + className + ", Could not get list of Tests!");
@@ -226,6 +231,91 @@ public class MyWebService {
 			e.printStackTrace();
 			return "<font color='red'>ERROR in the delete process.  System error: " + e + "</font>";
 		}
+	}
+
+	@POST
+	@Path("/ExportTestCase/{className}/{testName}")
+	public String exportTestCase(@PathParam("className") String className, @PathParam("testName") String testName) {
+		String returnString = "";
+		String rootPath = Constants.EXPORT_FILE_PATH;
+		String fullFilePath = rootPath + testName + ".txt";
+		System.out.println("Exporting Test Case: " + fullFilePath);
+
+		File file = new File(fullFilePath);
+		String content = getTestMethodCode(className, testName);
+		content = FormatCodeForExportCSV(content);
+		if(content.equals("")){
+			return "<font color='red'>ERROR: Test [" + testName + "] in class [" + className + "] has no code." +
+					"Either class or test do not exist.</font>";
+		}
+ 
+		try (FileOutputStream fop = new FileOutputStream(file)) {
+ 
+			if (file.exists()) {
+				returnString+= "<font color='orange'>WARNING: File already existed.  We are deleting the old file.</font><BR />";
+				file.delete();
+			}
+			file.createNewFile();
+			
+			byte[] contentInBytes = content.getBytes();
+ 
+			fop.write(contentInBytes);
+			fop.flush();
+			fop.close();
+ 
+			System.out.println("Export complete successfully.");
+			returnString+= "<font color='green'><B>File Created!</B></font><BR />";
+ 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return returnString;
+	}
+	private String getTestMethodCode(String className, String testName){
+		JavaClass testClass = null;
+		testClass = javaClassExists(testClass, className);
+		if(testClass == null) {
+			return null;
+		}
+		Method<JavaClass> currentMethod = testClass.getMethod(testName);
+		if(currentMethod == null){
+			System.out.println("Could not find current testCaseName: " + testName + ", could not get Method's code.");
+			return null;
+		}
+		return currentMethod.getBody();
+	}
+	private String FormatCodeForExportCSV(String content){
+		String returnString = "";
+		if(content == null){
+			return returnString;
+		}
+		content=content.replace("\n", "");
+		content=content.replace("; ", ";");
+		String[] statements = content.split(";");
+		returnString+="Keyword,Inputs\n";
+		for (String statement : statements) {
+			if(!Utility.isEmptyStep(statement)){
+				returnString+= getKeywordAndInputsFromCodeCallToHelperMethod(statement) + "\n";
+			}
+		}
+		
+		return returnString;
+	}
+	private String getKeywordAndInputsFromCodeCallToHelperMethod(String statement){
+		String returnString = "";
+		
+		/*Sample statement:
+		 * 		Helper.OpenBrowser(browser, Arrays.asList("index.jsp", "assigned_null",
+				"assigned_null", "assigned_null"), deploymentURL);
+		 */
+		String keyword = statement.substring("Helper.".length(), statement.indexOf("("));
+		String inputs = statement.substring(statement.indexOf("asList(") + "asList(".length(), statement.indexOf(")"));
+		inputs = inputs.replace("\"", "");
+		inputs = "[" + inputs + "]";
+		returnString += keyword + "," + inputs;
+		
+		return returnString;
 	}
 	
 	@POST

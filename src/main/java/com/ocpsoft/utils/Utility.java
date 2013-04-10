@@ -120,7 +120,7 @@ public class Utility {
 	}
 	
 	public static boolean isEmptyStep(String step){
-		if(step==null || step.equalsIgnoreCase("") || step.equalsIgnoreCase("\n") || step.equalsIgnoreCase("\n ")){
+		if(step==null || step.equals(" ") || step.equals("") || step.equalsIgnoreCase("\n") || step.equalsIgnoreCase("\n ")){
 			return true;
 		}
 		return false;

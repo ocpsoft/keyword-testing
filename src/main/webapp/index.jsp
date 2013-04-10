@@ -139,7 +139,8 @@
        <BR /><P /><BR />
        </center>
        <input type="submit" id="clearDivs" value="Clear Console" onClick='clearDivs()'/>
-       <input type="submit" id="deleteSuite" onClick='deleteSuite()'/><br />
+       <input type="submit" id="deleteSuite" onClick='deleteSuite()'/>
+       <input type="submit" id="exportTestCase" value="Export Current Test" onClick='exportTestCase()'/><br />
        			
 		The test currently looks as follows:
 		<div id="testSuite"></div>
@@ -153,6 +154,8 @@
 			hideAllInputs();
 			if(keyword == "BeginClass"){
 				updateTestCaseNames("NewClass", null);
+			} else {
+				updateTestCaseNames("NewTest", document.getElementById("testCaseName"));
 			}
 			showAllNecessaryInputs(keyword);
 		}
@@ -309,6 +312,12 @@
 			return returnVal;
 		}
 		
+		function exportTestCase(){
+			var POSTurl = 'rest/webService/ExportTestCase/' + document.getElementById("className").value +'/'+ getTestCaseName();
+			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
+			return returnVal;
+		}
+		
 		function getTestCaseNames() {
 			var className = document.getElementById("className").value;
 			var GETurl = 'rest/webService/ListOfTestMethodNames/' + className;
@@ -318,11 +327,7 @@
 
 		function postInstruction(keyword, input1, input2, input3, input4){
 			var className = document.getElementById("className").value;
-			var testCaseSelectObj = document.getElementById("testCaseName");
-			try{
-				var testCaseName = testCaseSelectObj.options[testCaseSelectObj.selectedIndex].text;
-			}
-			catch(err){ testCaseName = "assigned_null"; }
+			var testCaseName = getTestCaseName();
 			var inputArray = input1 + ", " + input2 + ", " + input3 + ", " + input4;
 			var POSTurl = 'rest/webService/NewInstruction/' + 
 				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + encodeURLComp(testCaseName) + '/' +
@@ -332,6 +337,18 @@
 				updateTestCaseNames("NewTest", input1);
 			}
 			return returnVal;
+		}
+
+		function getTestCaseName(){
+			var testCaseSelectObj = document.getElementById("testCaseName");
+			try{
+				var testCaseName = testCaseSelectObj.options[testCaseSelectObj.selectedIndex].text;
+			}
+			catch(err){ testCaseName = "assigned_null"; }
+			if(testCaseName==""){
+				testCaseName = "assigned_null";
+			}
+			return testCaseName;
 		}
 
 		function updateTestSuiteDisplay(testSuiteText){
@@ -352,6 +369,11 @@
 			}
 		}
 
+		function displayTestCaseNames(){
+			document.getElementById('testCaseDiv').style.visibility = 'visible';
+		}
+
+		
 		function performTestCaseSelectOptionUpdate(newOptions, newTestName){
 			var methodList = newOptions.split(",");
 			selectObject.options.length = methodList.length;
@@ -444,7 +466,7 @@
 					// wait for the call to complete
 				}
 			};
-		return null;
+			return null;
 		}//doPOST
 		
 		function encodeURLComp(component){

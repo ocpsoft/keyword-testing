@@ -11,12 +11,9 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ocpsoft.services.MyWebService;
 
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
@@ -29,31 +26,20 @@ public class MainSuiteTest {//Begin Class
 	 * 		Start up the server.
 	 * 		Do a full publish of the Keyword Application
 	 * 		Run the file as a JUnit Test with AS7_REMOTE container.
+	 * 
+	 * 		NOTE: Some tests are currently requiring a Publish
+	 * 			  for EVERY/ANY run of the tests.
 	 */
 	
    private static final String WEBAPP_SRC = "src/main/webapp";
    
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
-	   MavenDependencyResolver resolver = DependencyResolvers.use(
-			   MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
-		return ShrinkWrap.create(WebArchive.class, "KeywordApp.war")
-						.addClasses(MyWebService.class, Constants.class, Keyword.class, KeywordFactory.class)
+		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
+						.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
 						.addAsResource("META-INF/persistence.xml")
 						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
 						.addAsWebResource(new File(WEBAPP_SRC, "myLink.html"))
-						.addAsLibraries(resolver.artifacts("org.jboss.forge:forge-parser-java")
-								.resolveAsFiles())
-						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-java")
-								.resolveAsFiles())
-						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-server")
-								.resolveAsFiles())									
-						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-impl")
-								.resolveAsFiles())									
-						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium")
-								.resolveAsFiles())									
-						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium-server")
-								.resolveAsFiles())
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
@@ -119,10 +105,16 @@ private String getValue(String objectType, String objectXPath){
 		
 		URL placeholderDeploymentURL = deploymentURL;
 		
-		deploymentURL = new URL("https://www.facebook.com");
+		//Facebook right now is returning a bad security cookie to server for some reason, use another site for now.
+//		deploymentURL = new URL("https://www.facebook.com");
+//		browser.open(deploymentURL.toString());
+//		Assert.assertTrue("User should be on Facebook.com",
+//				browser.isElementPresent("xpath=//input[@id='email']"));
+		
+		deploymentURL = new URL("http://www.msn.com");
 		browser.open(deploymentURL.toString());
 		Assert.assertTrue("User should be on Facebook.com",
-				browser.isElementPresent("xpath=//input[@id='email']"));
+				browser.isElementPresent("xpath=//input[@id='q']"));
 		
 		deploymentURL = placeholderDeploymentURL;
 	}//End Test Case
@@ -140,7 +132,8 @@ private String getValue(String objectType, String objectXPath){
 		browser.open(deploymentURL + "index.jsp");
 
 		browser.click("link=Click to go to myLink");
-
+		Thread.sleep(200);//Allow the page to load
+		
 		value = getValue("input", "//input[@id='myInput']");
 		String expected = "";
 		Assert.assertTrue("value should be [blank]",
@@ -447,6 +440,37 @@ private String getValue(String objectType, String objectXPath){
 	}//End Test Case
 
 	@Test
+	public void testBuildingASuiteAndViewing() throws InterruptedException {//Begin Test Case
+		/* This test builds a new suite via the app.
+		 * Once constructed, it will verify the testSuite div is displaying correctly on the UI.
+		 */
+		
+		browser.open(deploymentURL + "index.jsp");
+
+		browser.click("id=deleteSuite");
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		//The Default
+		browser.click("id=AddInstruction");
+
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		Thread.sleep(200);
+		
+		value = getValue("div", "//div[@id='testSuite']");
+		String expected = "Test Suite Named: MySuiteTest\n" +
+							"testName\n" +
+							"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+							"if adding onto end of the domain): index.jsp";
+		Assert.assertTrue("value should be [" + expected + "]",
+				expected.equals(value));
+	}//End Test Case
+	
+	@Test
 	public void testBuildingASuiteAndRunning() throws InterruptedException {//Begin Test Case
 		/* This test builds a new suite via the app.
 		 * Once constructed, it will click the [Run Tests] button to kick it off.
@@ -465,14 +489,6 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=AddInstruction");
 		
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndTest);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EndClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
 		

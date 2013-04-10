@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<arquillian xmlns="http://jboss.org/schema/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd"/>
+<arquillian xmlns="http://jboss.org/schema/arquillian" 
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+			xsi:schemaLocation="http://jboss.org/schema/arquillian 
+								http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+	<extension qualifier="selenium">
+		<property name="browser">*googlechrome</property>
+		<property name="jbossHome">D:\_DEVELOPMENT_\JBossAS\jboss-as-7.1.1.Final\bin</property>
+	</extension>
+</arquillian>
