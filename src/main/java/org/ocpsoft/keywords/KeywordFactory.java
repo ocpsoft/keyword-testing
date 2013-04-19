@@ -20,7 +20,7 @@ public class KeywordFactory implements Serializable{
 	
 	public Keyword createKeyword(String key){
 		for (Keyword keyword : keywords) {
-			if(keyword.getShortName().equals(key)){
+			if(keyword.getShortName().toString().equals(key)){
 				return keyword;
 			}
 		}
@@ -30,7 +30,7 @@ public class KeywordFactory implements Serializable{
 	public ArrayList<String> getAllKeywordTypes(){
 		ArrayList<String> types = new ArrayList<String>();
 		for (Keyword keyword : keywords) {
-			types.add(keyword.getShortName());
+			types.add(keyword.getShortName().toString());
 		}
 		return types;
 	}

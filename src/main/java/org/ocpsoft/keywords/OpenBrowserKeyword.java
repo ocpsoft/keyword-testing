@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
 
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+
 public class OpenBrowserKeyword implements Keyword {
 
 	@Override
-	public String getShortName() {
-		return "OpenBrowser";
+	public KEYWORD_KEYS getShortName() {
+		return KEYWORD_KEYS.OpenBrowser;
 	}
 
 	@Override

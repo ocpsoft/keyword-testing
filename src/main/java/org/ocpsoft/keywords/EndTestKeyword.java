@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import org.jboss.forge.parser.java.JavaClass;
 
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+
+@Deprecated
 public class EndTestKeyword implements Keyword {
 
 	@Override
-	public String getShortName() {
-		return "EndTest";
+	public KEYWORD_KEYS getShortName() {
+		return KEYWORD_KEYS.EndClass;
 	}
 
 	@Override

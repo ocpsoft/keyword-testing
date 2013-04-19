@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.Stateful;
@@ -274,7 +273,7 @@ public class MyWebService {
 	}
 	private String getTestMethodCode(String className, String testName){
 		JavaClass testClass = null;
-		testClass = javaClassExists(testClass, className);
+		testClass = Utility.javaClassExists(testClass, className);
 		if(testClass == null) {
 			return null;
 		}
@@ -366,7 +365,7 @@ public class MyWebService {
 		
 		//Some Keywords are now Direct Process, and some get added via Method Calls
 		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
-			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass.toString())){
+			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass)){
 				//BeginClass will Create a new testClass, so it shouldn't exist yet, clear it out if it does
 				//TODO: If it exists already, we should throw up a warning and ask the user if they want it cleared/overriden or left as is.
 				File file = new File(testPath);
@@ -388,7 +387,7 @@ public class MyWebService {
 			}
 			else {
 				//Any other DirectProcess besides BeginClass will need the file to already exist!
-				testClass = javaClassExists(testClass, className);
+				testClass = Utility.javaClassExists(testClass, className);
 				if(testClass == null)
 				{
 					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
@@ -400,7 +399,7 @@ public class MyWebService {
 		}
 		else{
 			//All other Keywords get processed by adding a call to their HelperClassMethods into the test itself
-			testClass = javaClassExists(testClass, className);
+			testClass = Utility.javaClassExists(testClass, className);
 			if(testClass != null) {
 				Method<JavaClass> currentMethod = testClass.getMethod(testCaseName);
 				if(currentMethod == null){
@@ -430,17 +429,6 @@ public class MyWebService {
 				return "ERROR - Did not process keyword: " + keyword.getShortName();
 			}
 		}
-	}
-	
-	private JavaClass javaClassExists(JavaClass testClass, String className){
-		try {
-			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
-			testClass = (JavaClass) JavaParser.parse(testClassFile);
-		} catch (Exception e) {
-			System.out.println("Error in trying to get the testClass File for Processing a keyword: " + e);
-			return null;
-		}
-		return testClass;
 	}
 	
 	private ArrayList<String> filterInputArrayIntoArraList(String[] inputArray){

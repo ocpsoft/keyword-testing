@@ -21,13 +21,14 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 import com.ocpsoft.utils.Constants;
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 public class BeginClassKeyword implements Keyword {
 
 	@Override
-	public String getShortName() {
-		return "BeginClass";
+	public KEYWORD_KEYS getShortName() {
+		return KEYWORD_KEYS.BeginClass;
 	}
 	
 	@Override

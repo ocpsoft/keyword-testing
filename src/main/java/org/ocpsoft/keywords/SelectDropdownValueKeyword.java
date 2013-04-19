@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
 
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+
 public class SelectDropdownValueKeyword implements Keyword {
 
 	@Override
-	public String getShortName() {
-		return "SelectDropdownValue";
+	public KEYWORD_KEYS getShortName() {
+		return KEYWORD_KEYS.SelectDropdownValue;
 	}
 
 	@Override

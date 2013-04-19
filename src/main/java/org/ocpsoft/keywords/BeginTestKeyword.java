@@ -10,12 +10,13 @@ import org.jboss.forge.parser.java.util.Formatter;
 import org.junit.Test;
 
 import com.ocpsoft.utils.Constants;
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
 public class BeginTestKeyword implements Keyword {
 
 	@Override
-	public String getShortName() {
-		return "BeginTest";
+	public KEYWORD_KEYS getShortName() {
+		return KEYWORD_KEYS.BeginTest;
 	}
 
 	@Override

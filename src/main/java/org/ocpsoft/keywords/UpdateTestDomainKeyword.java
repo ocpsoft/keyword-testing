@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
 
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+
 public class UpdateTestDomainKeyword implements Keyword {
 
 	@Override
-	public String getShortName() {
-		return "UpdateTestDomain";
+	public KEYWORD_KEYS getShortName() {
+		return KEYWORD_KEYS.UpdateTestDomain;
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.jboss.forge.parser.java.JavaClass;
 
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+
 public interface Keyword {
 	
 	public static enum KEYWORD_PROCESS_TYPES
@@ -11,7 +13,7 @@ public interface Keyword {
 		MethodCall, DirectProcess
 	}
 	
-	String getShortName();
+	KEYWORD_KEYS getShortName();
 	KEYWORD_PROCESS_TYPES getProcessType();
 	String getAdditionalInputParams();
 	

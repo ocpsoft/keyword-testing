@@ -1,9 +1,12 @@
 package com.ocpsoft.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
+import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
 import org.jboss.forge.parser.java.util.Formatter;
@@ -20,6 +23,24 @@ public class Utility {
 		return false;
 	}
 	
+	public static Member<JavaClass, ?> getMemberFromTestCaseName(String testName, String className){
+		File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
+		JavaClass testClass = null;
+		try {
+			testClass = (JavaClass) JavaParser.parse(testClassFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+		List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
+		for (Member<JavaClass, ?> member : allMembers) {
+			if(member.toString().contains(testName) && memberIsATestCase(member)){
+				return member;
+			}
+		}
+		return null;
+	}
+	
 	public static String getTestCaseName(Member<JavaClass, ?> member){
 		if(memberIsATestCase(member)){
 			return member.getName();
@@ -32,6 +53,17 @@ public class Utility {
 			return getTestCaseName(member).equalsIgnoreCase(testCaseName);
 		}
 		return false;
+	}
+	
+	public static JavaClass javaClassExists(JavaClass testClass, String className){
+		try {
+			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
+			testClass = (JavaClass) JavaParser.parse(testClassFile);
+		} catch (Exception e) {
+			System.out.println("Error in trying to get the testClass File for Processing a keyword: " + e);
+			return null;
+		}
+		return testClass;
 	}
 	
 	public static String generateUserReadableStepsFromMethod(Member<JavaClass, ?> member){
@@ -62,6 +94,9 @@ public class Utility {
 	}
 	
 	public static String[] getStepsFromMethod(Member<JavaClass, ?> member){
+		if(member == null){
+			return null;
+		}
 		String[] steps = member.getOrigin().getMethod(getTestCaseName(member)).getBody().split(";");
 		String[] returnArray = new String[ steps.length - 1 ];  //Last line is always just a newline
 		for (int i = 0; i < returnArray.length; i++) {
