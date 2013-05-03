@@ -20,6 +20,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ocpsoft.common.services.ServiceLoader;
+import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 
 import com.ocpsoft.utils.Constants;
@@ -45,11 +47,8 @@ public class MainSuiteTest {//Begin Class
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
 						.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
-						.addPackage("org.ocpsoft.keywords") //TODO: Will this work instead of importing each Keyword class?
-//						.addClasses(BeginClassKeyword.class, BeginTestKeyword.class, ClickElementKeyword.class, EndClassKeyword.class,
-//								EndTestKeyword.class, EnterTextInInputKeyword.class, OpenBrowserKeyword.class, SelectDropdownValueKeyword.class,
-//								UpdateTestDomainKeyword.class, VerifyObjectIsDisplayedKeyword.class, VerifyObjectIsNotDisplayedKeyword.class,
-//								VerifyObjectPropertyKeyword.class)
+						.addPackage("org.ocpsoft.keywords")
+						.addPackage("org.ocpsoft.utils")
 						.addAsResource("META-INF/persistence.xml")
 						.addAsResource("META-INF/services/org.ocpsoft.keywords.Keyword")
 						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
@@ -220,15 +219,14 @@ private String getValue(String objectType, String objectXPath){
 			}
 			
 			Keyword curKeyword = null;
-			//TODO: ERROR - THIS IS FAILING
-			//Right now keywords is not getting injected (it's null)
-			//Need a way of getting the actual Keyword Class object from the KEYWORD_KEYS keyword we're on right now.
-//			for (Keyword key : keywords) {
-//				if(key.getShortName().equals(keyword)){
-//					curKeyword =  key;
-//					break;
-//				}
-//			}
+			@SuppressWarnings("unchecked")
+			List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
+			for (Keyword key : keywords) {
+				if(key.getShortName().equals(keyword)){
+					curKeyword =  key;
+					break;
+				}
+			}
 			if(keyword.equals(KEYWORD_KEYS.BeginClass)){
 				curKeyword = new BeginClassKeyword();
 			} else if(keyword.equals(KEYWORD_KEYS.BeginTest)){

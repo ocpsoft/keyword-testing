@@ -23,10 +23,20 @@ public class Helper {
 		}
 	}
 
-	static public void VerifyObjectIsNotDisplayed(DefaultSelenium browser,
+	static public void SelectDropdownValue(DefaultSelenium browser,
 			List<String> inputValues) {
-		Assert.assertFalse(inputValues.get(0),
-				browser.isElementPresent("xpath=//" + inputValues.get(1)));
+		browser.select("id=" + inputValues.get(0),
+				"label=" + inputValues.get(1));
+	}
+
+	static public void EnterTextInInput(DefaultSelenium browser,
+			List<String> inputValues) {
+		browser.type(inputValues.get(0), inputValues.get(1));
+	}
+
+	static public void OpenBrowser(DefaultSelenium browser,
+			List<String> inputValues, URL deploymentURL) {
+		browser.open(deploymentURL + inputValues.get(0));
 	}
 
 	static public URL UpdateTestDomain(List<String> inputValues)
@@ -41,17 +51,6 @@ public class Helper {
 					+ "] can NOT be set as a new Project Context.");
 			return null;
 		}
-	}
-
-	static public void VerifyObjectIsDisplayed(DefaultSelenium browser,
-			List<String> inputValues) {
-		Assert.assertTrue(inputValues.get(0),
-				browser.isElementPresent("xpath=//" + inputValues.get(1)));
-	}
-
-	static public void OpenBrowser(DefaultSelenium browser,
-			List<String> inputValues, URL deploymentURL) {
-		browser.open(deploymentURL + inputValues.get(0));
 	}
 
 	static public void ClickElement(DefaultSelenium browser,
@@ -71,14 +70,15 @@ public class Helper {
 		Assert.assertTrue(inputValues.get(0), inputValues.get(3).equals(value));
 	}
 
-	static public void SelectDropdownValue(DefaultSelenium browser,
+	static public void VerifyObjectIsNotDisplayed(DefaultSelenium browser,
 			List<String> inputValues) {
-		browser.select("id=" + inputValues.get(0),
-				"label=" + inputValues.get(1));
+		Assert.assertFalse(inputValues.get(0),
+				browser.isElementPresent("xpath=//" + inputValues.get(1)));
 	}
 
-	static public void EnterTextInInput(DefaultSelenium browser,
+	static public void VerifyObjectIsDisplayed(DefaultSelenium browser,
 			List<String> inputValues) {
-		browser.type(inputValues.get(0), inputValues.get(1));
+		Assert.assertTrue(inputValues.get(0),
+				browser.isElementPresent("xpath=//" + inputValues.get(1)));
 	}
 }
