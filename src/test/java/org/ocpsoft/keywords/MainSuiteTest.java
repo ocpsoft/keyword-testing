@@ -41,18 +41,12 @@ public class MainSuiteTest {//Begin Class
 	 * 			  for EVERY/ANY run of the tests.
 	 */
 	
-   private static final String WEBAPP_SRC = "src/main/webapp";
-   
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
 						.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
 						.addPackage("org.ocpsoft.keywords")
 						.addPackage("org.ocpsoft.utils")
-						.addAsResource("META-INF/persistence.xml")
-						.addAsResource("META-INF/services/org.ocpsoft.keywords.Keyword")
-						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
-						.addAsWebResource(new File(WEBAPP_SRC, "myLink.html"))
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
@@ -184,6 +178,7 @@ private String getValue(String objectType, String objectXPath){
 		browser.open(deploymentURL + "index.jsp");
 		String testSuiteName = "";
 		String testCaseName = "";
+		browser.click("id=deleteSuite"); //Make sure we start fresh
 		
 		for (KEYWORD_KEYS keyword : Constants.KEYWORD_KEYS.values()) {
 			valToSelect = Constants.KEYWORD_LONGNAMES.get(keyword);

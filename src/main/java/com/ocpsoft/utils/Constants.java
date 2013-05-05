@@ -21,6 +21,16 @@ public class Constants {
 	
 	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
 	
+	//Fully Qualified Paths for adding annotations to test files via the parser
+	public static final String RunWithAnnotationClass = "org.junit.runner.RunWith";
+	public static final String TestAnnotationClass = "org.junit.Test";
+	public static final String DeploymentAnnotationClass = "org.jboss.arquillian.container.test.api.Deployment";
+	public static final String DefaultSeleniumAnnotationClass = "com.thoughtworks.selenium.DefaultSelenium";
+	public static final String DroneAnnotationClass = "org.jboss.arquillian.drone.api.annotation.Drone";
+	public static final String ArquillianAnnotationClass = "org.jboss.arquillian.junit.Arquillian";
+	public static final String ArquillianResourceAnnotationClass = "org.jboss.arquillian.test.api.ArquillianResource";
+	
+
 	public static enum KEYWORD_KEYS
 	{
 		BeginClass, BeginTest, ClickElement, EndClass, EndTest, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 

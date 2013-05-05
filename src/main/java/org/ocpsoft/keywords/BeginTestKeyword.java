@@ -31,29 +31,8 @@ public class BeginTestKeyword implements Keyword {
 	}
 
 	@Override
+	@Deprecated
 	public void createKeywordHelperMethod(JavaClass helperClass){
-		helperClass.addMethod()
-          .setName("BeginTest")
-          .setStatic(true)
-          .setVisibility(Visibility.PUBLIC)
-          .setBody( "JavaClass testClass;" +
-//        			"try{" +
-//        			"	File testClassFile = new File(rootPath" +
-//        			"			+ inputValues.get(1));" +
-//        			"	testClass = (JavaClass) JavaParser.parse(testClassFile);" +
-//        			"}" +
-//        			"catch (Exception e) {" +
-//        			"	System.out.println(\"Error in trying to get the testClass File - e:\" + e);" +
-//        			"	return;" +
-//        			"}" +
-        			"testClass.addMethod().setName(inputValues.get(0))" +
-        			"	.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()" +
-        			"	.addThrows(InterruptedException.class)" +
-        			"	.addAnnotation(Test.class);"
-        		  )
-        		  
-          .setReturnTypeVoid()
-          .setParameters("DefaultSelenium browser, List inputValues");		
 	}
 
 	
@@ -64,7 +43,7 @@ public class BeginTestKeyword implements Keyword {
 				.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()
 				.addThrows(InterruptedException.class)
 				.setBody("")
-				.addAnnotation(Test.class);
+				.addAnnotation(Constants.TestAnnotationClass);
 		
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
@@ -78,31 +57,6 @@ public class BeginTestKeyword implements Keyword {
 		
 		System.out.println("SUCCESS: New Test [" + inputValues.get(0) + "] created successfully.");
 		return "SUCCESS: New Test [" + inputValues.get(0) + "] created successfully.";
-		
-		
-		/*OLD - NON-Parser way
-		 * try{
-			File f = new File(testPath);
-			if(!f.exists()) { 
-				return "FAILURE: ClassFile does not exist, can not add instruction.  Fix path of: " + testPath;
-			}
-			else{
-				PrintStream writetoTest = new PrintStream(
-						new FileOutputStream(testPath, true)); 
-				writetoTest.append("\n" +
-						"\t@Test\n" +
-						"\tpublic void "+ inputValues.get(0) +"() throws InterruptedException {//Begin Test Case\n");
-				
-				writetoTest.close();
-				System.out.println("\nSUCCESS - Test now has beginning!!!");
-				return "SUCCESS";
-			}
-		}
-		catch (Exception e) {
-			System.err.println("Failure in doBeginTest: " + e);
-			return "FAILURE in Beginning Class Instruction: " + e;
-		}
-		*/
 	}
 
 }
