@@ -18,4 +18,4 @@ Note: An input box will be added to the UI for each Description/Value for a give
 The ArrayLists for Description and Value must be the same size.  ie: each description must have a default value and vise-versa.
 
 At present TestClass MainSuiteTest.java has a test: testAllKeywordDropdownDescsValuesAndResultingTestFileLines()
-which will dynamically test the descriptions and values of each keyword, and will also validate that the resulting code in the test file is the correct code to call the keyword's helper method.
+which will dynamically test the descriptions and values of each keyword, and will also validate that the resulting code in the test file is the correct code to call the keyword's helper method (for all MethodCall keywords, it does not test resulting lines for DirectProcess keywords as there are no standard lines added to the test file for those).
