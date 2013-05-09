@@ -214,41 +214,42 @@ private String getValue(String objectType, String objectXPath){
 			}
 			
 			Keyword curKeyword = null;
+//			curKeyword = KeywordFactory.createKeyword(keyword.toString());
 			@SuppressWarnings("unchecked")
 			List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
 			for (Keyword key : keywords) {
 				if(key.getShortName().equals(keyword)){
-					curKeyword =  key;
+					curKeyword = key;
 					break;
 				}
 			}
-			if(keyword.equals(KEYWORD_KEYS.BeginClass)){
-				curKeyword = new BeginClassKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.BeginTest)){
-				curKeyword = new BeginTestKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.ClickElement)){
-				curKeyword = new ClickElementKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.EndClass)){
-				curKeyword = new EndClassKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.EndTest)){
-				curKeyword = new EndTestKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.EnterTextInInput)){
-				curKeyword = new EnterTextInInputKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.OpenBrowser)){
-				curKeyword = new OpenBrowserKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.SelectDropdownValue)){
-				curKeyword = new SelectDropdownValueKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.UpdateTestDomain)){
-				curKeyword = new UpdateTestDomainKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectIsDisplayed)){
-				curKeyword = new VerifyObjectIsDisplayedKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectIsNotDisplayed)){
-				curKeyword = new VerifyObjectIsNotDisplayedKeyword();
-			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectProperty)){
-				curKeyword = new VerifyObjectPropertyKeyword();
-			}  else {
-				curKeyword = null;
-			} 
+//			if(keyword.equals(KEYWORD_KEYS.BeginClass)){
+//				curKeyword = new BeginClassKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.BeginTest)){
+//				curKeyword = new BeginTestKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.ClickElement)){
+//				curKeyword = new ClickElementKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.EndClass)){
+//				curKeyword = new EndClassKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.EndTest)){
+//				curKeyword = new EndTestKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.EnterTextInInput)){
+//				curKeyword = new EnterTextInInputKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.OpenBrowser)){
+//				curKeyword = new OpenBrowserKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.SelectDropdownValue)){
+//				curKeyword = new SelectDropdownValueKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.UpdateTestDomain)){
+//				curKeyword = new UpdateTestDomainKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectIsDisplayed)){
+//				curKeyword = new VerifyObjectIsDisplayedKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectIsNotDisplayed)){
+//				curKeyword = new VerifyObjectIsNotDisplayedKeyword();
+//			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectProperty)){
+//				curKeyword = new VerifyObjectPropertyKeyword();
+//			}  else {
+//				curKeyword = null;
+//			} 
 			if(curKeyword == null){
 				Assert.assertTrue("Could not find correct keyword for: " + keyword.toString(), false);
 			}
@@ -262,15 +263,18 @@ private String getValue(String objectType, String objectXPath){
 				}
 				boolean validatedStep = false;
 				String inputList = "";
+				String additionalParams = "";
 				for (String step : steps) {
 					if(step.contains(keyword.toString())){
 						//Validate this step
 						//Example: Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);
+						//ie: "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
+						
 						inputList = buildInputValueStringFromList(Constants.KEYWORD_VALUES.get(keyword));
+						additionalParams = curKeyword.getAdditionalInputParams();
 						value = step;
-						expected = "Helper." + keyword.toString() + "(browser,Arrays.asList(" + inputList + "),deploymentURL);";
-						Assert.assertTrue("TestFile Step - value should be [" + expected + "]",
-								expected.equals(value));
+						expected = "Helper." + keyword.toString() + "(browser,Arrays.asList(" + inputList + ")" + additionalParams + ")";
+						Assert.assertEquals("Keyword: "+ keyword.toString() + " failed adding correct step call to testCase.", expected, value);
 						validatedStep = true;
 						break;
 					}

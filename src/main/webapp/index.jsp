@@ -325,10 +325,14 @@
 			return returnVal;
 		}
 
-		function postInstruction(keyword, input1, input2, input3, input4){
+		function postInstruction(keyword, inputList){
 			var className = document.getElementById("className").value;
 			var testCaseName = getTestCaseName();
-			var inputArray = input1 + ", " + input2 + ", " + input3 + ", " + input4;
+			var inputArray = "";
+			for (var i=0; i < inputList.length; i++){
+				inputArray += inputList[i] + ", ";
+			}
+			inputArray = inputArray.substring(0, inputArray.length - 2);
 			var POSTurl = 'rest/webService/NewInstruction/' + 
 				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + encodeURLComp(testCaseName) + '/' +
 				encodeURLComp(inputArray);
@@ -489,17 +493,23 @@
 			document.getElementById('testSuite').innerHTML = returnVal;		
 		}
 
+		function getAllInputValuesAsList(){
+			var returnVal = new Array();
+			var count = 1;
+			var e = document.getElementById("Input" + count);
+			while (e != null){
+				if (e.value != "assigned_null"){
+					returnVal.push(e.value);
+				}
+				count ++;
+				e = document.getElementById("Input" + count);
+			}
+			return returnVal;
+		}
+
 		function addInstruction(){
 			var e = document.getElementById("keyword");
 			var keyword = e.options[e.selectedIndex].value;
-			e = document.getElementById("Input1");
-			var input1 = e.value;
-			e = document.getElementById("Input2");
-			var input2 = e.value;
-			e = document.getElementById("Input3");
-			var input3 = e.value;
-			e = document.getElementById("Input4");
-			var input4 = e.value;						
 			//alert("keyword = " + keyword + ", input1: " + input1 + ", input2: " + input2);
 
 			if(keyword == "BeginClass"){
@@ -510,7 +520,7 @@
 				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
 			}
 			else{
-				postInstruction(keyword, input1, input2, input3, input4);
+				postInstruction(keyword, getAllInputValuesAsList());
 				getTestSuite();
 			}
 		}

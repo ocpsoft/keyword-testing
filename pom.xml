@@ -196,6 +196,12 @@
 					<groupId>org.jboss.as</groupId>
 					<artifactId>jboss-as-arquillian-container-remote</artifactId>
 					<version>7.1.1.Final</version>
+					  <exclusions>
+						<exclusion>
+							<groupId>org.jboss.arquillian.testenricher</groupId>
+							<artifactId>arquillian-testenricher-osgi</artifactId>
+						</exclusion>
+					  </exclusions>					
 					<scope>test</scope>
 				</dependency>
 			</dependencies>

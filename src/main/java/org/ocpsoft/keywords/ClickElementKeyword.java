@@ -40,10 +40,8 @@ public class ClickElementKeyword implements Keyword {
           .setParameters("DefaultSelenium browser, List inputValues")
           .setBody(	"browser.click(inputValues.get(0) + \"=\" + inputValues.get(1));" +
 					"if(inputValues.get(2) != null){" +
-					"	if(inputValues.get(2).equalsIgnoreCase(\"assigned_null\") == false){" +
-					"		/*wait for the  page to load*/" +
-					"		browser.waitForPageToLoad(Integer.toString(MAX_PAGE_LOAD_TIME_in_seconds * 1000));" +
-					"	}" +
+					"	/*wait for the  page to load*/" +
+					"	browser.waitForPageToLoad(Integer.toString(MAX_PAGE_LOAD_TIME_in_seconds * 1000));" +
 					"}"
         		  );
 

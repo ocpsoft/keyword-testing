@@ -23,7 +23,7 @@ public class UpdateTestDomainKeyword implements Keyword {
 
 	@Override
 	public String getAdditionalInputParams(){
-		return ", deploymentURL";
+		return ",deploymentURL";
 	}
 	
 	@Override
