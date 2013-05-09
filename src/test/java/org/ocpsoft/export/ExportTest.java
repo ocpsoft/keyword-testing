@@ -109,7 +109,7 @@ private String getValue(String objectType, String objectXPath){
 		
 		String input1 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0) + "]";
 		String input2 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(0) + "," +
-				Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1) + ",assigned_null,assigned_null]";
+				Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1) + "]";
 		String expectedFile = 	"Keyword,Inputs\n" +
 								KEYWORD_KEYS.OpenBrowser + "," + input1 + "\n" +
 								KEYWORD_KEYS.VerifyObjectIsNotDisplayed + "," + input2 + "\n";
