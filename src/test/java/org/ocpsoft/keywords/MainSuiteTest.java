@@ -223,33 +223,6 @@ private String getValue(String objectType, String objectXPath){
 					break;
 				}
 			}
-//			if(keyword.equals(KEYWORD_KEYS.BeginClass)){
-//				curKeyword = new BeginClassKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.BeginTest)){
-//				curKeyword = new BeginTestKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.ClickElement)){
-//				curKeyword = new ClickElementKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.EndClass)){
-//				curKeyword = new EndClassKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.EndTest)){
-//				curKeyword = new EndTestKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.EnterTextInInput)){
-//				curKeyword = new EnterTextInInputKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.OpenBrowser)){
-//				curKeyword = new OpenBrowserKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.SelectDropdownValue)){
-//				curKeyword = new SelectDropdownValueKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.UpdateTestDomain)){
-//				curKeyword = new UpdateTestDomainKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectIsDisplayed)){
-//				curKeyword = new VerifyObjectIsDisplayedKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectIsNotDisplayed)){
-//				curKeyword = new VerifyObjectIsNotDisplayedKeyword();
-//			} else if(keyword.equals(KEYWORD_KEYS.VerifyObjectProperty)){
-//				curKeyword = new VerifyObjectPropertyKeyword();
-//			}  else {
-//				curKeyword = null;
-//			} 
 			if(curKeyword == null){
 				Assert.assertTrue("Could not find correct keyword for: " + keyword.toString(), false);
 			}

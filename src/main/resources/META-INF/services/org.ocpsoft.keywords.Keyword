@@ -1,8 +1,6 @@
 org.ocpsoft.keywords.BeginClassKeyword
 org.ocpsoft.keywords.BeginTestKeyword
 org.ocpsoft.keywords.ClickElementKeyword
-org.ocpsoft.keywords.EndClassKeyword
-org.ocpsoft.keywords.EndTestKeyword
 org.ocpsoft.keywords.EnterTextInInputKeyword
 org.ocpsoft.keywords.OpenBrowserKeyword
 org.ocpsoft.keywords.SelectDropdownValueKeyword

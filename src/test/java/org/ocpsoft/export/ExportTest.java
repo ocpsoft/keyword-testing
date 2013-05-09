@@ -107,9 +107,7 @@ private String getValue(String objectType, String objectXPath){
 		//Now verify that the file was created and the contents are correct.
 		Thread.sleep(1000);//Give time for server to create the file
 		
-		//TODO: We need to remove these "assigned_null" values from getting put into the test
-		//		We refactored so they wouldn't be needed, so framework will run with them in, but there's no need for them
-		String input1 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0) + ",assigned_null,assigned_null,assigned_null]";
+		String input1 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0) + "]";
 		String input2 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(0) + "," +
 				Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1) + ",assigned_null,assigned_null]";
 		String expectedFile = 	"Keyword,Inputs\n" +

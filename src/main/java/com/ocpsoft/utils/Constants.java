@@ -33,7 +33,7 @@ public class Constants {
 
 	public static enum KEYWORD_KEYS
 	{
-		BeginClass, BeginTest, ClickElement, EndClass, EndTest, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 
+		BeginClass, BeginTest, ClickElement, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 
 		VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain
 	}
 	public static final Map<KEYWORD_KEYS, String> KEYWORD_LONGNAMES = new LinkedHashMap<KEYWORD_KEYS, String>();
@@ -47,8 +47,6 @@ public class Constants {
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectIsDisplayed, "Verify Object Is Displayed");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, "Verify Object Is NOT Displayed");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.SelectDropdownValue, "Select Dropdown Value");
-    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.EndTest, "End Current Test");
-    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.EndClass, "End Test Suite");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.UpdateTestDomain, "Update Test Domain");
     }
 	public static Map<KEYWORD_KEYS, String> getKeywordLongnames() {
@@ -65,10 +63,6 @@ public class Constants {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.ClickElement, Arrays.asList("with Identifyer [link/id/name/css/xpath] of:",
 											    			   	"and desired element key of:", 
 															   	"and desired Destination Path of (OPTIONAL FIELD - will wait for page to load):"));
-    	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EndClass, new ArrayList<String>());
-    	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EndTest, new ArrayList<String>());
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("with xPath of Input:",
 				   												"and Text to enter:"));
@@ -104,10 +98,6 @@ public class Constants {
     	KEYWORD_VALUES.put(KEYWORD_KEYS.BeginTest, Arrays.asList("testName"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.ClickElement, Arrays.asList("link","Get Your Info Here","myInfo.html"));
-    	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.EndClass, new ArrayList<String>());
-    	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.EndTest, new ArrayList<String>());
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("//input[@id='className']","Assigning Input Text"));
     	
