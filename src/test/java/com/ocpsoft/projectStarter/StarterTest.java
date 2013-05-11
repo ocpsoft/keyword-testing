@@ -10,6 +10,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.common.services.ServiceLoader;
@@ -26,34 +27,20 @@ public class StarterTest {//Begin Class
 
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
-	   MavenDependencyResolver resolver = DependencyResolvers.use(
-			   MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
 		return ShrinkWrap.create(WebArchive.class, "Startup.war")
-						.addClasses(MyWebService.class, Constants.class)
-						.addClasses(KeywordFactory.class, Keyword.class, JavaClass.class, ServiceLoader.class, Iterators.class)
-						.addAsResource("META-INF/persistence.xml")
-						.addAsLibraries(resolver.artifacts("org.jboss.forge:forge-parser-java")
-								.resolveAsFiles())
-						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-java")
-								.resolveAsFiles())
-						.addAsLibraries(resolver.artifacts("org.seleniumhq.selenium:selenium-server")
-								.resolveAsFiles())									
-						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-impl")
-								.resolveAsFiles())									
-						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium")
-								.resolveAsFiles())									
-						.addAsLibraries(resolver.artifacts("org.jboss.arquillian.extension:arquillian-drone-selenium-server")
-								.resolveAsFiles())
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
-
+   
+  	String packageLocation = getClass().getPackage().toString().substring("package ".length());
+  	String packagePath = packageLocation.replace(".", "/");
+  	
 	@Test
 	public void testSetupHelperFile() throws InterruptedException {//Begin Test Case
 		/* This test removes (if any) Helper.java file (in the current KeywordApp project,
 		 * Then creates a new one.  We simply verify that a file was created successfully.
 		 */
 		
-		String rootPath = Constants.KEYWORD_PROJECT_ROOT_FILE_PATH + "src/test/java/com/ocpsoft/projectStarter/";
+		String rootPath = Constants.ROOT_FILE_PATH;
 		File helperFile = new File(rootPath + "Helper.java");
 		
 		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
@@ -73,7 +60,11 @@ public class StarterTest {//Begin Class
 			System.out.println("Error msg: " + e);
 		}
 		
-		HelperFileCreator.createHelperClassViaParser(rootPath, "com.ocpsoft.projectStarter");	
+		helperFile = new File(rootPath + "Helper.java");
+		Assert.assertTrue(helperFile.exists() == false);
+		HelperFileCreator.createHelperClassViaParser(rootPath, "com.example.domain");	
+		helperFile = new File(rootPath + "Helper.java");
+		Assert.assertTrue(helperFile.exists() == true);
 		ParserExampleTest.removeClassFile(rootPath + "Helper.java");
 	}//End Test Case
 

@@ -32,14 +32,9 @@ public class ExportTest {//Begin Class
 	 * 		Run the file as a JUnit Test with AS7_REMOTE container.
 	 */
 	
-   private static final String WEBAPP_SRC = "src/main/webapp";
-   
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
-						.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
-						.addAsResource("META-INF/persistence.xml")
-						.addAsWebResource(new File(WEBAPP_SRC, "index.jsp"))
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 

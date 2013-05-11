@@ -53,8 +53,8 @@ public class HelperFileCreator {
 	      
 	      	helperClass.addImport(List.class);
 	      	helperClass.addImport(URL.class);
-	      	helperClass.addImport(DefaultSelenium.class);
-	      	helperClass.addImport(Assert.class);
+	      	helperClass.addImport(Constants.DefaultSeleniumAnnotationClass);
+	      	helperClass.addImport(Constants.AssertAnnotationClass);
 	      
 	      	//Go through every keyword and add each method for the MethodLoad Keywords to the Helper file
 	      	@SuppressWarnings("unchecked")

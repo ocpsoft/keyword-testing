@@ -24,6 +24,7 @@ public class Constants {
 	//Fully Qualified Paths for adding annotations to test files via the parser
 	public static final String RunWithAnnotationClass = "org.junit.runner.RunWith";
 	public static final String TestAnnotationClass = "org.junit.Test";
+	public static final String AssertAnnotationClass = "org.junit.Assert";
 	public static final String DeploymentAnnotationClass = "org.jboss.arquillian.container.test.api.Deployment";
 	public static final String DefaultSeleniumAnnotationClass = "com.thoughtworks.selenium.DefaultSelenium";
 	public static final String DroneAnnotationClass = "org.jboss.arquillian.drone.api.annotation.Drone";
