@@ -1,4 +1,4 @@
-package org.ocpsoft.keywords;
+package org.oscposft.individualTests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;

@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.jboss.forge.parser.java.Method;
 import org.jboss.forge.parser.java.util.Formatter;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
+import org.ocpsoft.keywords.KeywordAssignment;
 import org.ocpsoft.keywords.KeywordFactory;
 
 import com.ocpsoft.projectStarter.HelperFileCreator;
@@ -407,8 +409,22 @@ public class MyWebService {
 					return "ERROR - Did not find the testCase Named: " + testCaseName + ", we could not process your last keyword: " + keyword.getShortName();
 				}
 				
-				String newStep = "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
+				String setpPrefix = "";
+				if(keyword instanceof KeywordAssignment){
+					setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
+				}
+				String newStep = setpPrefix + "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
 				currentMethod.setBody(currentMethod.getBody() + newStep);
+				
+				if(keyword.addThrowsToTest() != null){
+					//This keyword needs to add certain Exceptions onto the throws of our current test
+					for (Class<? extends Exception> exceptionClassToAdd : keyword.addThrowsToTest()) {
+						List<String> throwsClasses = currentMethod.getThrownExceptions();
+						if(Utility.isExceptionAlreadyThrown(currentMethod, exceptionClassToAdd) == false){
+							currentMethod.addThrows(exceptionClassToAdd);
+						}
+					}
+				}
 				
 				//Now re-write the actual File with the updates to the class file
 				try {

@@ -14,6 +14,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
+import org.jboss.forge.parser.java.Method;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -107,9 +108,9 @@ private String getValue(String objectType, String objectXPath){
 	}//End Test Case
 
 	@Test
-	public void testUpdatingDomain() throws InterruptedException, MalformedURLException{//Begin Test Case
-		/* This test covers UpdatingTestDomain keyword
-		 * tests we can go to another URL and test that website
+	public void testOutsideWebsites() throws InterruptedException, MalformedURLException{//Begin Test Case
+		/* This test ensures we can test outside 
+		 * websites by updating the deploymentURL
 		 * uses www.facebook.com
 		 */
 		
@@ -129,6 +130,51 @@ private String getValue(String objectType, String objectXPath){
 		deploymentURL = placeholderDeploymentURL;
 	}//End Test Case
 	
+	@Test
+	public void testUpdateTestDomainKeyword() throws InterruptedException {//Begin Test Case
+		/* This test validates UpdateTestDomain Keyword call gets added correctly 
+		 * Also verifies that we add this keyword's addThrowsToTest once and only once
+		 * No matter how many times we add UpdateTestDomain as a step in a test.
+		 */
+		browser.open(deploymentURL + "index.jsp");
+		String valToSelect;
+		browser.click("id=deleteSuite"); //Make sure we start fresh
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		Thread.sleep(500);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		Thread.sleep(500);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		Thread.sleep(200);
+		
+		String testSuiteName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
+		String testCaseName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
+		validateTestCaseContainsCorrectStep(KEYWORD_KEYS.UpdateTestDomain, testCaseName, testSuiteName, null);
+		
+		//Validate we added the throws MalformedURLException to the test
+		JavaClass testClass = null;
+		testClass = Utility.javaClassExists(testClass, testSuiteName);
+		Method<JavaClass> testMethod = testClass.getMethod(testCaseName);
+		Assert.assertTrue("Test should now throw MalformedURLException", testMethod.getThrownExceptions().contains("MalformedURLException"));
+		Assert.assertTrue("Test should have 2 total Exceptions", testMethod.getThrownExceptions().size() == 2);
+		
+		//Add another Update, make sure that line is in there correctly too, and make sure we only have 1 Malformed Exception on the testcase (not 2).
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.type("//input[@id='Input1']", "http://www.cnn.com");
+		browser.click("id=AddInstruction");
+		Thread.sleep(200);
+		
+		testClass = Utility.javaClassExists(testClass, testSuiteName);
+		testMethod = testClass.getMethod(testCaseName);
+		int size = testMethod.getThrownExceptions().size();
+		Assert.assertTrue("Test should still only have 2 total Exceptions, we have: " + size + ", " + testMethod.getThrownExceptions(), size == 2);
+	}//End Test Case
 	
 	@Test
 	public void testLinkClicks() throws InterruptedException {//Begin Test Case
@@ -213,49 +259,72 @@ private String getValue(String objectType, String objectXPath){
 				testClass = Utility.javaClassExists(testClass, testSuiteName);
 			}
 			
-			Keyword curKeyword = null;
-//			curKeyword = KeywordFactory.createKeyword(keyword.toString());
-			@SuppressWarnings("unchecked")
-			List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
-			for (Keyword key : keywords) {
-				if(key.getShortName().equals(keyword)){
-					curKeyword = key;
-					break;
-				}
-			}
+			Keyword curKeyword = getKeyword(keyword);
 			if(curKeyword == null){
 				Assert.assertTrue("Could not find correct keyword for: " + keyword.toString(), false);
 			}
 			if(curKeyword.getProcessType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
 				//Validate the resulting line in the test file
-				Member<JavaClass, ?> member = null;
-				member = Utility.getMemberFromTestCaseName(testCaseName, testSuiteName);
-				String[] steps = Utility.getStepsFromMethod(member);
-				if(steps == null){
-					Assert.assertTrue("Could not get any steps for test case to validate this added Instruction: " + keyword.toString(), false);
-				}
-				boolean validatedStep = false;
-				String inputList = "";
-				String additionalParams = "";
-				for (String step : steps) {
-					if(step.contains(keyword.toString())){
-						//Validate this step
-						//Example: Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);
-						//ie: "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
-						
-						inputList = buildInputValueStringFromList(Constants.KEYWORD_VALUES.get(keyword));
-						additionalParams = curKeyword.getAdditionalInputParams();
-						value = step;
-						expected = "Helper." + keyword.toString() + "(browser,Arrays.asList(" + inputList + ")" + additionalParams + ")";
-						Assert.assertEquals("Keyword: "+ keyword.toString() + " failed adding correct step call to testCase.", expected, value);
-						validatedStep = true;
-						break;
-					}
-				}
-				Assert.assertTrue("Need to find the right step to validate containing: " + keyword.toString(), validatedStep);
+				validateTestCaseContainsCorrectStep(keyword, testCaseName, testSuiteName, null);
 			}
 		}
 	}//End Test Case
+	private Keyword getKeyword(KEYWORD_KEYS keyword) {
+		Keyword curKeyword = null;
+		@SuppressWarnings("unchecked")
+		List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
+		for (Keyword key : keywords) {
+			if(key.getShortName().equals(keyword)){
+				curKeyword = key;
+				break;
+			}
+		}
+		return curKeyword;
+	}
+	private void validateTestCaseContainsCorrectStep(KEYWORD_KEYS keywordKey, String testCaseName, String testSuiteName, String optionallyStepMustContainThisString) {
+		Member<JavaClass, ?> member = null;
+		member = Utility.getMemberFromTestCaseName(testCaseName, testSuiteName);
+		String[] steps = Utility.getStepsFromMethod(member);
+		if(steps == null){
+			Assert.assertTrue("Could not get any steps for test case to validate this added Instruction: " + keywordKey.toString(), false);
+		}
+		boolean validatedStep = false;
+		String inputList = "";
+		String additionalParams = "";
+		for (String step : steps) {
+			if(isStepWeAreLookingFor(step, keywordKey.toString(), optionallyStepMustContainThisString)){
+				//Validate this step
+				//Example: Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);
+				//ie: "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
+				//NOTE: For Assignment keywords, we'll have a variable assignment prefixing the Helper call
+				
+				inputList = buildInputValueStringFromList(Constants.KEYWORD_VALUES.get(keywordKey));
+				Keyword keyword = getKeyword(keywordKey);
+				additionalParams = keyword.getAdditionalInputParams();
+				String prefix = "";
+				if(keyword instanceof KeywordAssignment){
+					prefix = ((KeywordAssignment) keyword).variableName() + "=";
+				}
+				String value = step;
+				String expected = prefix + "Helper." + keywordKey.toString() + "(browser,Arrays.asList(" + inputList + ")" + additionalParams + ")";
+				Assert.assertEquals("Keyword: "+ keywordKey.toString() + " failed adding correct step call to testCase.", expected, value);
+				validatedStep = true;
+				break;
+			}
+		}
+		Assert.assertTrue("Need to find the right step to validate containing: " + keywordKey.toString(), validatedStep);
+	}
+	private boolean isStepWeAreLookingFor(String step, String keyword, String optionallyStepMustContainThisString) {
+		boolean containsKeyword = step.contains(keyword);
+		boolean containsPhrase;
+		if(optionallyStepMustContainThisString == null){
+			containsPhrase = true;
+		}
+		else {
+			containsPhrase = step.contains(optionallyStepMustContainThisString);
+		}
+		return (containsKeyword && containsPhrase);
+	}
 	private String buildInputValueStringFromList(List<String> inputValueList){
 		String returnVal = "";
 		for (String input : inputValueList) {

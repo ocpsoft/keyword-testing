@@ -1,4 +1,4 @@
-package org.ocpsoft.keywords;
+package org.oscposft.individualTests;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
+import org.ocpsoft.keywords.Keyword;
 
 import com.ocpsoft.utils.Constants;
 

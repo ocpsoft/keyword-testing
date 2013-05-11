@@ -20,6 +20,11 @@ public class OpenBrowserKeyword implements Keyword {
 	}
 
 	@Override
+	public ArrayList<Class<? extends Exception>> addThrowsToTest(){
+		return null;
+	}
+
+	@Override
 	public String getAdditionalInputParams(){
 		return ",deploymentURL";
 	}

@@ -9,7 +9,7 @@ import org.jboss.forge.parser.java.Visibility;
 
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
-public class UpdateTestDomainKeyword implements Keyword {
+public class UpdateTestDomainKeyword implements KeywordAssignment {
 
 	@Override
 	public KEYWORD_KEYS getShortName() {
@@ -22,8 +22,15 @@ public class UpdateTestDomainKeyword implements Keyword {
 	}
 
 	@Override
+	public ArrayList<Class<? extends Exception>> addThrowsToTest(){
+		ArrayList<Class<? extends Exception>> exceptionList = new ArrayList<Class<? extends Exception>>();
+		exceptionList.add(MalformedURLException.class);
+		return exceptionList;
+	}
+
+	@Override
 	public String getAdditionalInputParams(){
-		return ",deploymentURL";
+		return "";
 	}
 	
 	@Override
@@ -39,7 +46,7 @@ public class UpdateTestDomainKeyword implements Keyword {
           .setStatic(true)
           .setVisibility(Visibility.PUBLIC)
           .setReturnType(URL.class)
-          .setParameters("List inputValues")
+          .setParameters("DefaultSelenium browser, List inputValues")
           .addThrows(MalformedURLException.class)
           .setBody( "String domain = inputValues.get(0);" +
 					"if(domain.startsWith(\"http\")){" +
@@ -53,6 +60,11 @@ public class UpdateTestDomainKeyword implements Keyword {
 					"	return null;" +
 					"}"
         		  );
+	}
+
+	@Override
+	public String variableName() {
+		return "deploymentURL";
 	}
 	
 	/* EXAMPLE:

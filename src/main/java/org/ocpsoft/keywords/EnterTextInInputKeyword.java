@@ -20,6 +20,11 @@ public class EnterTextInInputKeyword implements Keyword {
 	}
 
 	@Override
+	public ArrayList<Class<? extends Exception>> addThrowsToTest(){
+		return null;
+	}
+
+	@Override
 	@Deprecated
 	public String getAdditionalInputParams(){
 		return "";

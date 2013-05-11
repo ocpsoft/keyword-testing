@@ -16,6 +16,7 @@ public interface Keyword {
 	KEYWORD_KEYS getShortName();
 	KEYWORD_PROCESS_TYPES getProcessType();
 	String getAdditionalInputParams();
+	ArrayList<Class<? extends Exception>> addThrowsToTest();
 	
 	//TODO: This is kind of a hack right now.  We're putting 2 methods into each keyword, but each will implement
 	//One and only One of them.  Should really break this out into 2 different objects.

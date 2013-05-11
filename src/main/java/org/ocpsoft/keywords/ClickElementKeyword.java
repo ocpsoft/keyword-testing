@@ -18,6 +18,11 @@ public class ClickElementKeyword implements Keyword {
 	public KEYWORD_PROCESS_TYPES getProcessType(){
 		return KEYWORD_PROCESS_TYPES.MethodCall;
 	}
+
+	@Override
+	public ArrayList<Class<? extends Exception>> addThrowsToTest(){
+		return null;
+	}
 	
 	@Override
 	@Deprecated

@@ -1,4 +1,4 @@
-package com.ocpsoft.projectStarter;
+package org.oscposft.individualTests;
 
 import java.io.File;
 
@@ -17,9 +17,9 @@ import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.KeywordFactory;
-import org.ocpsoft.keywords.ParserExampleTest;
 import org.ocpsoft.services.MyWebService;
 
+import com.ocpsoft.projectStarter.HelperFileCreator;
 import com.ocpsoft.utils.Constants;
 
 @RunWith(Arquillian.class)

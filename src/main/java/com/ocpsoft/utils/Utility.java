@@ -9,6 +9,7 @@ import java.util.List;
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
+import org.jboss.forge.parser.java.Method;
 import org.jboss.forge.parser.java.util.Formatter;
 
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
@@ -193,6 +194,16 @@ public class Utility {
 			else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
 		}
 		return returnVal;
+	}
+	
+	public static boolean isExceptionAlreadyThrown(Method<JavaClass> method, Class<? extends Exception> exceptionClassToAdd){
+		List<String> allExceptions = method.getThrownExceptions();
+		for (String exception : allExceptions) {
+			if(exception.equalsIgnoreCase(exceptionClassToAdd.getSimpleName())){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	//TODO: This doesn't work right now, low priority, at least find a work around at some point.

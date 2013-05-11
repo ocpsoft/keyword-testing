@@ -23,6 +23,11 @@ public class BeginTestKeyword implements Keyword {
 	public KEYWORD_PROCESS_TYPES getProcessType(){
 		return KEYWORD_PROCESS_TYPES.DirectProcess;
 	}
+
+	@Override
+	public ArrayList<Class<? extends Exception>> addThrowsToTest(){
+		return null;
+	}
 	
 	@Override
 	@Deprecated
