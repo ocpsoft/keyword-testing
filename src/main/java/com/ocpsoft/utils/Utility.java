@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.forge.parser.JavaParser;
@@ -56,7 +57,8 @@ public class Utility {
 		return false;
 	}
 	
-	public static JavaClass javaClassExists(JavaClass testClass, String className){
+	public static JavaClass javaClassExists(String className){
+		JavaClass testClass = null;
 		try {
 			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
 			testClass = (JavaClass) JavaParser.parse(testClassFile);
@@ -218,5 +220,11 @@ public class Utility {
 		return formattedText;
 	}
 	
-	
+	public static ArrayList<String> convertListStringToArrayListString(List<String> strings){
+		ArrayList<String> returnVal = new ArrayList<String>();
+		for (String string : strings) {
+			returnVal.add(string);
+		}
+		return returnVal;
+	}
 }

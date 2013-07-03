@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +26,14 @@ import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
 import org.jboss.forge.parser.java.Method;
 import org.jboss.forge.parser.java.util.Formatter;
+import org.ocpsoft.dataBeans.Instruction;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordAssignment;
 import org.ocpsoft.keywords.KeywordFactory;
 
 import com.ocpsoft.projectStarter.HelperFileCreator;
+import com.ocpsoft.utils.ConfigXMLParser;
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.ocpsoft.utils.Utility;
@@ -244,7 +246,7 @@ public class MyWebService {
 
 		File file = new File(fullFilePath);
 		String content = getTestMethodCode(className, testName);
-		content = FormatCodeForExportCSV(content);
+		content = FormatCodeStatementsToXMLInstructions(content);
 		if(content.equals("")){
 			return "<font color='red'>ERROR: Test [" + testName + "] in class [" + className + "] has no code." +
 					"Either class or test do not exist.</font>";
@@ -274,8 +276,7 @@ public class MyWebService {
 		return returnString;
 	}
 	private String getTestMethodCode(String className, String testName){
-		JavaClass testClass = null;
-		testClass = Utility.javaClassExists(testClass, className);
+		JavaClass testClass = Utility.javaClassExists(className);
 		if(testClass == null) {
 			return null;
 		}
@@ -286,37 +287,112 @@ public class MyWebService {
 		}
 		return currentMethod.getBody();
 	}
-	private String FormatCodeForExportCSV(String content){
+	private String FormatCodeStatementsToXMLInstructions(String methodBody){
 		String returnString = "";
-		if(content == null){
+		if(methodBody == null){
 			return returnString;
 		}
-		content=content.replace("\n", "");
-		content=content.replace("; ", ";");
-		String[] statements = content.split(";");
-		returnString+="Keyword,Inputs\n";
+		methodBody=methodBody.replace("\n", "");
+		methodBody=methodBody.replace("; ", ";");
+		String[] statements = methodBody.split(";");
+		ConfigXMLParser parser = ConfigXMLParser.getInstance();
+		
+		//Build the XML document as a string
+		returnString+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + parser.INSTRUCTION_SET_XML_TAG + ">\n";
 		for (String statement : statements) {
 			if(!Utility.isEmptyStep(statement)){
-				returnString+= getKeywordAndInputsFromCodeCallToHelperMethod(statement) + "\n";
+				returnString+= getInstructionFromCodeStatement(statement).toXMLString() + "\n";
 			}
 		}
-		
+		returnString+="</" + parser.INSTRUCTION_SET_XML_TAG + ">";
 		return returnString;
 	}
-	private String getKeywordAndInputsFromCodeCallToHelperMethod(String statement){
-		String returnString = "";
+	private Instruction getInstructionFromCodeStatement(String statement){
 		
 		/*Sample statement:
-		 * 		Helper.OpenBrowser(browser, Arrays.asList("index.jsp", "assigned_null",
-				"assigned_null", "assigned_null"), deploymentURL);
+		 * 		Helper.OpenBrowser(browser, Arrays.asList("index.jsp"), deploymentURL);
 		 */
 		String keyword = statement.substring("Helper.".length(), statement.indexOf("("));
-		String inputs = statement.substring(statement.indexOf("asList(") + "asList(".length(), statement.indexOf(")"));
-		inputs = inputs.replace("\"", "");
-		inputs = "[" + inputs + "]";
-		returnString += keyword + "," + inputs;
+		//TODO: Note: This makes assumption that there are no ")" chars in any of the input elements.
+		String inputsString = statement.substring(statement.indexOf("asList(") + "asList(".length(), statement.indexOf(")"));
+		inputsString = inputsString.replace("\"", "");
 		
+		Instruction instruction = new Instruction();
+		instruction.setKeyword(factory.createKeyword(keyword));
+		//TODO: Note: This makes assumption that there are no "," chars in any of the input elements.
+		ArrayList<String> inputs = new ArrayList<>();
+		for (String string : inputsString.split(",")) {
+			inputs.add(string);
+		}
+		instruction.setInputs(inputs);
+		
+		return instruction;
+	}
+	
+	@POST
+	@Path("/ImportTestSteps/{className}/{testName}/{importFile}")
+	public String importTestSteps(@PathParam("className") String className, 
+			@PathParam("testName") String testName, @PathParam("importFile") String importFilePath) {
+		importFilePath = decodeURLComponent(importFilePath);
+		String returnString = "";
+		System.out.println("Importing steps from file: " + importFilePath + ", into test: " + testName);
+
+		File file = new File(importFilePath);
+		if(!file.exists()){
+			return "<font color='red'>ERROR: Import file specified: " + importFilePath + ", does NOT exist.  Could not import any steps.</font>";
+		}
+
+		ArrayList<Instruction> importInstructions = getInstructionsFromXMLFile(importFilePath);
+		if(importInstructions == null){
+			return "<font color='red'>ERROR: Import file specified: " + importFilePath + ", does NOT contain valid steps.  <BR />" +
+					"Could not parse input file (or it's blank).  Import not completed</font>";
+		}
+	  
+		returnString+="Just finished importing the following Keywords:<BR />";
+		int count = 0;
+		for (Instruction instruction : importInstructions) {
+			//We don't want to try to import the header of [Keyword~~Inputs] from the input file.
+			addInstructionToTest(className, testName, instruction);
+			returnString+=instruction.getKeyword().getShortName() + "<BR />";
+			count++;
+		}
+	  
+		System.out.println("We just added a total of [" + count + "] instructions from the import file.");
+		returnString+="<P />[" + count + "] total instructions have been imported.";
 		return returnString;
+	}
+	private ArrayList<Instruction> getInstructionsFromXMLFile(String filepath){
+		/*Sample File:
+			<InstructionSet>
+				<Instruction>
+					<Keyword>VerifyObjectProperty</Keyword>
+					<InputsList>
+						<Input>Selected Value should be Begin New Suite</Input>
+						<Input>select</Input>
+						<Input>//select[@id='keyword']</Input>
+						<Input>Begin New Suite</Input>
+					</InputsList>
+				</Instruction>
+				<Instruction>
+					...
+				</Instruction>
+				<Instruction>
+					...
+				</Instruction>
+			</InstructionSet>
+		 */
+		String xmlDoc = "";
+		try (BufferedReader br = new BufferedReader(new FileReader(filepath)))
+		{
+			String curFileLine;
+			while ((curFileLine = br.readLine()) != null) {
+				xmlDoc += curFileLine + "\n";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return ConfigXMLParser.getInstance().getInstructionSetFromXMLDoc(xmlDoc);
 	}
 	
 	@POST
@@ -349,21 +425,24 @@ public class MyWebService {
 	}
 	
 	@POST
-	@Path("/NewInstruction/{keyword}/{className}/{testCaseName}/{inputArray}")
+	@Path("/NewInstruction/{keyword}/{className}/{testCaseName}/{inputArrayXML}")
 	public String processNewInstruction(
 			@PathParam("keyword") String keywordkey,
 			@PathParam("className") String className,
 			@PathParam("testCaseName") String testCaseName,
-			@PathParam("inputArray") String[] inputArray) {
+			@PathParam("inputArrayXML") String inputArrayXML) {
+		inputArrayXML = decodeURLComponent(inputArrayXML);
 		
-		ArrayList<String> inputs = filterInputArrayIntoArraList(inputArray);
+		ArrayList<String> inputs = ConfigXMLParser.getInstance().getInstructionInputsFromXMLDoc(inputArrayXML);
 		System.out.println("Processing New Instruction - Keyword: " + keywordkey
 				+ ", inputArray: " + inputs + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
 		String testPath = Constants.ROOT_FILE_PATH + className + ".java";
+		Instruction instruction = new Instruction();
+		instruction.setKeyword(keyword);
+		instruction.setInputs(inputs);
 		JavaClass testClass = null;
-		String error = "";
 		
 		//Some Keywords are now Direct Process, and some get added via Method Calls
 		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
@@ -389,7 +468,7 @@ public class MyWebService {
 			}
 			else {
 				//Any other DirectProcess besides BeginClass will need the file to already exist!
-				testClass = Utility.javaClassExists(testClass, className);
+				testClass = Utility.javaClassExists(className);
 				if(testClass == null)
 				{
 					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
@@ -401,68 +480,8 @@ public class MyWebService {
 		}
 		else{
 			//All other Keywords get processed by adding a call to their HelperClassMethods into the test itself
-			testClass = Utility.javaClassExists(testClass, className);
-			if(testClass != null) {
-				Method<JavaClass> currentMethod = testClass.getMethod(testCaseName);
-				if(currentMethod == null){
-					System.out.println("Could not find current testCaseName method: " + testCaseName + ", keyword NOT processed");
-					return "ERROR - Did not find the testCase Named: " + testCaseName + ", we could not process your last keyword: " + keyword.getShortName();
-				}
-				
-				String setpPrefix = "";
-				if(keyword instanceof KeywordAssignment){
-					setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
-				}
-				String newStep = setpPrefix + "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
-				currentMethod.setBody(currentMethod.getBody() + newStep);
-				
-				if(keyword.addThrowsToTest() != null){
-					//This keyword needs to add certain Exceptions onto the throws of our current test
-					for (Class<? extends Exception> exceptionClassToAdd : keyword.addThrowsToTest()) {
-						List<String> throwsClasses = currentMethod.getThrownExceptions();
-						if(Utility.isExceptionAlreadyThrown(currentMethod, exceptionClassToAdd) == false){
-							currentMethod.addThrows(exceptionClassToAdd);
-						}
-					}
-				}
-				
-				//Now re-write the actual File with the updates to the class file
-				try {
-					PrintStream writetoTest = new PrintStream(new FileOutputStream(
-							Constants.ROOT_FILE_PATH + className + ".java"));
-					writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
-					writetoTest.close();
-				} catch (Exception e) {
-					System.err.println("Failure in writing out the new file for processing this keyword.  Error: " + e);
-					return "ERROR: Could not process the last keyword.";
-				}
-				System.out.println("SUCCESS - Added method call for " + keyword.getShortName());
-				return "SUCCESS";
-			}
-			else{
-				System.out.println("Error in trying to get the testClass File for a MethodCall keyword.");
-				System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: " + error);
-				return "ERROR - Did not process keyword: " + keyword.getShortName();
-			}
+			return addInstructionToTest(className, testCaseName, instruction);
 		}
-	}
-	
-	private ArrayList<String> filterInputArrayIntoArraList(String[] inputArray){
-		//For some reason, REST is passing the inputArray as [array], need to treat element(0) as the actual inputArray
-		String[] tempArray = inputArray[0].split(", ");
-		try {
-			for (int i = 0; i < tempArray.length; i++) {
-				tempArray[i] = decodeURLForBadChars(tempArray[i]);
-			}
-		} catch (Exception e) {
-			System.out.println("ERROR: Exception in Encoding URL inputs!");
-		}
-		ArrayList<String> inputs = new ArrayList<String>(tempArray.length);
-		for (String s : tempArray) {  
-			inputs.add(s);  
-		}
-		
-		return inputs;
 	}
 		
 	private String printOutArrayListAsList(ArrayList<String> list){
@@ -480,10 +499,63 @@ public class MyWebService {
 		return returnVal.substring(0, returnVal.length() - 2) + ")";
 	}
 	
+	private String addInstructionToTest(String className, String testName, Instruction instruction){
+		System.out.println("Adding Instruction to testcase: " + instruction +"\n To test: " + testName);
+		
+		JavaClass testClass = Utility.javaClassExists(className);
+		Keyword keyword = instruction.getKeyword();
+		ArrayList<String> inputs = instruction.getInputs();
+		if(testClass != null) {
+		  Method<JavaClass> currentMethod = testClass.getMethod(testName);
+		  if(currentMethod == null){
+		    System.out.println("Could not find current testCaseName method: " + testClass + ", keyword NOT processed");
+		    return "ERROR - Did not find the testCase Named: " + testClass + ", we could not process your last keyword: " + keyword.getShortName();
+		  }
+		  
+		  String setpPrefix = "";
+		  if(keyword instanceof KeywordAssignment){
+		    setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
+		  }
+		  String newStep = setpPrefix + "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
+		  currentMethod.setBody(currentMethod.getBody() + newStep);
+		  
+		  if(keyword.addThrowsToTest() != null){
+		    //This keyword needs to add certain Exceptions onto the throws of our current test
+		    for (Class<? extends Exception> exceptionClassToAdd : keyword.addThrowsToTest()) {
+		      @SuppressWarnings("unused")
+		      List<String> throwsClasses = currentMethod.getThrownExceptions();
+		      if(Utility.isExceptionAlreadyThrown(currentMethod, exceptionClassToAdd) == false){
+		        currentMethod.addThrows(exceptionClassToAdd);
+		      }
+		    }
+		  }
+		  
+		  //Now re-write the actual File with the updates to the class file
+		  try {
+		    PrintStream writetoTest = new PrintStream(new FileOutputStream(
+		        Constants.ROOT_FILE_PATH + className + ".java"));
+		    writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
+		    writetoTest.close();
+		  } catch (Exception e) {
+		    System.err.println("Failure in writing out the new file for processing this keyword.  Error: " + e);
+		    return "ERROR: Could not process the last keyword.";
+		  }
+		  System.out.println("SUCCESS - Added method call for " + keyword.getShortName());
+		  return "SUCCESS";
+		}
+		else{
+		  System.out.println("Error in trying to get the testClass File for a MethodCall keyword.");
+		  System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: testClass being null.");
+		  return "ERROR - Did not process keyword: " + keyword.getShortName();
+		}
+	}
+
 	//TODO: This is a hack, find a better way of passing these "bad chars"
-	private String decodeURLForBadChars(String url){
-		String returnVal = url.replace("&&&***", "//");
-		returnVal = returnVal.replace("&**&", "/");
+	private String decodeURLComponent(String url){
+		String returnVal = url.replace("^^^***", "//");
+		returnVal = returnVal.replace("^**^", "/");
+		returnVal = returnVal.replace("*^*", "\\");//NOTE: We need one \ to escape, so this is replacing with only "\"
+		
 		return returnVal;
 	}
 	

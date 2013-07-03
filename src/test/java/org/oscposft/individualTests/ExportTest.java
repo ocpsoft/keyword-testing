@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -16,11 +17,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ocpsoft.keywords.Keyword;
-import org.ocpsoft.keywords.KeywordFactory;
 
+import com.ocpsoft.utils.ConfigXMLParser;
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
+import com.ocpsoft.utils.Utility;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
@@ -67,47 +68,95 @@ private String getValue(String objectType, String objectXPath){
 		 * We will then open a new FileStream to read the file contents and verify they are correct.
 		 */
 		
-		browser.open(deploymentURL + "index.jsp");
-
-		browser.click("id=deleteSuite");
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.click("id=AddInstruction");
-
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		Thread.sleep(200);
-		
-		//Verify UI is correct:
-		String value = getValue("div", "//div[@id='testSuite']");
-		String expected = "Test Suite Named: MySuiteTest\n" +
-							"testName\n" +
-							"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
-							"if adding onto end of the domain): index.jsp\n" +
-							"|UP| |DOWN| VerifyObjectIsNotDisplayed: with Verification Message of: User " +
-							"should NOT see message [Error: invalid action]!, with XPath property to verify of: div[@id='myFBdata']";
-		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
-				expected.equals(value));
+		buildTest();
+		verifyCorrectTestStepsOnUI("testName");
 		
 		browser.click("id=exportTestCase");
+		Thread.sleep(300);//Give time for server to create the file
 		
-		//Now verify that the file was created and the contents are correct.
-		Thread.sleep(1000);//Give time for server to create the file
+		verifyOutputFileOfExport();
 		
-		String input1 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser).get(0) + "]";
-		String input2 = "[" + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(0) + "," +
-				Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed).get(1) + "]";
-		String expectedFile = 	"Keyword,Inputs\n" +
-								KEYWORD_KEYS.OpenBrowser + "," + input1 + "\n" +
-								KEYWORD_KEYS.VerifyObjectIsNotDisplayed + "," + input2 + "\n";
+		//Clear the entire class, then create a new test and try to import the thing we just exported
+		browser.click("id=deleteSuite");
+		importTestFromFile("testViaImport");
+		
+		//Verfiy the correct message on the UI for the import step
+		String value = getValue("div", "//div[@id='testSuite']");
+		String expected = "Just finished importing the following Keywords:\n"+
+		          "OpenBrowser\n"+
+		          "VerifyObjectIsNotDisplayed\n"+
+		          "VerifyObjectProperty\n"+
+		          "[3] total instructions have been imported.";
+		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
+		    expected.equals(value));
+		
+		//Now load the suite that's there from the import and make sure it matches the same UI test steps
+		browser.click("id=loadSuite");
+		Thread.sleep(100);
+		verifyCorrectTestStepsOnUI("testViaImport");
+	}//End Test Case
+		
+	private void buildTest() throws InterruptedException {
+		browser.open(deploymentURL + "index.jsp");
+		
+		browser.click("id=deleteSuite");
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    Thread.sleep(100);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	}
+	
+	private void verifyCorrectTestStepsOnUI(String testCaseName) {
+		String value = getValue("div", "//div[@id='testSuite']");
+		String expected = "Test Suite Named: MySuiteTest\n" +
+				testCaseName + "\n" +
+				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+				"if adding onto end of the domain): index.jsp\n" +
+				"|UP| |DOWN| VerifyObjectIsNotDisplayed: with Verification Message of: User " +
+				"should NOT see message [Error: invalid action]!, with XPath property to verify of: div[@id='myFBdata']\n" +
+				"|UP| |DOWN| VerifyObjectProperty: with Verification Message of: Selected Value should be Begin New Suite, " +
+				"with object Type of: select, with XPath property to verify of: //select[@id='keyword'], with value to verify of: Begin New Suite";
+		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
+				expected.equals(value));
+	}
+	
+	private void verifyOutputFileOfExport() {
+		ConfigXMLParser parser = ConfigXMLParser.getInstance();
+		ArrayList<String> inputs1 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser));
+		ArrayList<String> inputs2 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed));
+		ArrayList<String> inputs3 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectProperty));
+		
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.add(KEYWORD_KEYS.OpenBrowser.toString());
+		keywords.add(KEYWORD_KEYS.VerifyObjectIsNotDisplayed.toString());
+		keywords.add(KEYWORD_KEYS.VerifyObjectProperty.toString());
+		ArrayList<ArrayList<String>> inputs = new ArrayList<ArrayList<String>>();
+		inputs.add(inputs1);
+		inputs.add(inputs2);
+		inputs.add(inputs3);
+		String expectedFile = parser.generateInstructionSetXMLDoc(keywords, inputs);
+		expectedFile += "\n"; //Since the entire file is going to have an extra newLine, make one here too since it's easier.
+		
 		String entireFile = "";
 		File file = new File(exportFilePath);
 		if(file.exists()){
@@ -125,9 +174,26 @@ private String getValue(String objectType, String objectXPath){
 			Assert.assertTrue("Export did not work. Fail test...", false);
 		}
 		
-		Assert.assertTrue("File should match pre-defined file string\n" +
-				"actual file:\n" + entireFile + "\n\nexpected:\n" + expectedFile, expectedFile.equals(entireFile));
-	}//End Test Case
+		Assert.assertEquals(expectedFile, entireFile);
+//		Assert.assertTrue("File should match pre-defined file string\n" +
+//				"actual file:\n" + entireFile + "\n\nexpected:\n" + expectedFile, expectedFile.equals(entireFile));
+	}
 
+	private void importTestFromFile(String testName) throws InterruptedException {
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.click("id=AddInstruction");
+		Thread.sleep(100);
+		
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+		browser.select("id=keyword", "label=" + valToSelect);
+		browser.type("//input[@id='Input1']", testName);
+		browser.click("id=AddInstruction");
+		Thread.sleep(100);
+		
+		browser.type("//input[@id='ImportInput1']", exportFilePath);
+		browser.click("id=importSteps");
+		Thread.sleep(300);//Give time for server modify the test by adding all the steps from the inputFile.
+	}
 	
 }//End Class

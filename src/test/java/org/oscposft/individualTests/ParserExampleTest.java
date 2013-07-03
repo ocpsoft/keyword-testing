@@ -6,7 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -22,9 +25,12 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ocpsoft.dataBeans.Instruction;
+import org.ocpsoft.keywords.Keyword;
+import org.ocpsoft.keywords.KeywordFactory;
 
+import com.ocpsoft.utils.ConfigXMLParser;
 import com.ocpsoft.utils.Constants;
-import com.ocpsoft.utils.Utility;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 @RunWith(Arquillian.class)
@@ -34,8 +40,13 @@ public class ParserExampleTest
    	@Deployment(testable = false)
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class)
+				.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
+				.addPackage("org.ocpsoft.keywords")
+				.addPackage("org.ocpsoft.utils")
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
+
+   	@Inject KeywordFactory factory;
 	   
    	String packageLocation = getClass().getPackage().toString().substring("package ".length());
    	String packagePath = packageLocation.replace(".", "/");
@@ -58,7 +69,6 @@ public class ParserExampleTest
 		Assert.assertTrue("Could not find static var, 2 other vars, and getDeployment method.", allMembers.size() == 4);
 		removeClassFile(rootPath + className + ".java");
 	}
-	
 	private void createTestClassViaParser(String testPath, String className) {
 		JavaClass testClass = JavaParser.create(JavaClass.class);
 	
@@ -118,7 +128,6 @@ public class ParserExampleTest
 				System.err.println("Failure in createTestClassViaParser: " + e);
 			}
 	}
-	
 	public static void removeClassFile(String filePath){
 		File classFile = new File(filePath);
 		try{
@@ -136,5 +145,86 @@ public class ParserExampleTest
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	
+
+	@Test
+	public void testXMLParserGetInstruction() throws InterruptedException {
+		ConfigXMLParser parser = ConfigXMLParser.getInstance();
+		
+		//Basic Keyword
+		ArrayList<String> expectedInputs = new ArrayList<>();
+		expectedInputs.add("index.jsp");
+		String xmlDoc = parser.generateInstructionXMLDoc("OpenBrowser", expectedInputs);
+		Instruction i = parser.getInstructionObjectFromXMLDoc(xmlDoc);
+		Keyword expectedKeyword = factory.createKeyword("OpenBrowser");
+		
+		Assert.assertTrue(expectedKeyword.equals(i.getKeyword()));
+		Assert.assertTrue(expectedInputs.equals(i.getInputs()));
+		
+		//More complicated Keyword
+		expectedInputs = new ArrayList<>();
+		expectedInputs.add("Selected Value should be Begin New Suite");
+		expectedInputs.add("select");
+		expectedInputs.add("//select[@id='keyword']");
+		expectedInputs.add("Begin New Suite");
+		xmlDoc = parser.generateInstructionXMLDoc("VerifyObjectProperty", expectedInputs);
+		i = parser.getInstructionObjectFromXMLDoc(xmlDoc);
+		expectedKeyword = factory.createKeyword("VerifyObjectProperty");
+		Assert.assertTrue(expectedKeyword.equals(i.getKeyword()));
+		Assert.assertTrue(expectedInputs.equals(i.getInputs()));
+	}
+
+	@Test
+	public void testXMLParserGetInputs() throws InterruptedException {
+		ConfigXMLParser parser = ConfigXMLParser.getInstance();
+		
+		//Basic Input List
+		ArrayList<String> expectedInputs = new ArrayList<>();
+		expectedInputs.add("index.jsp");
+		String xmlDoc = parser.generateInputsXMLDoc(expectedInputs);
+		ArrayList<String> list = parser.getInstructionInputsFromXMLDoc(xmlDoc);
+		Assert.assertTrue(expectedInputs.equals(list));
+		
+		//More complicated Input List
+		expectedInputs = new ArrayList<>();
+		expectedInputs.add("Selected Value should be Begin New Suite");
+		expectedInputs.add("select");
+		expectedInputs.add("//select[@id='keyword']");
+		expectedInputs.add("Begin New Suite");
+		xmlDoc = parser.generateInputsXMLDoc(expectedInputs);
+		list = parser.getInstructionInputsFromXMLDoc(xmlDoc);
+		Assert.assertTrue(expectedInputs.equals(list));
+	}
+	
+	@Test
+	public void testXMLParserGetInstructionSet() throws InterruptedException {
+		ConfigXMLParser parser = ConfigXMLParser.getInstance();
+		
+		ArrayList<String> expectedInputs1 = new ArrayList<String>();
+		expectedInputs1.add("index.jsp");
+		Keyword expectedKeyword1 = factory.createKeyword("OpenBrowser");
+		
+		ArrayList<String> expectedInputs2 = new ArrayList<String>();
+		expectedInputs2.add("Selected Value should be Begin New Suite");
+		expectedInputs2.add("select");
+		expectedInputs2.add("//select[@id='keyword']");
+		expectedInputs2.add("Begin New Suite");
+		Keyword expectedKeyword2 = factory.createKeyword("VerifyObjectProperty");
+
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.add("OpenBrowser");
+		keywords.add("VerifyObjectProperty");
+		ArrayList<ArrayList<String>> inputs = new ArrayList<ArrayList<String>>();
+		inputs.add(expectedInputs1);
+		inputs.add(expectedInputs2);
+		String xmlDoc = parser.generateInstructionSetXMLDoc(keywords, inputs);
+		ArrayList<Instruction> instructions = parser.getInstructionSetFromXMLDoc(xmlDoc);
+		Assert.assertTrue(instructions.size() == 2);
+		Assert.assertTrue(expectedKeyword1.equals(instructions.get(0).getKeyword()));
+		Assert.assertTrue(expectedKeyword2.equals(instructions.get(1).getKeyword()));
+		Assert.assertTrue(expectedInputs1.equals(instructions.get(0).getInputs()));
+		Assert.assertTrue(expectedInputs2.equals(instructions.get(1).getInputs()));
 	}
 }

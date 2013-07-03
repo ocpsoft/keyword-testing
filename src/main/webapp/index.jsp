@@ -14,6 +14,7 @@
 		
 		<!-- Here are all the descriptions<BR /> -->
 		<script type="text/javascript">
+		var isDEBUG = false;
    		var curKeyword = "";
    		var keywordDescMap = {};
    		var keywordValueMap = {};
@@ -96,7 +97,7 @@
 	   <P />
 	   <input type="submit" value="Begin New Project" onClick='startNewProject()'><P />
        Current Suite is: <input type="text" id="className" />
-       <input type="submit" value="LoadSuite" onClick='getTestSuite()'/><P />
+       <input type="submit" value="LoadSuite" id="loadSuite" onClick='getTestSuite()'/><P />
        <P />
        </center>
        <div id="testCaseDiv">
@@ -140,7 +141,9 @@
        </center>
        <input type="submit" id="clearDivs" value="Clear Console" onClick='clearDivs()'/>
        <input type="submit" id="deleteSuite" onClick='deleteSuite()'/>
-       <input type="submit" id="exportTestCase" value="Export Current Test" onClick='exportTestCase()'/><br />
+       <input type="submit" id="exportTestCase" value="Export Current Test" onClick='exportTestCase()'/>
+       <input type="submit" id="importSteps" value="Import Steps" onClick='importTestSteps()'/>
+       <input type="text" id="ImportInput1" /><br />
        			
 		The test currently looks as follows:
 		<div id="testSuite"></div>
@@ -317,6 +320,12 @@
 			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
 			return returnVal;
 		}
+
+		function importTestSteps(){
+			var POSTurl = 'rest/webService/ImportTestSteps/' + document.getElementById("className").value +'/'+ getTestCaseName() +'/'+ encodeURLComp(document.getElementById("ImportInput1").value);
+			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
+			return returnVal;
+		}
 		
 		function getTestCaseNames() {
 			var className = document.getElementById("className").value;
@@ -325,17 +334,12 @@
 			return returnVal;
 		}
 
-		function postInstruction(keyword, inputList){
+		function postInstruction(keyword, inputListXML){
 			var className = document.getElementById("className").value;
 			var testCaseName = getTestCaseName();
-			var inputArray = "";
-			for (var i=0; i < inputList.length; i++){
-				inputArray += inputList[i] + ", ";
-			}
-			inputArray = inputArray.substring(0, inputArray.length - 2);
 			var POSTurl = 'rest/webService/NewInstruction/' + 
 				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + encodeURLComp(testCaseName) + '/' +
-				encodeURLComp(inputArray);
+				encodeURLComp(inputListXML);
 			var returnVal = doPOST(POSTurl, "", false);
 			if(keyword == "BeginTest"){
 				updateTestCaseNames("NewTest", input1);
@@ -476,8 +480,9 @@
 		function encodeURLComp(component){
 			//TODO: For some reason encodeURIComponent isn't working for WebService, seems like Java is Decoding it before the @Path takes a look, don't know why...
 			var newString
-			newString = component.replace("//", "&&&***");
-			newString = newString.split('/').join('&**&');
+			newString = component.replace("//", "^^^***");
+			newString = newString.split('/').join('^**^');
+			newString = newString.split('\\').join('*^*');//Note: Need one \ to escape, so this is looking for only "\"
 			return newString;
 		}
 		function clearDivs(){
@@ -493,18 +498,20 @@
 			document.getElementById('testSuite').innerHTML = returnVal;		
 		}
 
-		function getAllInputValuesAsList(){
-			var returnVal = new Array();
+		function getAllInputValuesAsXML(){
+			var inputArray = "<InputsList>";
 			var count = 1;
+
 			var e = document.getElementById("Input" + count);
 			while (e != null){
 				if (e.value != "assigned_null"){
-					returnVal.push(e.value);
+					inputArray += "<Input>" + e.value + "</Input>";
 				}
 				count ++;
 				e = document.getElementById("Input" + count);
 			}
-			return returnVal;
+			inputArray = inputArray + "</InputsList>";
+			return inputArray;
 		}
 
 		function addInstruction(){
@@ -520,7 +527,7 @@
 				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
 			}
 			else{
-				postInstruction(keyword, getAllInputValuesAsList());
+				postInstruction(keyword, getAllInputValuesAsXML());
 				getTestSuite();
 			}
 		}

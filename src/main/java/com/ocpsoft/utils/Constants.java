@@ -20,6 +20,8 @@ public class Constants {
 	public static final String EXPORT_FILE_PATH = "D:/DEVELOPMENT/projects/Keyword_Export_Files/";
 	
 	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
+	public static final String LIST_DELIMITER = "##";
+	public static final String OBJECT_DELIMITER = "~~";
 	
 	//Fully Qualified Paths for adding annotations to test files via the parser
 	public static final String RunWithAnnotationClass = "org.junit.runner.RunWith";

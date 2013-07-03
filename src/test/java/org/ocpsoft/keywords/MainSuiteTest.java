@@ -139,6 +139,7 @@ private String getValue(String objectType, String objectXPath){
 		browser.open(deploymentURL + "index.jsp");
 		String valToSelect;
 		browser.click("id=deleteSuite"); //Make sure we start fresh
+		Thread.sleep(100);
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
@@ -150,7 +151,7 @@ private String getValue(String objectType, String objectXPath){
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
-		Thread.sleep(200);
+		Thread.sleep(500);
 		
 		String testSuiteName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
 		String testCaseName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
@@ -158,7 +159,7 @@ private String getValue(String objectType, String objectXPath){
 		
 		//Validate we added the throws MalformedURLException to the test
 		JavaClass testClass = null;
-		testClass = Utility.javaClassExists(testClass, testSuiteName);
+		testClass = Utility.javaClassExists(testSuiteName);
 		Method<JavaClass> testMethod = testClass.getMethod(testCaseName);
 		Assert.assertTrue("Test should now throw MalformedURLException", testMethod.getThrownExceptions().contains("MalformedURLException"));
 		Assert.assertTrue("Test should have 2 total Exceptions", testMethod.getThrownExceptions().size() == 2);
@@ -168,9 +169,9 @@ private String getValue(String objectType, String objectXPath){
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.type("//input[@id='Input1']", "http://www.cnn.com");
 		browser.click("id=AddInstruction");
-		Thread.sleep(200);
+		Thread.sleep(500);
 		
-		testClass = Utility.javaClassExists(testClass, testSuiteName);
+		testClass = Utility.javaClassExists(testSuiteName);
 		testMethod = testClass.getMethod(testCaseName);
 		int size = testMethod.getThrownExceptions().size();
 		Assert.assertTrue("Test should still only have 2 total Exceptions, we have: " + size + ", " + testMethod.getThrownExceptions(), size == 2);
@@ -203,6 +204,7 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));	
 		
 		browser.click("link=Click to go to Index");
+		Thread.sleep(100);//Allow the page to load
 		
 		Assert.assertTrue("User should be on Index Page!",
 			           browser.isElementPresent("xpath=//div[@id='entireInput1']"));
@@ -255,8 +257,7 @@ private String getValue(String objectType, String objectXPath){
 			}
 			if(keyword.equals(Constants.KEYWORD_KEYS.BeginTest)){
 				testCaseName = Constants.KEYWORD_VALUES.get(keyword).get(0);
-				JavaClass testClass = null;
-				testClass = Utility.javaClassExists(testClass, testSuiteName);
+				JavaClass testClass = Utility.javaClassExists(testSuiteName);
 			}
 			
 			Keyword curKeyword = getKeyword(keyword);
@@ -361,8 +362,7 @@ private String getValue(String objectType, String objectXPath){
 							"testName\n" +
 							"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 							"if adding onto end of the domain): index.jsp";
-		Assert.assertTrue("value should be [" + expected + "]",
-				expected.equals(value));
+		Assert.assertEquals(expected, value);
 	}//End Test Case
 	
 	@Test
