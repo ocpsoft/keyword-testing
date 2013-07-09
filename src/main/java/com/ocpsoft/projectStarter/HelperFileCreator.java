@@ -60,7 +60,7 @@ public class HelperFileCreator {
 	      	@SuppressWarnings("unchecked")
 			List<Keyword> allKeywords = Iterators.asList(ServiceLoader.load(Keyword.class));
 			for (Keyword keyword : allKeywords) {
-				if(keyword.getProcessType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
+				if(keyword.processType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
 					//Add this keyword's HelperMethod to the class.
 //					if(keyword.getShortName().equals(InputConstants.KEYWORD_KEYS.BeginClass.toString())){
 						keyword.createKeywordHelperMethod(helperClass);

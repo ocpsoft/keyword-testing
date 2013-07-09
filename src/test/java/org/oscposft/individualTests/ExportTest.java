@@ -33,52 +33,41 @@ public class ExportTest {//Begin Class
 	 * 		Run the file as a JUnit Test with AS7_REMOTE container.
 	 */
 	
-   @Deployment(testable = false) // testable = false to run as a client
+	@Deployment(testable = false) // testable = false client mode
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
-@Drone
-DefaultSelenium browser;
-
-@ArquillianResource
-URL deploymentURL;
-
-private String getValue(String objectType, String objectXPath){
-	if(objectType.equals("select")) {
-		return browser.getSelectedLabel(objectXPath);
-	} else if(objectType.equals("input")) {
-		return browser.getValue(objectXPath);
-	} else if(objectType.equals("div")) {
-		//TODO: Really should do innerHTML, but having problems getting that right now.
-		//Text will have to be good enough right now, there is no method to get innerHTML.
-		return browser.getText(objectXPath);
-	} else {
-		return browser.getText(objectXPath);
-	}
-}
+	@Drone
+	DefaultSelenium browser;
+	
+	@ArquillianResource
+	URL deploymentURL;
 
 	private String exportFilePath = Constants.EXPORT_FILE_PATH + Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0) + ".txt";
 
 	@Test
-	public void testBuildingATestAndExportingIt() throws InterruptedException {//Begin Test Case
+	public void testBuildingATestExportingItThenImportingItBack() throws InterruptedException {//Begin Test Case
 		/* This test builds a new suite and 1 new test via the app.
 		 * Once constructed, it will click the [Export Current Test] button to export it to file.
 		 * We will then open a new FileStream to read the file contents and verify they are correct.
 		 */
 		
 		buildTest();
+		System.out.println("***************** Built test successfully ****************");
 		verifyCorrectTestStepsOnUI("testName");
 		
 		browser.click("id=exportTestCase");
 		Thread.sleep(300);//Give time for server to create the file
 		
 		verifyOutputFileOfExport();
+		System.out.println("***************** Verified UI message of Export successfully ****************");
 		
 		//Clear the entire class, then create a new test and try to import the thing we just exported
 		browser.click("id=deleteSuite");
 		importTestFromFile("testViaImport");
+		System.out.println("***************** Imported test back successfully ****************");
 		
 		//Verfiy the correct message on the UI for the import step
 		String value = getValue("div", "//div[@id='testSuite']");
@@ -141,7 +130,6 @@ private String getValue(String objectType, String objectXPath){
 	}
 	
 	private void verifyOutputFileOfExport() {
-		ConfigXMLParser parser = ConfigXMLParser.getInstance();
 		ArrayList<String> inputs1 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser));
 		ArrayList<String> inputs2 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed));
 		ArrayList<String> inputs3 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectProperty));
@@ -154,7 +142,8 @@ private String getValue(String objectType, String objectXPath){
 		inputs.add(inputs1);
 		inputs.add(inputs2);
 		inputs.add(inputs3);
-		String expectedFile = parser.generateInstructionSetXMLDoc(keywords, inputs);
+		ConfigXMLParser xmlParser = new ConfigXMLParser();
+		String expectedFile = xmlParser.generateInstructionSetXMLDoc(keywords, inputs);
 		expectedFile += "\n"; //Since the entire file is going to have an extra newLine, make one here too since it's easier.
 		
 		String entireFile = "";
@@ -191,9 +180,27 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=AddInstruction");
 		Thread.sleep(100);
 		
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+		browser.select("id=keyword", "label=" + valToSelect); //Need to open the testCaseName field on the UI
+		
 		browser.type("//input[@id='ImportInput1']", exportFilePath);
 		browser.click("id=importSteps");
 		Thread.sleep(300);//Give time for server modify the test by adding all the steps from the inputFile.
 	}
 	
+	
+
+	private String getValue(String objectType, String objectXPath){
+		if(objectType.equals("select")) {
+			return browser.getSelectedLabel(objectXPath);
+		} else if(objectType.equals("input")) {
+			return browser.getValue(objectXPath);
+		} else if(objectType.equals("div")) {
+			//TODO: Really should do innerHTML, but having problems getting that right now.
+			//Text will have to be good enough right now, there is no method to get innerHTML.
+			return browser.getText(objectXPath);
+		} else {
+			return browser.getText(objectXPath);
+		}
+	}
 }//End Class

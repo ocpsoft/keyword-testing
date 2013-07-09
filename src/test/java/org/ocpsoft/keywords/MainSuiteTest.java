@@ -1,6 +1,5 @@
 package org.ocpsoft.keywords;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -264,7 +263,7 @@ private String getValue(String objectType, String objectXPath){
 			if(curKeyword == null){
 				Assert.assertTrue("Could not find correct keyword for: " + keyword.toString(), false);
 			}
-			if(curKeyword.getProcessType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
+			if(curKeyword.processType().equals(KEYWORD_PROCESS_TYPES.MethodCall)){
 				//Validate the resulting line in the test file
 				validateTestCaseContainsCorrectStep(keyword, testCaseName, testSuiteName, null);
 			}
@@ -275,7 +274,7 @@ private String getValue(String objectType, String objectXPath){
 		@SuppressWarnings("unchecked")
 		List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
 		for (Keyword key : keywords) {
-			if(key.getShortName().equals(keyword)){
+			if(key.shortName().equals(keyword)){
 				curKeyword = key;
 				break;
 			}
@@ -301,7 +300,7 @@ private String getValue(String objectType, String objectXPath){
 				
 				inputList = buildInputValueStringFromList(Constants.KEYWORD_VALUES.get(keywordKey));
 				Keyword keyword = getKeyword(keywordKey);
-				additionalParams = keyword.getAdditionalInputParams();
+				additionalParams = keyword.additionalInputParams();
 				String prefix = "";
 				if(keyword instanceof KeywordAssignment){
 					prefix = ((KeywordAssignment) keyword).variableName() + "=";

@@ -1,5 +1,6 @@
 package com.ocpsoft.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +11,10 @@ import org.jboss.forge.parser.xml.XMLParser;
 import org.ocpsoft.dataBeans.Instruction;
 import org.ocpsoft.keywords.KeywordFactory;
 
-public class ConfigXMLParser {
+public class ConfigXMLParser implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
+
 	@Inject KeywordFactory factory;
 
 	public final String INSTRUCTION_SET_XML_TAG = "InstructionSet";
@@ -19,14 +22,7 @@ public class ConfigXMLParser {
 	public final String KEYWORD_XML_TAG = "Keyword";
 	public final String INPUTS_LIST_XML_TAG = "InputsList";
 	public final String INPUT_XML_TAG = "Input";
-	
-	public static ConfigXMLParser getInstance() {
-//		Node xml = XMLParser.parse("<Instruction><keyword>OpenBrowser</keyword><inputs><input>index.jsp</input><input>#2</input></inputs></Instruction>");
-//		xml.getSingle("keyword");
-//		XMLParser.toXMLString(xml);
-		return new ConfigXMLParser();
-	}
-	
+		
 	//Assumes there is only 1 child with the nodeName
 	public Node getSimpleXmlNode(String XMLdoc, String nodeName){
 		Node xml = XMLParser.parse(XMLdoc);

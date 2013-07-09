@@ -2,10 +2,12 @@ package org.ocpsoft.keywords;
 
 import java.util.ArrayList;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.jboss.forge.parser.java.JavaClass;
 
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, property="@class")
 public interface Keyword {
 	
 	public static enum KEYWORD_PROCESS_TYPES
@@ -13,9 +15,9 @@ public interface Keyword {
 		MethodCall, DirectProcess
 	}
 	
-	KEYWORD_KEYS getShortName();
-	KEYWORD_PROCESS_TYPES getProcessType();
-	String getAdditionalInputParams();
+	KEYWORD_KEYS shortName();
+	KEYWORD_PROCESS_TYPES processType();
+	String additionalInputParams();
 	ArrayList<Class<? extends Exception>> addThrowsToTest();
 	
 	//TODO: This is kind of a hack right now.  We're putting 2 methods into each keyword, but each will implement

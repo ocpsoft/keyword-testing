@@ -11,6 +11,9 @@ public class Instruction {
 	Keyword keyword;
 	ArrayList<String> inputs;
 
+	public Instruction() {
+	}
+	
 	public Keyword getKeyword() {
 		return keyword;
 	}
@@ -35,11 +38,11 @@ public class Instruction {
 		if(inputsAsOneString.length() > 0){
 			inputsAsOneString = inputsAsOneString.substring(0, inputsAsOneString.length() - Constants.LIST_DELIMITER.length()); //Remove last delimiter
 		}
-		return getKeyword().getShortName() + Constants.OBJECT_DELIMITER + inputsAsOneString;
+		return getKeyword().shortName() + Constants.OBJECT_DELIMITER + inputsAsOneString;
 	}
 
 
-	public String toXMLString(){
-		return ConfigXMLParser.getInstance().generateInstructionXMLDoc(getKeyword().getShortName().toString(), getInputs());
+	public String toXMLString(ConfigXMLParser xmlParser){
+		return xmlParser.generateInstructionXMLDoc(getKeyword().shortName().toString(), getInputs());
 	}
 }

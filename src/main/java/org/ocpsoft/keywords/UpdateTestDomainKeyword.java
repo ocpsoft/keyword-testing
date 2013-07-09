@@ -11,13 +11,16 @@ import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
 public class UpdateTestDomainKeyword implements KeywordAssignment {
 
+	public UpdateTestDomainKeyword() {
+	}
+	
 	@Override
-	public KEYWORD_KEYS getShortName() {
+	public KEYWORD_KEYS shortName() {
 		return KEYWORD_KEYS.UpdateTestDomain;
 	}
 
 	@Override
-	public KEYWORD_PROCESS_TYPES getProcessType(){
+	public KEYWORD_PROCESS_TYPES processType(){
 		return KEYWORD_PROCESS_TYPES.MethodCall;
 	}
 
@@ -29,7 +32,7 @@ public class UpdateTestDomainKeyword implements KeywordAssignment {
 	}
 
 	@Override
-	public String getAdditionalInputParams(){
+	public String additionalInputParams(){
 		return "";
 	}
 	

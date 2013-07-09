@@ -9,13 +9,16 @@ import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
 public class ClickElementKeyword implements Keyword {
 
+	public ClickElementKeyword(){
+	}
+	
 	@Override
-	public KEYWORD_KEYS getShortName() {
+	public KEYWORD_KEYS shortName() {
 		return KEYWORD_KEYS.ClickElement;
 	}
 
 	@Override
-	public KEYWORD_PROCESS_TYPES getProcessType(){
+	public KEYWORD_PROCESS_TYPES processType(){
 		return KEYWORD_PROCESS_TYPES.MethodCall;
 	}
 
@@ -32,7 +35,7 @@ public class ClickElementKeyword implements Keyword {
 
 	@Override
 	@Deprecated
-	public String getAdditionalInputParams(){
+	public String additionalInputParams(){
 		return "";
 	}
 	

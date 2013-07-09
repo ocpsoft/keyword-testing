@@ -18,10 +18,9 @@ public class KeywordFactory implements Serializable{
 	@Inject
 	Instance<Keyword> keywords;
 	
-	//NOTE: Can't set keywords to be static cause it wont inject anything, so we can't make createKeyword static.
 	public Keyword createKeyword(String key){
 		for (Keyword keyword : keywords) {
-			if(keyword.getShortName().toString().equals(key)){
+			if(keyword.shortName().toString().equals(key)){
 				return keyword;
 			}
 		}
@@ -31,7 +30,7 @@ public class KeywordFactory implements Serializable{
 	public ArrayList<String> getAllKeywordTypes(){
 		ArrayList<String> types = new ArrayList<String>();
 		for (Keyword keyword : keywords) {
-			types.add(keyword.getShortName().toString());
+			types.add(keyword.shortName().toString());
 		}
 		return types;
 	}

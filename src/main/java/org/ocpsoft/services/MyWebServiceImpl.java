@@ -11,15 +11,11 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Stateful;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
@@ -38,14 +34,11 @@ import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.ocpsoft.utils.Utility;
 
-@Path("/webService")
-@Stateful
-@RequestScoped
-@Consumes({ "application/json" })
-@Produces({ "application/json" })
-public class MyWebService {
+public class MyWebServiceImpl implements MyWebServiceInterface{
 
 	@Inject KeywordFactory factory;
+	@Inject ConfigXMLParser xmlParser;
+	
 	String className = "";//Should be re-assigned on BeginClassKeyword
 	
 	@GET
@@ -55,7 +48,54 @@ public class MyWebService {
 		return message;
 	}
 
+	@GET
+	@Path("/GetKeywordObject/{shortName}")
+	public Keyword generateKeyword(@PathParam("shortName") String shortName) {
+		System.out.println("Generating a keyword for: " + shortName);
+		Keyword keyword = factory.createKeyword(shortName);
+		if(keyword == null){
+			System.out.println("GenerateKeyword ERROR - Invalid shortName: " + shortName + ", could not generate a valid keyword.");
+		}
+		System.out.println("Returning generated keyword: " + keyword);
+		return keyword;
+	}
 
+	@GET
+	@Path("/GetInstructionObjectFromXMLDoc/{xmlDoc}")
+	public Instruction generateInstructionFromXMLDoc(@PathParam("xmlDoc") String xmlDoc) {
+		System.out.println("Getting Instruction From XML String Document");
+		xmlDoc = decodeURLComponent(xmlDoc);
+		Instruction instruction = xmlParser.getInstructionObjectFromXMLDoc(xmlDoc);
+		//For some reason, the inputs are all coming back with [%20] instead of [ ].
+//		ArrayList<String> inputs = new ArrayList<String>();
+//		for (String input : instruction.getInputs()) {
+//			inputs.add(input.replace("%20", " "));
+//		}
+//		instruction.setInputs(inputs);
+		System.out.println("Got Instruction: " + instruction);
+		return instruction;
+	}
+
+	@GET
+	@Path("/GetInstructionSetFromXMLDoc/{xmlDoc}")
+	public ArrayList<Instruction> generateInstructionSetFromXMLDoc(@PathParam("xmlDoc") String xmlDoc) {
+		System.out.println("Getting Instruction Set From XML String Document");
+		xmlDoc = decodeURLComponent(xmlDoc);
+		ArrayList<Instruction> instructions = xmlParser.getInstructionSetFromXMLDoc(xmlDoc);
+//		ArrayList<Instruction> returnInstructions = new ArrayList<Instruction>();
+//		ArrayList<String> inputs;
+//		for (Instruction instruction : instructions) {
+//			inputs = new ArrayList<String>();
+//			for (String input : instruction.getInputs()) {
+//				inputs.add(input.replace("%20", " "));
+//			}
+//			instruction.setInputs(inputs);
+//			returnInstructions.add(instruction);
+//		}
+		System.out.println("Got Instruction Set: " + instructions);
+		return instructions;
+	}
+	
 	@GET
 	@Path("/AllKeywordTypes")
 	public String getAllKeywordtypes() {
@@ -295,16 +335,15 @@ public class MyWebService {
 		methodBody=methodBody.replace("\n", "");
 		methodBody=methodBody.replace("; ", ";");
 		String[] statements = methodBody.split(";");
-		ConfigXMLParser parser = ConfigXMLParser.getInstance();
 		
 		//Build the XML document as a string
-		returnString+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + parser.INSTRUCTION_SET_XML_TAG + ">\n";
+		returnString+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + xmlParser.INSTRUCTION_SET_XML_TAG + ">\n";
 		for (String statement : statements) {
 			if(!Utility.isEmptyStep(statement)){
-				returnString+= getInstructionFromCodeStatement(statement).toXMLString() + "\n";
+				returnString+= getInstructionFromCodeStatement(statement).toXMLString(xmlParser) + "\n";
 			}
 		}
-		returnString+="</" + parser.INSTRUCTION_SET_XML_TAG + ">";
+		returnString+="</" + xmlParser.INSTRUCTION_SET_XML_TAG + ">";
 		return returnString;
 	}
 	private Instruction getInstructionFromCodeStatement(String statement){
@@ -353,7 +392,7 @@ public class MyWebService {
 		for (Instruction instruction : importInstructions) {
 			//We don't want to try to import the header of [Keyword~~Inputs] from the input file.
 			addInstructionToTest(className, testName, instruction);
-			returnString+=instruction.getKeyword().getShortName() + "<BR />";
+			returnString+=instruction.getKeyword().shortName() + "<BR />";
 			count++;
 		}
 	  
@@ -392,7 +431,7 @@ public class MyWebService {
 			e.printStackTrace();
 			return null;
 		}
-		return ConfigXMLParser.getInstance().getInstructionSetFromXMLDoc(xmlDoc);
+		return xmlParser.getInstructionSetFromXMLDoc(xmlDoc);
 	}
 	
 	@POST
@@ -433,7 +472,7 @@ public class MyWebService {
 			@PathParam("inputArrayXML") String inputArrayXML) {
 		inputArrayXML = decodeURLComponent(inputArrayXML);
 		
-		ArrayList<String> inputs = ConfigXMLParser.getInstance().getInstructionInputsFromXMLDoc(inputArrayXML);
+		ArrayList<String> inputs = xmlParser.getInstructionInputsFromXMLDoc(inputArrayXML);
 		System.out.println("Processing New Instruction - Keyword: " + keywordkey
 				+ ", inputArray: " + inputs + ", className=" + className);
 
@@ -445,8 +484,8 @@ public class MyWebService {
 		JavaClass testClass = null;
 		
 		//Some Keywords are now Direct Process, and some get added via Method Calls
-		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.getProcessType())){
-			if(keyword.getShortName().equals(KEYWORD_KEYS.BeginClass)){
+		if(KEYWORD_PROCESS_TYPES.DirectProcess.equals(keyword.processType())){
+			if(keyword.shortName().equals(KEYWORD_KEYS.BeginClass)){
 				//BeginClass will Create a new testClass, so it shouldn't exist yet, clear it out if it does
 				//TODO: If it exists already, we should throw up a warning and ask the user if they want it cleared/overriden or left as is.
 				File file = new File(testPath);
@@ -472,7 +511,7 @@ public class MyWebService {
 				if(testClass == null)
 				{
 					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
-					return "ERROR - Did not process keyword: " + keyword.getShortName();
+					return "ERROR - Did not process keyword: " + keyword.shortName();
 				}
 			}
 			
@@ -509,14 +548,14 @@ public class MyWebService {
 		  Method<JavaClass> currentMethod = testClass.getMethod(testName);
 		  if(currentMethod == null){
 		    System.out.println("Could not find current testCaseName method: " + testClass + ", keyword NOT processed");
-		    return "ERROR - Did not find the testCase Named: " + testClass + ", we could not process your last keyword: " + keyword.getShortName();
+		    return "ERROR - Did not find the testCase Named: " + testClass + ", we could not process your last keyword: " + keyword.shortName();
 		  }
 		  
 		  String setpPrefix = "";
 		  if(keyword instanceof KeywordAssignment){
 		    setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
 		  }
-		  String newStep = setpPrefix + "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
+		  String newStep = setpPrefix + "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
 		  currentMethod.setBody(currentMethod.getBody() + newStep);
 		  
 		  if(keyword.addThrowsToTest() != null){
@@ -540,13 +579,13 @@ public class MyWebService {
 		    System.err.println("Failure in writing out the new file for processing this keyword.  Error: " + e);
 		    return "ERROR: Could not process the last keyword.";
 		  }
-		  System.out.println("SUCCESS - Added method call for " + keyword.getShortName());
+		  System.out.println("SUCCESS - Added method call for " + keyword.shortName());
 		  return "SUCCESS";
 		}
 		else{
 		  System.out.println("Error in trying to get the testClass File for a MethodCall keyword.");
-		  System.out.println("Keyword: " + keyword.getShortName() + ", FAILED due to: testClass being null.");
-		  return "ERROR - Did not process keyword: " + keyword.getShortName();
+		  System.out.println("Keyword: " + keyword.shortName() + ", FAILED due to: testClass being null.");
+		  return "ERROR - Did not process keyword: " + keyword.shortName();
 		}
 	}
 
@@ -555,6 +594,7 @@ public class MyWebService {
 		String returnVal = url.replace("^^^***", "//");
 		returnVal = returnVal.replace("^**^", "/");
 		returnVal = returnVal.replace("*^*", "\\");//NOTE: We need one \ to escape, so this is replacing with only "\"
+		returnVal = returnVal.replace("%20", " ");
 		
 		return returnVal;
 	}

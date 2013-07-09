@@ -7,20 +7,22 @@ import java.util.ArrayList;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Visibility;
 import org.jboss.forge.parser.java.util.Formatter;
-import org.junit.Test;
 
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
 public class BeginTestKeyword implements Keyword {
 
+	public BeginTestKeyword(){
+	}
+	
 	@Override
-	public KEYWORD_KEYS getShortName() {
+	public KEYWORD_KEYS shortName() {
 		return KEYWORD_KEYS.BeginTest;
 	}
 
 	@Override
-	public KEYWORD_PROCESS_TYPES getProcessType(){
+	public KEYWORD_PROCESS_TYPES processType(){
 		return KEYWORD_PROCESS_TYPES.DirectProcess;
 	}
 
@@ -31,7 +33,7 @@ public class BeginTestKeyword implements Keyword {
 	
 	@Override
 	@Deprecated
-	public String getAdditionalInputParams(){
+	public String additionalInputParams(){
 		return "";
 	}
 

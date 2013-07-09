@@ -17,7 +17,7 @@ import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.KeywordFactory;
-import org.ocpsoft.services.MyWebService;
+import org.ocpsoft.services.MyWebServiceImpl;
 
 import com.ocpsoft.projectStarter.HelperFileCreator;
 import com.ocpsoft.utils.Constants;

@@ -9,13 +9,16 @@ import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
 public class OpenBrowserKeyword implements Keyword {
 
+	public OpenBrowserKeyword() {
+	}
+	
 	@Override
-	public KEYWORD_KEYS getShortName() {
+	public KEYWORD_KEYS shortName() {
 		return KEYWORD_KEYS.OpenBrowser;
 	}
 
 	@Override
-	public KEYWORD_PROCESS_TYPES getProcessType(){
+	public KEYWORD_PROCESS_TYPES processType(){
 		return KEYWORD_PROCESS_TYPES.MethodCall;
 	}
 
@@ -25,7 +28,7 @@ public class OpenBrowserKeyword implements Keyword {
 	}
 
 	@Override
-	public String getAdditionalInputParams(){
+	public String additionalInputParams(){
 		return ",deploymentURL";
 	}
 	

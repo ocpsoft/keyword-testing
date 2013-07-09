@@ -9,8 +9,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
@@ -19,6 +17,7 @@ import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
 import org.jboss.forge.parser.java.Visibility;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -27,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.dataBeans.Instruction;
 import org.ocpsoft.keywords.Keyword;
-import org.ocpsoft.keywords.KeywordFactory;
+import org.ocpsoft.services.MyWebServiceInterface;
 
 import com.ocpsoft.utils.ConfigXMLParser;
 import com.ocpsoft.utils.Constants;
@@ -40,14 +39,21 @@ public class ParserExampleTest
    	@Deployment(testable = false)
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class)
-				.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
-				.addPackage("org.ocpsoft.keywords")
-				.addPackage("org.ocpsoft.utils")
+//				.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
+//				.addPackage("org.ocpsoft.keywords")
+//				.addPackage("org.ocpsoft.utils")
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
-   	@Inject KeywordFactory factory;
-	   
+//   	@Inject KeywordFactory factory;
+//   	@Inject ConfigXMLParser xmlParser;
+   	
+   	@Drone
+   	DefaultSelenium browser;
+	@ArquillianResource
+	URL deploymentURL;
+	String webServiceTargetURL_hardcode = "http://localhost:8080/keword-testing/rest";	
+	
    	String packageLocation = getClass().getPackage().toString().substring("package ".length());
    	String packagePath = packageLocation.replace(".", "/");
 	   
@@ -151,16 +157,14 @@ public class ParserExampleTest
 
 	@Test
 	public void testXMLParserGetInstruction() throws InterruptedException {
-		ConfigXMLParser parser = ConfigXMLParser.getInstance();
-		
 		//Basic Keyword
 		ArrayList<String> expectedInputs = new ArrayList<>();
 		expectedInputs.add("index.jsp");
-		String xmlDoc = parser.generateInstructionXMLDoc("OpenBrowser", expectedInputs);
-		Instruction i = parser.getInstructionObjectFromXMLDoc(xmlDoc);
-		Keyword expectedKeyword = factory.createKeyword("OpenBrowser");
+		Keyword expectedKeyword = generateKeyword("OpenBrowser");
+		String xmlDoc = generateInstructionXMLDoc("OpenBrowser", expectedInputs);
+		Instruction i = generateInstructionObject(xmlDoc);
 		
-		Assert.assertTrue(expectedKeyword.equals(i.getKeyword()));
+		Assert.assertTrue(expectedKeyword.getClass().equals(i.getKeyword().getClass()));
 		Assert.assertTrue(expectedInputs.equals(i.getInputs()));
 		
 		//More complicated Keyword
@@ -169,22 +173,43 @@ public class ParserExampleTest
 		expectedInputs.add("select");
 		expectedInputs.add("//select[@id='keyword']");
 		expectedInputs.add("Begin New Suite");
-		xmlDoc = parser.generateInstructionXMLDoc("VerifyObjectProperty", expectedInputs);
-		i = parser.getInstructionObjectFromXMLDoc(xmlDoc);
-		expectedKeyword = factory.createKeyword("VerifyObjectProperty");
-		Assert.assertTrue(expectedKeyword.equals(i.getKeyword()));
+		xmlDoc = generateInstructionXMLDoc("VerifyObjectProperty", expectedInputs);
+		i = generateInstructionObject(xmlDoc);
+		expectedKeyword = generateKeyword("VerifyObjectProperty");
+		Assert.assertTrue(expectedKeyword.getClass().equals(i.getKeyword().getClass()));
 		Assert.assertTrue(expectedInputs.equals(i.getInputs()));
 	}
+	private MyWebServiceInterface generateService(){
+		MyWebServiceInterface service = ProxyFactory.create(MyWebServiceInterface.class, webServiceTargetURL_hardcode);
+		return service;
+	}
+	private Keyword generateKeyword(String shortName) {
+        MyWebServiceInterface service = generateService();
+        Keyword keyword = service.generateKeyword(shortName);
+		return keyword;
+	}
+	private ArrayList<Instruction> generateInstructionSet(String xmlDoc) {
+		xmlDoc = encodeURLComponent(xmlDoc);
+        MyWebServiceInterface service = generateService();
+        ArrayList<Instruction> instructions = service.generateInstructionSetFromXMLDoc(xmlDoc);
+		return instructions;
+	}
+	private Instruction generateInstructionObject(String xmlDoc) {
+		xmlDoc = encodeURLComponent(xmlDoc);
+		MyWebServiceInterface service = generateService();
+        Instruction instruction = service.generateInstructionFromXMLDoc(xmlDoc);
+		return instruction;
+	}
+	
 
 	@Test
 	public void testXMLParserGetInputs() throws InterruptedException {
-		ConfigXMLParser parser = ConfigXMLParser.getInstance();
-		
 		//Basic Input List
+		ConfigXMLParser xmlParser = new ConfigXMLParser();
 		ArrayList<String> expectedInputs = new ArrayList<>();
 		expectedInputs.add("index.jsp");
-		String xmlDoc = parser.generateInputsXMLDoc(expectedInputs);
-		ArrayList<String> list = parser.getInstructionInputsFromXMLDoc(xmlDoc);
+		String xmlDoc = xmlParser.generateInputsXMLDoc(expectedInputs);
+		ArrayList<String> list = xmlParser.getInstructionInputsFromXMLDoc(xmlDoc);
 		Assert.assertTrue(expectedInputs.equals(list));
 		
 		//More complicated Input List
@@ -193,25 +218,24 @@ public class ParserExampleTest
 		expectedInputs.add("select");
 		expectedInputs.add("//select[@id='keyword']");
 		expectedInputs.add("Begin New Suite");
-		xmlDoc = parser.generateInputsXMLDoc(expectedInputs);
-		list = parser.getInstructionInputsFromXMLDoc(xmlDoc);
+		xmlDoc = xmlParser.generateInputsXMLDoc(expectedInputs);
+		list = xmlParser.getInstructionInputsFromXMLDoc(xmlDoc);
 		Assert.assertTrue(expectedInputs.equals(list));
 	}
 	
 	@Test
 	public void testXMLParserGetInstructionSet() throws InterruptedException {
-		ConfigXMLParser parser = ConfigXMLParser.getInstance();
-		
 		ArrayList<String> expectedInputs1 = new ArrayList<String>();
 		expectedInputs1.add("index.jsp");
-		Keyword expectedKeyword1 = factory.createKeyword("OpenBrowser");
+		
+		Keyword expectedKeyword1 = generateKeyword("OpenBrowser");
 		
 		ArrayList<String> expectedInputs2 = new ArrayList<String>();
 		expectedInputs2.add("Selected Value should be Begin New Suite");
 		expectedInputs2.add("select");
 		expectedInputs2.add("//select[@id='keyword']");
 		expectedInputs2.add("Begin New Suite");
-		Keyword expectedKeyword2 = factory.createKeyword("VerifyObjectProperty");
+		Keyword expectedKeyword2 = generateKeyword("VerifyObjectProperty");
 
 		ArrayList<String> keywords = new ArrayList<String>();
 		keywords.add("OpenBrowser");
@@ -219,12 +243,53 @@ public class ParserExampleTest
 		ArrayList<ArrayList<String>> inputs = new ArrayList<ArrayList<String>>();
 		inputs.add(expectedInputs1);
 		inputs.add(expectedInputs2);
-		String xmlDoc = parser.generateInstructionSetXMLDoc(keywords, inputs);
-		ArrayList<Instruction> instructions = parser.getInstructionSetFromXMLDoc(xmlDoc);
+		String xmlDoc = generateInstructionSetXMLDoc(keywords, inputs);
+		ArrayList<Instruction> instructions = generateInstructionSet(xmlDoc);
 		Assert.assertTrue(instructions.size() == 2);
-		Assert.assertTrue(expectedKeyword1.equals(instructions.get(0).getKeyword()));
-		Assert.assertTrue(expectedKeyword2.equals(instructions.get(1).getKeyword()));
+		Assert.assertTrue(expectedKeyword1.getClass().equals(instructions.get(0).getKeyword().getClass()));
+		Assert.assertTrue(expectedKeyword2.getClass().equals(instructions.get(1).getKeyword().getClass()));
 		Assert.assertTrue(expectedInputs1.equals(instructions.get(0).getInputs()));
 		Assert.assertTrue(expectedInputs2.equals(instructions.get(1).getInputs()));
+	}
+	
+	
+	//NOTE: For now these are simply copied from ConfigXMLParser for ease of use in the test.
+	/********* BEGIN Method for generating the XML Documents*********/
+	public String generateInstructionSetXMLDoc(ArrayList<String> keywords, ArrayList<ArrayList<String>> inputs){
+		ConfigXMLParser parser = new ConfigXMLParser();
+		String xmlDoc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + parser.INSTRUCTION_SET_XML_TAG + ">\n";
+		for (int x=0; x < keywords.size(); x++) {
+			xmlDoc += generateInstructionXMLDoc(keywords.get(x), inputs.get(x)) + "\n";
+		}
+		xmlDoc += "</" + parser.INSTRUCTION_SET_XML_TAG + ">";
+		return xmlDoc;
+	}
+	public String generateInstructionXMLDoc(String keyword, ArrayList<String> inputs) {
+		ConfigXMLParser parser = new ConfigXMLParser();
+		String xmlDoc = "\t<" + parser.INSTRUCTION_XML_TAG + ">\n" +
+				"\t\t<" + parser.KEYWORD_XML_TAG + ">" + keyword + "</" + parser.KEYWORD_XML_TAG + ">\n" +
+				generateInputsXMLDoc(inputs) +
+				"\n\t</" + parser.INSTRUCTION_XML_TAG + ">";
+		return xmlDoc;
+	}
+	public String generateInputsXMLDoc(ArrayList<String> inputs) {
+		ConfigXMLParser parser = new ConfigXMLParser();
+		String xmlDoc = "\t\t<" + parser.INPUTS_LIST_XML_TAG + ">\n";
+		for (String input : inputs) {
+			xmlDoc += "\t\t\t<" + parser.INPUT_XML_TAG + ">" + input + "</" + parser.INPUT_XML_TAG + ">\n";
+		}
+		xmlDoc += "\t\t</" + parser.INPUTS_LIST_XML_TAG + ">";
+		return xmlDoc;
+	}
+	/********* END Method for generating the XML Documents*********/
+	
+	//TODO: This is a hack, find a better way of passing these "bad chars"
+	private static String encodeURLComponent(String url){
+		String returnVal = url.replace("//", "^^^***");
+		returnVal = returnVal.replace("/", "^**^");
+		returnVal = returnVal.replace("\\", "*^*");//NOTE: We need one \ to escape, so this is replacing with only "\"
+		returnVal = returnVal.replace("\t", "").replace("\n", "").replace(" ", "%20");
+		
+		return returnVal;
 	}
 }

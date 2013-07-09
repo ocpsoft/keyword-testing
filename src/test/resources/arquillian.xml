@@ -5,6 +5,6 @@
 								http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 	<extension qualifier="selenium">
 		<property name="browser">*googlechrome</property>
-		<property name="jbossHome">D:\_DEVELOPMENT_\JBossAS\jboss-as-7.1.1.Final\bin</property>
+		<property name="jbossHome">D:\DEVELOPMENT\JBossAS\jboss-as-7.1.1.Final\bin</property>
 	</extension>
 </arquillian>

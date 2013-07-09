@@ -84,13 +84,25 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.1</version>
-			<scope>compile</scope>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>2.3.6.Final</version>
+			<scope>test</scope>
 		</dependency>
-
-
+		<dependency>
+		    <groupId>org.jboss.resteasy</groupId>
+		    <artifactId>resteasy-jaxrs</artifactId>
+		    <version>2.3.5.Final</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.jboss.resteasy</groupId>
+		    <artifactId>resteasy-jackson-provider</artifactId>
+		    <version>2.3.4.Final</version>
+		    <scope>test</scope>
+	   	</dependency>
+   
+   
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

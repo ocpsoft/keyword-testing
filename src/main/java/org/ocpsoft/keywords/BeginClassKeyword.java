@@ -19,13 +19,16 @@ import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 
 public class BeginClassKeyword implements Keyword {
 
+	public BeginClassKeyword(){
+	}
+
 	@Override
-	public KEYWORD_KEYS getShortName() {
+	public KEYWORD_KEYS shortName() {
 		return KEYWORD_KEYS.BeginClass;
 	}
 	
 	@Override
-	public KEYWORD_PROCESS_TYPES getProcessType(){
+	public KEYWORD_PROCESS_TYPES processType(){
 		return KEYWORD_PROCESS_TYPES.DirectProcess;
 	}
 
@@ -36,7 +39,7 @@ public class BeginClassKeyword implements Keyword {
 	
 	@Override
 	@Deprecated
-	public String getAdditionalInputParams(){
+	public String additionalInputParams(){
 		return "";
 	}
 	
