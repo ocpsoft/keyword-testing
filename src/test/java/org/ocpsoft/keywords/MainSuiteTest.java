@@ -43,7 +43,7 @@ public class MainSuiteTest {//Begin Class
 	
    @Deployment(testable = false) // testable = false to run as a client
 	public static WebArchive createDeployment() {
-		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
+		return ShrinkWrap.create(WebArchive.class, "mainTestSuite.war")
 						.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
 						.addPackage("org.ocpsoft.keywords")
 						.addPackage("org.ocpsoft.utils")
@@ -80,6 +80,13 @@ private String getValue(String objectType, String objectXPath){
 		/* This test covers the [Clear Divs] and [Delete Suite] buttons 
 		 * Also tests Text (TODO:needs to do innerHTML) of Div elements.
 		 */
+		
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		browser.open(deploymentURL + "index.jsp");
 
@@ -135,6 +142,14 @@ private String getValue(String objectType, String objectXPath){
 		 * Also verifies that we add this keyword's addThrowsToTest once and only once
 		 * No matter how many times we add UpdateTestDomain as a step in a test.
 		 */
+
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
 		browser.open(deploymentURL + "index.jsp");
 		String valToSelect;
 		browser.click("id=deleteSuite"); //Make sure we start fresh
@@ -184,6 +199,13 @@ private String getValue(String objectType, String objectXPath){
 		 * tests VerifyObjectIsDisplayed - div.
 		 * tests VerifyObjectIsNotDislayed - input.
 		 */
+
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		browser.open(deploymentURL + "index.jsp");
 
@@ -219,6 +241,13 @@ private String getValue(String objectType, String objectXPath){
 		 * tests properties of all input values of all keywords.
 		 * tests resulting lines in the new arquillian test created from adding the keyword with default values.
 		 */
+
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		String valToSelect = "";
 		String expected = "";
@@ -339,6 +368,13 @@ private String getValue(String objectType, String objectXPath){
 		/* This test builds a new suite via the app.
 		 * Once constructed, it will verify the testSuite div is displaying correctly on the UI.
 		 */
+
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		browser.open(deploymentURL + "index.jsp");
 
@@ -354,7 +390,7 @@ private String getValue(String objectType, String objectXPath){
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
-		Thread.sleep(200);
+		Thread.sleep(500);
 		
 		value = getValue("div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
@@ -370,6 +406,13 @@ private String getValue(String objectType, String objectXPath){
 		 * Once constructed, it will click the [Run Tests] button to kick it off.
 		 * 		NOT CURRENTLY KICKING OFF TEST SUITE.  Need to do something with port number, or other fix, see below.
 		 */
+
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		browser.open(deploymentURL + "index.jsp");
 

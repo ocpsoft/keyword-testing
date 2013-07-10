@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class ExportTest {//Begin Class
 	
 	@Deployment(testable = false) // testable = false client mode
 	public static WebArchive createDeployment() {
-		return ShrinkWrap.create(WebArchive.class, "keword-testing.war")
+		return ShrinkWrap.create(WebArchive.class, "export-testing.war")
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
@@ -53,6 +54,13 @@ public class ExportTest {//Begin Class
 		 * Once constructed, it will click the [Export Current Test] button to export it to file.
 		 * We will then open a new FileStream to read the file contents and verify they are correct.
 		 */
+
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		buildTest();
 		System.out.println("***************** Built test successfully ****************");

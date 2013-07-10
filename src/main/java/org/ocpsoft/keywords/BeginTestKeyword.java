@@ -2,6 +2,7 @@ package org.ocpsoft.keywords;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import org.jboss.forge.parser.java.JavaClass;
@@ -49,7 +50,14 @@ public class BeginTestKeyword implements Keyword {
 		testClass.addMethod().setName(inputValues.get(0))
 				.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()
 				.addThrows(InterruptedException.class)
-				.setBody("")
+				
+				//TODO: #DeploymentURL_HACK
+				//TODO: This is a temporary measure.  We need to figure out a way of running the tests on our app server
+				//without making the deployment name "keword-testing.war".  This is a temp stop-gap.
+				//NOTE: This is going to show up as an error right now on the UI in the status section.
+				.addThrows(MalformedURLException.class)
+				.setBody("deploymentURL=new URL(\"http://localhost:8080/keword-testing/\");")
+				
 				.addAnnotation(Constants.TestAnnotationClass);
 		
 		try {

@@ -36,22 +36,12 @@ import com.thoughtworks.selenium.DefaultSelenium;
 public class ParserExampleTest
 {
 
-   	@Deployment(testable = false)
+   	@Deployment(testable = false) //false = run as client
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class)
-//				.addClasses(Constants.class, Keyword.class, KeywordFactory.class)
-//				.addPackage("org.ocpsoft.keywords")
-//				.addPackage("org.ocpsoft.utils")
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
-//   	@Inject KeywordFactory factory;
-//   	@Inject ConfigXMLParser xmlParser;
-   	
-   	@Drone
-   	DefaultSelenium browser;
-	@ArquillianResource
-	URL deploymentURL;
 	String webServiceTargetURL_hardcode = "http://localhost:8080/keword-testing/rest";	
 	
    	String packageLocation = getClass().getPackage().toString().substring("package ".length());

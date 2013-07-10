@@ -28,6 +28,7 @@ import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordAssignment;
 import org.ocpsoft.keywords.KeywordFactory;
 
+import com.ocpsoft.projectStarter.ActionsFileCreator;
 import com.ocpsoft.projectStarter.HelperFileCreator;
 import com.ocpsoft.utils.ConfigXMLParser;
 import com.ocpsoft.utils.Constants;
@@ -460,6 +461,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 		
 		HelperFileCreator.createHelperClassViaParser(rootPath, "com.example.domain");
+		ActionsFileCreator.createActionsClassViaParser(rootPath, "com.example.domain");
 		return "SUCCESS";
 	}
 	

@@ -74,12 +74,20 @@ public class Utility {
 		String testName = Utility.getTestCaseName(member);
 		returnVal+= "<B>" + testName + "</B><BR />";
 		String[] steps  = getStepsFromMethod(member);
+		String steptranslation = "";
 		int index = 0;
 		for (String step : steps) {
 			if(!isEmptyStep(step)){
-				returnVal+= generateMoveButton(testName, index, "up") + " " + 
-						    generateMoveButton(testName, index, "down") + " " + 
-						    reverseTranslateStep(step) + "<BR />";
+				steptranslation = reverseTranslateStep(step);
+				if(steptranslation.startsWith("ERROR")){
+					returnVal+= steptranslation + "<BR />";
+				} else if(steptranslation.startsWith("IGNORE")){
+					//Do nothing at all
+				} else {
+					returnVal+= generateMoveButton(testName, index, "up") + " " + 
+						    	generateMoveButton(testName, index, "down") + " " + 
+						    	steptranslation + "<BR />";
+				}
 			}
 			index++;
 		}
@@ -124,6 +132,12 @@ public class Utility {
 			}
 		}
 		if(thisKeywordsDescriptions == null){
+			//TODO: #DeploymentURL_HACK
+			//If this is from chaning the deployment URL, just completely ignore that line and don't print
+			//anything in the UI status for it at all.
+			if(step.startsWith("deploymentURL=new URL(")){
+				return "IGNORE";
+			}
 			return "ERROR: Could not get back Descriptions for Keyword: " + keywordName;
 		}
 		

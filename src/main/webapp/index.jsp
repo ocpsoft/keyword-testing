@@ -145,7 +145,7 @@
        <input type="submit" id="importSteps" value="Import Steps" onClick='importTestSteps()'/>
        <input type="text" id="ImportInput1" /><br />
        			
-		The test currently looks as follows:
+		Status:
 		<div id="testSuite"></div>
 
 

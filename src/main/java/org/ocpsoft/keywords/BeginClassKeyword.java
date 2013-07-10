@@ -76,6 +76,10 @@ public class BeginClassKeyword implements Keyword {
 								+ ".addAsWebInfResource(EmptyAsset.INSTANCE, \"beans.xml\");")
 				.addAnnotation(Constants.DeploymentAnnotationClass).setLiteralValue("testable", "false").getOrigin() //TESTABLE = FALSE is KEY
 				.addImport(File.class);
+		
+		//TODO: #DeploymentURL_HACK
+		testClass.addImport(URL.class);
+		
 		testClass.addImport(WebArchive.class);
 		testClass.addImport(Constants.DeploymentAnnotationClass);
 		testClass.addImport(ShrinkWrap.class);

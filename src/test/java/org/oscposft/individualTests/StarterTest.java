@@ -4,21 +4,14 @@ import java.io.File;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ocpsoft.common.services.ServiceLoader;
-import org.ocpsoft.common.util.Iterators;
-import org.ocpsoft.keywords.Keyword;
-import org.ocpsoft.keywords.KeywordFactory;
-import org.ocpsoft.services.MyWebServiceImpl;
 
+import com.ocpsoft.projectStarter.ActionsFileCreator;
 import com.ocpsoft.projectStarter.HelperFileCreator;
 import com.ocpsoft.utils.Constants;
 
@@ -41,31 +34,41 @@ public class StarterTest {//Begin Class
 		 */
 		
 		String rootPath = Constants.ROOT_FILE_PATH;
-		File helperFile = new File(rootPath + "Helper.java");
+		String fileName = "Helper.java";
 		
-		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
-		try{
-			if(!helperFile.exists()){
-				System.out.println("Helper.java does NOT exist, nothing to clear out.");
-			}
-			else{
-				if(helperFile.delete()){
-					System.out.println(helperFile.getName() + " is deleted!  We just made room to create a fresh one");
-				}else{
-					System.out.println("Delete operation is failed.");
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println("Error msg: " + e);
-		}
+		ParserExampleTest.removeClassFile(rootPath + fileName);
+		File helperFile = new File(rootPath + fileName);
+		Assert.assertTrue(helperFile.exists() == false); //Make sure it's not there and we're starting from scratch
 		
-		helperFile = new File(rootPath + "Helper.java");
-		Assert.assertTrue(helperFile.exists() == false);
 		HelperFileCreator.createHelperClassViaParser(rootPath, "com.example.domain");	
-		helperFile = new File(rootPath + "Helper.java");
-		Assert.assertTrue(helperFile.exists() == true);
-		ParserExampleTest.removeClassFile(rootPath + "Helper.java");
+		helperFile = new File(rootPath + fileName);
+		Assert.assertTrue(helperFile.exists() == true); //Make sure that the HelperFileCreator actually created a file
+		
+		ParserExampleTest.removeClassFile(rootPath + fileName);
+		helperFile = new File(rootPath + fileName);
+		Assert.assertTrue(helperFile.exists() == false); //Make sure it's gone again.
 	}//End Test Case
 
+	@Test
+	public void testSetupActionsFile() throws InterruptedException {//Begin Test Case
+		/* This test removes (if any) Actions.java file (in the current KeywordApp project,
+		 * Then creates a new one.  We simply verify that a file was created successfully.
+		 */
+		
+		String rootPath = Constants.ROOT_FILE_PATH;
+		String fileName = "Actions.java";
+		
+		ParserExampleTest.removeClassFile(rootPath + fileName);
+		File actionsFile = new File(rootPath + fileName);
+		Assert.assertTrue(actionsFile.exists() == false); //Make sure it's not there and we're starting from scratch
+		
+		ActionsFileCreator.createActionsClassViaParser(rootPath, "com.example.domain");	
+		actionsFile = new File(rootPath + fileName);
+		Assert.assertTrue(actionsFile.exists() == true); //Make sure that the ActionsFileCreator actually created a file
+		
+		ParserExampleTest.removeClassFile(rootPath + fileName);
+		actionsFile = new File(rootPath + fileName);
+		Assert.assertTrue(actionsFile.exists() == false); //Make sure it's gone again.
+	}//End Test Case
+	
 }//End Class
