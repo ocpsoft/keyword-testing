@@ -12,7 +12,7 @@ public interface Keyword {
 	
 	public static enum KEYWORD_PROCESS_TYPES
 	{
-		MethodCall, DirectProcess
+		MethodCall, DirectProcess, UniqueProcess
 	}
 	
 	KEYWORD_KEYS shortName();

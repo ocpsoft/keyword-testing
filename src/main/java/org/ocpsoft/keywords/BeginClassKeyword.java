@@ -95,7 +95,7 @@ public class BeginClassKeyword implements Keyword {
 		testClass.addImport(Arrays.class);
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
-					Constants.ROOT_FILE_PATH + inputValues.get(0) + ".java"));
+					Constants.APP_UNDER_TEST_ROOT_FILE_PATH + inputValues.get(0) + ".java"));
 			
 			writetoTest.print(testClass); //TODO: Format this
 			writetoTest.close();

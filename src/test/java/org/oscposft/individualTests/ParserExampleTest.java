@@ -62,7 +62,7 @@ public class ParserExampleTest
 			Assert.assertTrue("Error in testParser: " + e, false);
 		}
 		List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
-		Assert.assertTrue("Could not find static var, 2 other vars, and getDeployment method.", allMembers.size() == 4);
+		Assert.assertTrue("Could not find all of: static var, 2 other vars, and getDeployment method.", allMembers.size() == 4);
 		removeClassFile(rootPath + className + ".java");
 	}
 	private void createTestClassViaParser(String testPath, String className) {

@@ -18,7 +18,7 @@ import org.ocpsoft.keywords.Keyword;
 @Stateful
 @RequestScoped
 @Consumes({ "application/json" })
-@Produces({ "application/json" })
+@Produces("application/xml")
 public interface MyWebServiceInterface {
 
 	String className = "";//Should be re-assigned on BeginClassKeyword
@@ -28,14 +28,17 @@ public interface MyWebServiceInterface {
 	public String echoService(@PathParam("message") String message);
 
 	@GET
+	@Produces("application/json") 
 	@Path("/GetKeywordObject/{shortName}")
 	public Keyword generateKeyword(@PathParam("shortName") String shortName);
 
 	@GET
+	@Produces("application/json")
 	@Path("/GetInstructionObjectFromXMLDoc/{xmlDoc}")
 	public Instruction generateInstructionFromXMLDoc(@PathParam("xmlDoc") String xmlDoc);
 
 	@GET
+	@Produces("application/json")
 	@Path("/GetInstructionSetFromXMLDoc/{xmlDoc}")
 	public ArrayList<Instruction> generateInstructionSetFromXMLDoc(@PathParam("xmlDoc") String xmlDoc);
 	
@@ -65,7 +68,13 @@ public interface MyWebServiceInterface {
 	@POST
 	@Path("/DeleteTestSuite/{className}")
 	public String deleteTestSuite(@PathParam("className") String className);
-
+	
+	@POST
+	@Path("/ExportTestToAction/{testClassName}/{testName}/{actionName}")
+	public String exportTestToAction(@PathParam("testClassName") String testClassName, 
+			@PathParam("testName") String testName, 
+			@PathParam("actionName") String actionName);
+	
 	@POST
 	@Path("/ExportTestCase/{className}/{testName}")
 	public String exportTestCase(@PathParam("className") String className, @PathParam("testName") String testName);

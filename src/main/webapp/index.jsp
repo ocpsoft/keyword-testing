@@ -95,7 +95,7 @@
        <H1>Welcome to The Keyword Framework</H1><P />
        <a href="myLink.html">Click to go to myLink</a><BR />
 	   <P />
-	   <input type="submit" value="Begin New Project" onClick='startNewProject()'><P />
+	   <input type="submit" value="Begin New Project" id="BeginNewProject" onClick='startNewProject()'><P />
        Current Suite is: <input type="text" id="className" />
        <input type="submit" value="LoadSuite" id="loadSuite" onClick='getTestSuite()'/><P />
        <P />
@@ -137,8 +137,10 @@
        <div id="InstructionStatus"></div><P />
        <input type="submit" id="RunTests" value="Run Tests" onClick='runTests()'/><P />
        <div id="RunTests"></div><P />
-       <BR /><P /><BR />
+       <BR /><P />
        </center>
+       <input type="submit" id="exportToAction" value="Export to Action" onClick='exportToAction()' />
+       <input type="text" id="exportToActionName" /><br />
        <input type="submit" id="clearDivs" value="Clear Console" onClick='clearDivs()'/>
        <input type="submit" id="deleteSuite" onClick='deleteSuite()'/>
        <input type="submit" id="exportTestCase" value="Export Current Test" onClick='exportTestCase()'/>
@@ -321,6 +323,13 @@
 			return returnVal;
 		}
 
+		function exportToAction(){
+			var actionName = document.getElementById("exportToActionName").value;
+			var POSTurl = 'rest/webService/ExportTestToAction/' + document.getElementById("className").value + '/' + getTestCaseName() + '/' + actionName;
+			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
+			return returnVal;
+		}
+		
 		function importTestSteps(){
 			var POSTurl = 'rest/webService/ImportTestSteps/' + document.getElementById("className").value +'/'+ getTestCaseName() +'/'+ encodeURLComp(document.getElementById("ImportInput1").value);
 			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
@@ -342,7 +351,7 @@
 				encodeURLComp(inputListXML);
 			var returnVal = doPOST(POSTurl, "", false);
 			if(keyword == "BeginTest"){
-				updateTestCaseNames("NewTest", input1);
+				updateTestCaseNames("NewTest", getTestCaseName());
 			}
 			return returnVal;
 		}

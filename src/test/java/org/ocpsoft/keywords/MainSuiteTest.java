@@ -100,7 +100,7 @@ private String getValue(String objectType, String objectXPath){
 
 		value = getValue("div", "//div[@id='testSuite']");
 //		String expected = "<font color='orange'>WARNING: You tried to delete a file that does not exist. File [" + Constants.ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.</font>";
-		String expected = "WARNING: You tried to delete a file that does not exist. File [" + Constants.ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.";
+		String expected = "WARNING: You tried to delete a file that does not exist. File [" + Constants.APP_UNDER_TEST_ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.";
 		System.out.println("Check 1 - Value = [" + value + "]");
 		Assert.assertTrue("value should be [Warning] text",
 				expected.equals(value));
@@ -173,7 +173,7 @@ private String getValue(String objectType, String objectXPath){
 		
 		//Validate we added the throws MalformedURLException to the test
 		JavaClass testClass = null;
-		testClass = Utility.javaClassExists(testSuiteName);
+		testClass = Utility.getJavaClass(testSuiteName);
 		Method<JavaClass> testMethod = testClass.getMethod(testCaseName);
 		Assert.assertTrue("Test should now throw MalformedURLException", testMethod.getThrownExceptions().contains("MalformedURLException"));
 		Assert.assertTrue("Test should have 2 total Exceptions", testMethod.getThrownExceptions().size() == 2);
@@ -185,7 +185,7 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=AddInstruction");
 		Thread.sleep(500);
 		
-		testClass = Utility.javaClassExists(testSuiteName);
+		testClass = Utility.getJavaClass(testSuiteName);
 		testMethod = testClass.getMethod(testCaseName);
 		int size = testMethod.getThrownExceptions().size();
 		Assert.assertTrue("Test should still only have 2 total Exceptions, we have: " + size + ", " + testMethod.getThrownExceptions(), size == 2);
@@ -285,7 +285,6 @@ private String getValue(String objectType, String objectXPath){
 			}
 			if(keyword.equals(Constants.KEYWORD_KEYS.BeginTest)){
 				testCaseName = Constants.KEYWORD_VALUES.get(keyword).get(0);
-				JavaClass testClass = Utility.javaClassExists(testSuiteName);
 			}
 			
 			Keyword curKeyword = getKeyword(keyword);

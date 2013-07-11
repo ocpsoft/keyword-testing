@@ -2,11 +2,15 @@ package com.ocpsoft.projectStarter;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.URL;
+import java.util.Arrays;
 
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 
+import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Utility;
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class ActionsFileCreator {
 
@@ -18,7 +22,11 @@ public class ActionsFileCreator {
 		actionsClass
 			.setName(className)
 			.setPublic()
-			.setPackage(packageName);
+			.setPackage(packageName)
+			
+			.addImport(Arrays.class);
+		actionsClass.addImport(URL.class);
+		actionsClass.addImport(Constants.DefaultSeleniumAnnotationClass);
 		
 		try{
 			PrintStream writetoTest = new PrintStream(

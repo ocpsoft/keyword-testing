@@ -14,7 +14,7 @@ public class Constants {
 	//public static final String EXPORT_FILE_PATH = "/home/fife/workspace/Keyword_Export_Files";
 	
 	/***********************  WINDOWWS FILE PATH *****************************************/
-	public static final String ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/AppUnderTest/src/test/java/com/example/domain/";
+	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/AppUnderTest/src/test/java/com/example/domain/";
 	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/";
 	public static final String EXPORT_FILE_PATH = "D:/DEVELOPMENT/projects/Keyword_Export_Files/";
 	
@@ -36,7 +36,7 @@ public class Constants {
 	public static enum KEYWORD_KEYS
 	{
 		BeginClass, BeginTest, ClickElement, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 
-		VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain
+		VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain, CallAction
 	}
 	public static final Map<KEYWORD_KEYS, String> KEYWORD_LONGNAMES = new LinkedHashMap<KEYWORD_KEYS, String>();
     static {
@@ -50,6 +50,7 @@ public class Constants {
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, "Verify Object Is NOT Displayed");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.SelectDropdownValue, "Select Dropdown Value");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.UpdateTestDomain, "Update Test Domain");
+    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.CallAction, "Call Action");
     }
 	public static Map<KEYWORD_KEYS, String> getKeywordLongnames() {
 		return KEYWORD_LONGNAMES;
@@ -86,6 +87,8 @@ public class Constants {
 																"with value to verify of:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("New test domain is:"));
+    	
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CallAction, Arrays.asList("with Action Name:"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordDescriptions() {
@@ -114,6 +117,8 @@ public class Constants {
     	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("http://www.facebook.com"));
+    	
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordValues() {

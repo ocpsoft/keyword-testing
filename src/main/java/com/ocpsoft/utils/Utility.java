@@ -26,7 +26,7 @@ public class Utility {
 	}
 	
 	public static Member<JavaClass, ?> getMemberFromTestCaseName(String testName, String className){
-		File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
+		File testClassFile = new File(Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java");
 		JavaClass testClass = null;
 		try {
 			testClass = (JavaClass) JavaParser.parse(testClassFile);
@@ -57,10 +57,10 @@ public class Utility {
 		return false;
 	}
 	
-	public static JavaClass javaClassExists(String className){
+	public static JavaClass getJavaClass(String className){
 		JavaClass testClass = null;
 		try {
-			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
+			File testClassFile = new File(Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java");
 			testClass = (JavaClass) JavaParser.parse(testClassFile);
 		} catch (Exception e) {
 			System.out.println("Error in trying to get the testClass File for Processing a keyword: " + e);
@@ -117,9 +117,18 @@ public class Utility {
 	}
 	
 	public static String reverseTranslateStep(String step){
-		//Note: All the steps look the same, like: 
+		String keywordName;
+		//Note: Some steps are Action calls like:
+		//Actions.callSomeMethod(deploymentURL, browser)
+		if(step.contains("Actions.")){
+			keywordName = step.substring(step.indexOf("Actions.") + 8, step.indexOf("("));
+			return "<font color='blue'>" + "Action Call" + "</font>: " +
+					"<em><font color='purple'>" + keywordName + "</em></font>";
+		}
+		
+		//Note: All the rest of the steps look the same, like: 
 		//Helper.OpenBrowser(browser,Arrays.asList("index.jsp","assigned_null","assigned_null","assigned_null"),deploymentURL);
-		String keywordName = step.substring(step.indexOf("Helper.") + 7, step.indexOf("("));
+		keywordName = step.substring(step.indexOf("Helper.") + 7, step.indexOf("("));
 		String methodParams = step.substring(step.indexOf("(") + 1);
 		String inputArrayString = methodParams.substring(methodParams.indexOf("(") + 1, methodParams.indexOf(")"));
 		String[] inputArray = inputArrayString.split(",");

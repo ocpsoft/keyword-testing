@@ -62,7 +62,7 @@ public class BeginTestKeyword implements Keyword {
 		
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
-					Constants.ROOT_FILE_PATH + testClass.getName() + ".java"));
+					Constants.APP_UNDER_TEST_ROOT_FILE_PATH + testClass.getName() + ".java"));
 			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 			writetoTest.close();
 		} catch (Exception e) {

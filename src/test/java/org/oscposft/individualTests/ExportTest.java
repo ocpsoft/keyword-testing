@@ -80,10 +80,13 @@ public class ExportTest {//Begin Class
 		//Verfiy the correct message on the UI for the import step
 		String value = getValue("div", "//div[@id='testSuite']");
 		String expected = "Just finished importing the following Keywords:\n"+
+					//TODO: #DeploymentURL_HACK
+				  "deploymentURL=new URL(\"http://localhost:8080/keword-testing/\")\n"+
 		          "OpenBrowser\n"+
 		          "VerifyObjectIsNotDisplayed\n"+
 		          "VerifyObjectProperty\n"+
-		          "[3] total instructions have been imported.";
+		          	//TODO: #DeploymentURL_HACK
+		          "[4] total instructions have been imported.";
 		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
 		    expected.equals(value));
 		

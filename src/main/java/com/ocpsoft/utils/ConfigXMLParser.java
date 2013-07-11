@@ -17,11 +17,12 @@ public class ConfigXMLParser implements Serializable{
 
 	@Inject KeywordFactory factory;
 
-	public final String INSTRUCTION_SET_XML_TAG = "InstructionSet";
-	public final String INSTRUCTION_XML_TAG = "Instruction";
-	public final String KEYWORD_XML_TAG = "Keyword";
-	public final String INPUTS_LIST_XML_TAG = "InputsList";
-	public final String INPUT_XML_TAG = "Input";
+	public final static String INSTRUCTION_SET_XML_TAG = "InstructionSet";
+	public final static String INSTRUCTION_XML_TAG = "Instruction";
+	public final static String KEYWORD_XML_TAG = "Keyword";
+	public final static String INPUTS_LIST_XML_TAG = "InputsList";
+	public final static String INPUT_XML_TAG = "Input";
+	public final static String NON_CONFORMING_CODE_LINE_TAG = "CodeLine";
 		
 	//Assumes there is only 1 child with the nodeName
 	public Node getSimpleXmlNode(String XMLdoc, String nodeName){
@@ -37,9 +38,20 @@ public class ConfigXMLParser implements Serializable{
 	 * 			<Input>otherInputValue</Input>
 	 * 		</Inputs>
 	 * </Instruction>
+	 * 
+	 * or
+	 * 
+	 * <Instruction>
+	 * 		<CodeLine>deploymentURL = new URL("http://localhost:8080/keword-testing/");</CodeLine>
+	 * </Instruction>
 	 */
 	public Instruction getInstructionObjectFromXMLDoc(String XMLdoc){
 		Instruction instruction = new Instruction();
+		
+		if(getSimpleXmlNode(XMLdoc, KEYWORD_XML_TAG) != null){
+			instruction.setNonConformingCodeLine(getSimpleXmlNode(XMLdoc, KEYWORD_XML_TAG).getText());
+			return instruction;
+		}
 		
 		Node keywordNode = getSimpleXmlNode(XMLdoc, KEYWORD_XML_TAG);
 		String keywordString = keywordNode.getText();
@@ -60,6 +72,8 @@ public class ConfigXMLParser implements Serializable{
 				keywordString = node.getText();
 			} else if(node.getName().equals(INPUTS_LIST_XML_TAG)){
 				inputs = getInstructionInputsFromXMLNode(node);
+			} else if(node.getName().equals(NON_CONFORMING_CODE_LINE_TAG)){
+				instruction.setNonConformingCodeLine(node.getText());
 			} else {
 				System.out.println("Invalid XML Tag while looking to get Instruction object. Tag: " + node.getName() + " is invalid.  Not doing anything with it");
 			}

@@ -10,6 +10,7 @@ import com.ocpsoft.utils.Constants;
 public class Instruction {
 	Keyword keyword;
 	ArrayList<String> inputs;
+	String nonConformingCodeLine;
 
 	public Instruction() {
 	}
@@ -29,20 +30,35 @@ public class Instruction {
 	public void addInput(String input){
 		this.inputs.add(input);
 	}
+	public String getNonConformingCodeLine() {
+		return nonConformingCodeLine;
+	}
+	public void setNonConformingCodeLine(String nonConformingCodeLine) {
+		this.nonConformingCodeLine = nonConformingCodeLine;
+	}
 
 	public String toString(){
-		String inputsAsOneString = "";
-		for (String input : getInputs()) {
-			inputsAsOneString += input + Constants.LIST_DELIMITER;
+		if(getNonConformingCodeLine() == null || getNonConformingCodeLine().equals("")){
+			String inputsAsOneString = "";
+			for (String input : getInputs()) {
+				inputsAsOneString += input + Constants.LIST_DELIMITER;
+			}
+			if(inputsAsOneString.length() > 0){
+				inputsAsOneString = inputsAsOneString.substring(0, inputsAsOneString.length() - Constants.LIST_DELIMITER.length()); //Remove last delimiter
+			}
+			return getKeyword().shortName() + Constants.OBJECT_DELIMITER + inputsAsOneString;
 		}
-		if(inputsAsOneString.length() > 0){
-			inputsAsOneString = inputsAsOneString.substring(0, inputsAsOneString.length() - Constants.LIST_DELIMITER.length()); //Remove last delimiter
-		}
-		return getKeyword().shortName() + Constants.OBJECT_DELIMITER + inputsAsOneString;
+		return getNonConformingCodeLine();
 	}
 
 
 	public String toXMLString(ConfigXMLParser xmlParser){
-		return xmlParser.generateInstructionXMLDoc(getKeyword().shortName().toString(), getInputs());
+		if(getNonConformingCodeLine() == null || getNonConformingCodeLine().equals("")){
+			return xmlParser.generateInstructionXMLDoc(getKeyword().shortName().toString(), getInputs());
+		}
+		return "\t<" + ConfigXMLParser.INSTRUCTION_XML_TAG + ">\n" +
+				"\t\t<" + ConfigXMLParser.NON_CONFORMING_CODE_LINE_TAG + ">" + getNonConformingCodeLine() + 
+												"</" + ConfigXMLParser.NON_CONFORMING_CODE_LINE_TAG + ">\n" +
+				"\t</" + ConfigXMLParser.INSTRUCTION_XML_TAG + ">";
 	}
 }

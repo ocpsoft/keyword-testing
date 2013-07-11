@@ -8,21 +8,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.Member;
 import org.jboss.forge.parser.java.Method;
+import org.jboss.forge.parser.java.Visibility;
 import org.jboss.forge.parser.java.util.Formatter;
 import org.ocpsoft.dataBeans.Instruction;
+import org.ocpsoft.keywords.CallActionKeyword;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordAssignment;
@@ -42,15 +42,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	
 	String className = "";//Should be re-assigned on BeginClassKeyword
 	
-	@GET
-	@Path("/{message}")
 	public String echoService(@PathParam("message") String message) {
 		System.out.println("GET on message");
 		return message;
 	}
 
-	@GET
-	@Path("/GetKeywordObject/{shortName}")
 	public Keyword generateKeyword(@PathParam("shortName") String shortName) {
 		System.out.println("Generating a keyword for: " + shortName);
 		Keyword keyword = factory.createKeyword(shortName);
@@ -61,51 +57,27 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		return keyword;
 	}
 
-	@GET
-	@Path("/GetInstructionObjectFromXMLDoc/{xmlDoc}")
 	public Instruction generateInstructionFromXMLDoc(@PathParam("xmlDoc") String xmlDoc) {
 		System.out.println("Getting Instruction From XML String Document");
 		xmlDoc = decodeURLComponent(xmlDoc);
 		Instruction instruction = xmlParser.getInstructionObjectFromXMLDoc(xmlDoc);
-		//For some reason, the inputs are all coming back with [%20] instead of [ ].
-//		ArrayList<String> inputs = new ArrayList<String>();
-//		for (String input : instruction.getInputs()) {
-//			inputs.add(input.replace("%20", " "));
-//		}
-//		instruction.setInputs(inputs);
 		System.out.println("Got Instruction: " + instruction);
 		return instruction;
 	}
 
-	@GET
-	@Path("/GetInstructionSetFromXMLDoc/{xmlDoc}")
 	public ArrayList<Instruction> generateInstructionSetFromXMLDoc(@PathParam("xmlDoc") String xmlDoc) {
 		System.out.println("Getting Instruction Set From XML String Document");
 		xmlDoc = decodeURLComponent(xmlDoc);
 		ArrayList<Instruction> instructions = xmlParser.getInstructionSetFromXMLDoc(xmlDoc);
-//		ArrayList<Instruction> returnInstructions = new ArrayList<Instruction>();
-//		ArrayList<String> inputs;
-//		for (Instruction instruction : instructions) {
-//			inputs = new ArrayList<String>();
-//			for (String input : instruction.getInputs()) {
-//				inputs.add(input.replace("%20", " "));
-//			}
-//			instruction.setInputs(inputs);
-//			returnInstructions.add(instruction);
-//		}
 		System.out.println("Got Instruction Set: " + instructions);
 		return instructions;
 	}
 	
-	@GET
-	@Path("/AllKeywordTypes")
 	public String getAllKeywordtypes() {
 		System.out.println("Get on all Keyword Types");
 		return factory.getAllKeywordTypes().toString();
 	}
 	
-	@GET
-	@Path("/RunBuild")
 	public String runBuild() {
 		System.out.println("Run Build Request");
 		// Java code to run the build
@@ -113,7 +85,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		String testLine = "";
 		try {
 			Process p;
-			if(Constants.ROOT_FILE_PATH.startsWith("D:")){
+			if(Constants.APP_UNDER_TEST_ROOT_FILE_PATH.startsWith("D:")){
 				//Currently on WINDOWS development
 				p = Runtime.getRuntime().exec("cmd.exe /C mvn test -PJBOSS_AS_REMOTE_7.X -f D:/_DEVELOPMENT_/projects/AppUnderTest/pom.xml");
 			}
@@ -151,10 +123,8 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 	}
 
-	@GET
-	@Path("/TestSuite/{className}")
 	public String getTestSuite(@PathParam("className") String className) {
-		String classPath = Constants.ROOT_FILE_PATH + className + ".java";
+		String classPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
 		System.out.println("Getting Test Suite: " + classPath);
 		
 		File file = new File(classPath);
@@ -169,13 +139,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 	}
 
-	@POST
-	@Path("/MoveTestStep/{className}/{testCaseName}/{stepNumber}/{direction}")
 	public String moveTestStep(@PathParam("className") String className,
 			@PathParam("testCaseName") String testCaseName,
 			@PathParam("stepNumber") int stepNumber,
 			@PathParam("direction") String direction) {
-		String completePath = Constants.ROOT_FILE_PATH + className + ".java";
+		String completePath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
 		System.out.println("Moving Step [" + stepNumber + "] in test {" + testCaseName + "} dirction: " + direction);
 
 		File file = new File(completePath);
@@ -221,14 +189,12 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 	}
 	
-	@GET
-	@Path("/ListOfTestMethodNames/{className}")
 	public String getListOfTestMethodNames(@PathParam("className") String className) {
-		String classPath = Constants.ROOT_FILE_PATH + className + ".java";
+		String classPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
 		System.out.println("Getting List of all Tests in Suite: " + classPath);
 
 		try{
-			File testClassFile = new File(Constants.ROOT_FILE_PATH + className + ".java");
+			File testClassFile = new File(Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java");
 			JavaClass testClass = (JavaClass) JavaParser.parse(testClassFile);
 			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
 			String returnVal = "";
@@ -250,10 +216,8 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 	}
 
-	@POST
-	@Path("/DeleteTestSuite/{className}")
 	public String deleteTestSuite(@PathParam("className") String className) {
-		String rootPath = Constants.ROOT_FILE_PATH;
+		String rootPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH;
 		System.out.println("Deleting Test Suite: " + rootPath + className);
 
 		File file = new File(rootPath + className);
@@ -276,9 +240,51 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			return "<font color='red'>ERROR in the delete process.  System error: " + e + "</font>";
 		}
 	}
-
-	@POST
-	@Path("/ExportTestCase/{className}/{testName}")
+	
+	public String exportTestToAction(@PathParam("testClassName") String testClassName, 
+			@PathParam("testName") String testName, 
+			@PathParam("actionName") String actionName) {
+		
+		System.out.println("Exporting a test [" + testName + "] to a new Action [" + actionName + "].");
+		String testBody = "";
+		JavaClass testClass = Utility.getJavaClass(testClassName);
+		if(testClass != null) {
+			testBody = testClass.getMethod(testName).getBody();
+		} else {
+			System.out.println("ERROR: Could not retrieve " + testName + ".java class.  Could not export your new Action [" + actionName + "]");
+			return "ERROR: Could not retrieve " + testName + ".java class.  Could not export your new Action [" + actionName + "]";
+		}
+		
+		JavaClass actionsClass = Utility.getJavaClass("Actions");
+		if(actionsClass != null) {
+			actionsClass.addMethod().setName(actionName)
+			.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()
+			.setStatic(true)
+			
+			//TODO: #DeploymentURL_HACK
+			.addThrows(MalformedURLException.class)
+						
+			.setParameters("URL deploymentURL, DefaultSelenium browser")
+			.setBody(testBody);
+			
+			try {
+				PrintStream writetoTest = new PrintStream(new FileOutputStream(
+						Constants.APP_UNDER_TEST_ROOT_FILE_PATH + actionsClass.getName() + ".java"));
+				writetoTest.print(Formatter.format(actionsClass)); //TODO: This doesn't work, low priority to fix
+				writetoTest.close();
+			} catch (Exception e) {
+				System.err.println("Failure in create new Test Case: " + e);
+				return "ERROR: Could not create new Test.";
+			}
+			
+			System.out.println("SUCCESS: New Action [" + actionName + "] created successfully.");
+			return "SUCCESS: New Action [" + actionName + "] created successfully.";
+		} else {
+			System.out.println("ERROR: Could not retrieve Actions.java class.  Could not export your new Action [" + actionName + "]");
+			return "ERROR: Could not retrieve Actions.java class.  Could not export your new Action [" + actionName + "]";
+		}
+	}
+	
 	public String exportTestCase(@PathParam("className") String className, @PathParam("testName") String testName) {
 		String returnString = "";
 		String rootPath = Constants.EXPORT_FILE_PATH;
@@ -317,7 +323,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		return returnString;
 	}
 	private String getTestMethodCode(String className, String testName){
-		JavaClass testClass = Utility.javaClassExists(className);
+		JavaClass testClass = Utility.getJavaClass(className);
 		if(testClass == null) {
 			return null;
 		}
@@ -338,39 +344,61 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		String[] statements = methodBody.split(";");
 		
 		//Build the XML document as a string
-		returnString+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + xmlParser.INSTRUCTION_SET_XML_TAG + ">\n";
+		returnString+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + ConfigXMLParser.INSTRUCTION_SET_XML_TAG + ">\n";
 		for (String statement : statements) {
 			if(!Utility.isEmptyStep(statement)){
-				returnString+= getInstructionFromCodeStatement(statement).toXMLString(xmlParser) + "\n";
+				Instruction i = getInstructionFromCodeStatement(statement);
+				if(i != null){
+					returnString+=  i.toXMLString(xmlParser) + "\n";
+				}
 			}
 		}
-		returnString+="</" + xmlParser.INSTRUCTION_SET_XML_TAG + ">";
+		returnString+="</" + ConfigXMLParser.INSTRUCTION_SET_XML_TAG + ">";
 		return returnString;
 	}
 	private Instruction getInstructionFromCodeStatement(String statement){
 		
 		/*Sample statement:
 		 * 		Helper.OpenBrowser(browser, Arrays.asList("index.jsp"), deploymentURL);
+		 * 
+		 * 		Or direct Code lines like the following:
+		 * 		Actions.myActionCall(deploymentURL, browser)
+		 * 		//TODO: #DeploymentURL_HACK
+		 * 		deploymentURL = new URL("http://localhost:8080/keword-testing/");
 		 */
-		String keyword = statement.substring("Helper.".length(), statement.indexOf("("));
-		//TODO: Note: This makes assumption that there are no ")" chars in any of the input elements.
-		String inputsString = statement.substring(statement.indexOf("asList(") + "asList(".length(), statement.indexOf(")"));
-		inputsString = inputsString.replace("\"", "");
+		String keyword = "";
+		Instruction instruction = null;
 		
-		Instruction instruction = new Instruction();
-		instruction.setKeyword(factory.createKeyword(keyword));
-		//TODO: Note: This makes assumption that there are no "," chars in any of the input elements.
-		ArrayList<String> inputs = new ArrayList<>();
-		for (String string : inputsString.split(",")) {
-			inputs.add(string);
+		if(statement.contains("Helper.")){
+			keyword = statement.substring("Helper.".length(), statement.indexOf("("));
+			//TODO: Note: This makes assumption that there are no ")" chars in any of the input elements.
+			String inputsString = statement.substring(statement.indexOf("asList(") + "asList(".length(), statement.indexOf(")"));
+			inputsString = inputsString.replace("\"", "");
+			
+			instruction = new Instruction();
+			instruction.setKeyword(factory.createKeyword(keyword));
+			//TODO: Note: This makes assumption that there are no "," chars in any of the input elements.
+			ArrayList<String> inputs = new ArrayList<>();
+			for (String string : inputsString.split(",")) {
+				inputs.add(string);
+			}
+			instruction.setInputs(inputs);
+			return instruction;
+		} else if(statement.contains("Actions.")){
+			instruction = new Instruction();
+			instruction.setNonConformingCodeLine(statement);
+			return instruction;
+		//TODO: #DeploymentURL_HACK
+		} else if(statement.replace(" ", "").startsWith("deploymentURL=newURL(")){
+			instruction = new Instruction();
+			instruction.setNonConformingCodeLine(statement);
+			return instruction;
+		} else {
+			System.out.println("ERROR - Can't parse into Instrcution object. Unknown type of statement:" + statement);
+			return null;
 		}
-		instruction.setInputs(inputs);
-		
-		return instruction;
 	}
 	
-	@POST
-	@Path("/ImportTestSteps/{className}/{testName}/{importFile}")
 	public String importTestSteps(@PathParam("className") String className, 
 			@PathParam("testName") String testName, @PathParam("importFile") String importFilePath) {
 		importFilePath = decodeURLComponent(importFilePath);
@@ -393,7 +421,13 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		for (Instruction instruction : importInstructions) {
 			//We don't want to try to import the header of [Keyword~~Inputs] from the input file.
 			addInstructionToTest(className, testName, instruction);
-			returnString+=instruction.getKeyword().shortName() + "<BR />";
+			if(instruction.getKeyword() != null){
+				returnString+=instruction.getKeyword().shortName() + "<BR />";
+			} else if(instruction.getNonConformingCodeLine() != null){
+				returnString+=instruction.getNonConformingCodeLine() + "<BR />";
+			} else {
+				returnString+="ERROR with instruction: " + instruction;
+			}
 			count++;
 		}
 	  
@@ -435,11 +469,9 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		return xmlParser.getInstructionSetFromXMLDoc(xmlDoc);
 	}
 	
-	@POST
-	@Path("StartNewProject")
 	public String startNewProject(){
 		//TODO: This should really create a totally new project, for now we'll just keep re-using AppUnderTest
-		String rootPath = Constants.ROOT_FILE_PATH;
+		String rootPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH;
 		File helperFile = new File(rootPath + "Helper.java");
 		
 		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
@@ -465,8 +497,6 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		return "SUCCESS";
 	}
 	
-	@POST
-	@Path("/NewInstruction/{keyword}/{className}/{testCaseName}/{inputArrayXML}")
 	public String processNewInstruction(
 			@PathParam("keyword") String keywordkey,
 			@PathParam("className") String className,
@@ -479,7 +509,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 				+ ", inputArray: " + inputs + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
-		String testPath = Constants.ROOT_FILE_PATH + className + ".java";
+		String testPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
 		Instruction instruction = new Instruction();
 		instruction.setKeyword(keyword);
 		instruction.setInputs(inputs);
@@ -509,7 +539,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			}
 			else {
 				//Any other DirectProcess besides BeginClass will need the file to already exist!
-				testClass = Utility.javaClassExists(className);
+				testClass = Utility.getJavaClass(className);
 				if(testClass == null)
 				{
 					System.out.println("Error in trying to get the testClass File for DirectProcess of keyword.");
@@ -519,12 +549,48 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			
 			return keyword.performKeyword(testClass, inputs);
 		}
+		else if(KEYWORD_PROCESS_TYPES.UniqueProcess.equals(keyword.processType())){
+			//Each UniqueProcess keyword needs to add specific code directly to the testcase itself
+			System.out.println(keyword.shortName().toString() +"," + inputs.get(0) + ", " + testCaseName);
+			switch (keyword.shortName().toString()) {
+			case "CallAction":
+				String actionName = inputs.get(0);
+				return processCallActionKeyword(className, testCaseName, actionName);
+			default:
+				System.out.println("ERROR - Unknown keyword with UniqueProcess type: " + keyword.shortName().toString());
+				return "ERROR - Unknown keyword with UniqueProcess type: " + keyword.shortName().toString();
+			}
+			
+		}
 		else{
 			//All other Keywords get processed by adding a call to their HelperClassMethods into the test itself
 			return addInstructionToTest(className, testCaseName, instruction);
 		}
 	}
 		
+	private String processCallActionKeyword(String className, String testName, String actionName) {
+		JavaClass testClass = Utility.getJavaClass(className);
+		if(testClass != null) {
+			Method<JavaClass> currentMethod = testClass.getMethod(testName);
+			if(currentMethod == null){
+				System.out.println("Could not find current testCaseName method: " + testName + ", keyword NOT processed");
+				return "ERROR - Did not find the testCase Named: " + testName + ", we could not process your last keyword: " + KEYWORD_KEYS.CallAction;
+			}
+		  
+			String newStep = "Actions." + actionName + "(deploymentURL, browser);";
+			currentMethod.setBody(currentMethod.getBody() + newStep);
+		  
+			addThrowsToMethodIfNeededForKeyword(new CallActionKeyword(), currentMethod); //In case we ever need to add some later.
+		  
+			return reWriteTestClassFile(className, testClass);
+		}
+		else{
+			System.out.println("Error in trying to get the testClass File for a MethodCall keyword.");
+			System.out.println("Keyword: " + KEYWORD_KEYS.CallAction + ", FAILED due to: testClass being null.");
+			return "ERROR - Did not process keyword: " + KEYWORD_KEYS.CallAction;
+		}
+	}
+
 	private String printOutArrayListAsList(ArrayList<String> list){
 		String returnVal = "Arrays.asList(";
 		for (String element : list) {
@@ -543,52 +609,61 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	private String addInstructionToTest(String className, String testName, Instruction instruction){
 		System.out.println("Adding Instruction to testcase: " + instruction +"\n To test: " + testName);
 		
-		JavaClass testClass = Utility.javaClassExists(className);
+		JavaClass testClass = Utility.getJavaClass(className);
 		Keyword keyword = instruction.getKeyword();
 		ArrayList<String> inputs = instruction.getInputs();
 		if(testClass != null) {
 		  Method<JavaClass> currentMethod = testClass.getMethod(testName);
 		  if(currentMethod == null){
-		    System.out.println("Could not find current testCaseName method: " + testClass + ", keyword NOT processed");
-		    return "ERROR - Did not find the testCase Named: " + testClass + ", we could not process your last keyword: " + keyword.shortName();
+		    System.out.println("Could not find current testCaseName method: " + testName + ", keyword NOT processed");
+		    return "ERROR - Did not find the testCase Named: " + testName + ", we could not process your last keyword: " + keyword.shortName();
 		  }
 		  
-		  String setpPrefix = "";
-		  if(keyword instanceof KeywordAssignment){
-		    setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
+		  String newStep = "";
+		  if(instruction.getNonConformingCodeLine() == null || instruction.getNonConformingCodeLine().equals("")){
+			  String setpPrefix = "";
+			  if(keyword instanceof KeywordAssignment){
+			    setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
+			  }
+			  newStep = setpPrefix + "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
+			  addThrowsToMethodIfNeededForKeyword(keyword, currentMethod);
+		  } else {
+			  newStep = instruction.getNonConformingCodeLine();
 		  }
-		  String newStep = setpPrefix + "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
 		  currentMethod.setBody(currentMethod.getBody() + newStep);
 		  
-		  if(keyword.addThrowsToTest() != null){
-		    //This keyword needs to add certain Exceptions onto the throws of our current test
-		    for (Class<? extends Exception> exceptionClassToAdd : keyword.addThrowsToTest()) {
-		      @SuppressWarnings("unused")
-		      List<String> throwsClasses = currentMethod.getThrownExceptions();
-		      if(Utility.isExceptionAlreadyThrown(currentMethod, exceptionClassToAdd) == false){
-		        currentMethod.addThrows(exceptionClassToAdd);
-		      }
-		    }
-		  }
-		  
-		  //Now re-write the actual File with the updates to the class file
-		  try {
-		    PrintStream writetoTest = new PrintStream(new FileOutputStream(
-		        Constants.ROOT_FILE_PATH + className + ".java"));
-		    writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
-		    writetoTest.close();
-		  } catch (Exception e) {
-		    System.err.println("Failure in writing out the new file for processing this keyword.  Error: " + e);
-		    return "ERROR: Could not process the last keyword.";
-		  }
-		  System.out.println("SUCCESS - Added method call for " + keyword.shortName());
-		  return "SUCCESS";
+		  return reWriteTestClassFile(className, testClass);
 		}
 		else{
 		  System.out.println("Error in trying to get the testClass File for a MethodCall keyword.");
 		  System.out.println("Keyword: " + keyword.shortName() + ", FAILED due to: testClass being null.");
 		  return "ERROR - Did not process keyword: " + keyword.shortName();
 		}
+	}
+	private void addThrowsToMethodIfNeededForKeyword(Keyword keyword, Method<JavaClass> currentMethod) {
+		if(keyword.addThrowsToTest() != null){
+		    //This keyword needs to add certain Exceptions onto the throws of our current test
+		    for (Class<? extends Exception> exceptionClassToAdd : keyword.addThrowsToTest()) {
+		    	@SuppressWarnings("unused")
+		    	List<String> throwsClasses = currentMethod.getThrownExceptions();
+		    	if(Utility.isExceptionAlreadyThrown(currentMethod, exceptionClassToAdd) == false){
+		    		currentMethod.addThrows(exceptionClassToAdd);
+		    	}
+		    }
+		}
+	}
+	private String reWriteTestClassFile(String className, JavaClass testClass) {
+		try {
+			PrintStream writetoTest = new PrintStream(new FileOutputStream(
+		        Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java"));
+		    writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
+		    writetoTest.close();
+		} catch (Exception e) {
+		    System.err.println("Failure in writing out the new file for processing this keyword.  Error: " + e);
+		    return "ERROR: Could not process the last keyword.";
+		}
+		System.out.println("SUCCESS - Added new line of code to the test case");
+		return "SUCCESS";
 	}
 
 	//TODO: This is a hack, find a better way of passing these "bad chars"
