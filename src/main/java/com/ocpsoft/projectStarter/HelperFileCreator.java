@@ -36,7 +36,7 @@ public class HelperFileCreator {
 		//NOTE: Right now we have a MORE HACK in the Utility.java class to correct setting this variable to a value.
 		  
 		helperClass.addField().setPrivate().setStatic(true).setType(String.class)
-			.setName("rootPath").setStringInitializer(Constants.APP_UNDER_TEST_ROOT_FILE_PATH);
+			.setName("rootPath").setStringInitializer(Constants.APP_UNDER_TEST__TEST_FILE_PATH);
 		helperClass.addMethod()
 			.setName("getValue")
 			.setStatic(true)

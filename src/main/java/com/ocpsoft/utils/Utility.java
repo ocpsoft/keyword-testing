@@ -26,7 +26,7 @@ public class Utility {
 	}
 	
 	public static Member<JavaClass, ?> getMemberFromTestCaseName(String testName, String className){
-		File testClassFile = new File(Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java");
+		File testClassFile = new File(Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java");
 		JavaClass testClass = null;
 		try {
 			testClass = (JavaClass) JavaParser.parse(testClassFile);
@@ -60,7 +60,7 @@ public class Utility {
 	public static JavaClass getJavaClass(String className){
 		JavaClass testClass = null;
 		try {
-			File testClassFile = new File(Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java");
+			File testClassFile = new File(Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java");
 			testClass = (JavaClass) JavaParser.parse(testClassFile);
 		} catch (Exception e) {
 			System.out.println("Error in trying to get the testClass File for Processing a keyword: " + e);
@@ -121,9 +121,9 @@ public class Utility {
 		//Note: Some steps are Action calls like:
 		//Actions.callSomeMethod(deploymentURL, browser)
 		if(step.contains("Actions.")){
-			keywordName = step.substring(step.indexOf("Actions.") + 8, step.indexOf("("));
+			String actionName = step.substring(step.indexOf("Actions.") + 8, step.indexOf("("));
 			return "<font color='blue'>" + "Action Call" + "</font>: " +
-					"<em><font color='purple'>" + keywordName + "</em></font>";
+					"<em><font color='purple'>" + actionName + "</em></font>";
 		}
 		
 		//Note: All the rest of the steps look the same, like: 

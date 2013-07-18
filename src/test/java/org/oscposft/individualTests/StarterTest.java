@@ -33,7 +33,7 @@ public class StarterTest {//Begin Class
 		 * Then creates a new one.  We simply verify that a file was created successfully.
 		 */
 		
-		String rootPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH;
+		String rootPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH;
 		String fileName = "Helper.java";
 		
 		ParserExampleTest.removeClassFile(rootPath + fileName);
@@ -55,7 +55,7 @@ public class StarterTest {//Begin Class
 		 * Then creates a new one.  We simply verify that a file was created successfully.
 		 */
 		
-		String rootPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH;
+		String rootPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH;
 		String fileName = "Actions.java";
 		
 		ParserExampleTest.removeClassFile(rootPath + fileName);

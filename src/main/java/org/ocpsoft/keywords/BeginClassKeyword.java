@@ -67,12 +67,6 @@ public class BeginClassKeyword implements Keyword {
 				.setReturnType(WebArchive.class)
 				.setBody(
 						"return ShrinkWrap.create(WebArchive.class, \"FBTutorialDemo.war\")"
-								+ ".addAsResource(\"META-INF/persistence.xml\")"
-								+ ".addClass(Helper.class)"
-								+ ".addAsWebResource(new File(WEBAPP_SRC, \"index.html\"))"
-								+ ".addAsWebResource(new File(WEBAPP_SRC, \"index2.html\"))"
-								+ ".addAsWebResource(new File(WEBAPP_SRC, \"myInfo.html\"))"
-								+ ".addAsWebResource(new File(WEBAPP_SRC, \"friendsInfo.html\"))"
 								+ ".addAsWebInfResource(EmptyAsset.INSTANCE, \"beans.xml\");")
 				.addAnnotation(Constants.DeploymentAnnotationClass).setLiteralValue("testable", "false").getOrigin() //TESTABLE = FALSE is KEY
 				.addImport(File.class);
@@ -95,7 +89,7 @@ public class BeginClassKeyword implements Keyword {
 		testClass.addImport(Arrays.class);
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
-					Constants.APP_UNDER_TEST_ROOT_FILE_PATH + inputValues.get(0) + ".java"));
+					Constants.APP_UNDER_TEST__TEST_FILE_PATH + inputValues.get(0) + ".java"));
 			
 			writetoTest.print(testClass); //TODO: Format this
 			writetoTest.close();

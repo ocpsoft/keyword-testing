@@ -48,7 +48,7 @@ public class ConfigXMLParser implements Serializable{
 	public Instruction getInstructionObjectFromXMLDoc(String XMLdoc){
 		Instruction instruction = new Instruction();
 		
-		if(getSimpleXmlNode(XMLdoc, KEYWORD_XML_TAG) != null){
+		if(getSimpleXmlNode(XMLdoc, KEYWORD_XML_TAG) == null){
 			instruction.setNonConformingCodeLine(getSimpleXmlNode(XMLdoc, KEYWORD_XML_TAG).getText());
 			return instruction;
 		}

@@ -136,7 +136,7 @@
        <center>
        <div id="InstructionStatus"></div><P />
        <input type="submit" id="RunTests" value="Run Tests" onClick='runTests()'/><P />
-       <div id="RunTests"></div><P />
+       <div id="RunTestsResults"><img src="" id="RunTestsResultsImg" /></div><P />
        <BR /><P />
        </center>
        <input type="submit" id="exportToAction" value="Export to Action" onClick='exportToAction()' />
@@ -153,6 +153,8 @@
 
         <script type="text/javascript">
 
+        var doneRunningTests = false;
+        
 		function instruction_Selected(){
 			var dropdown = document.getElementById("keyword");
 			var keyword = dropdown.options[dropdown.selectedIndex].value;
@@ -232,7 +234,8 @@
 						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
 						myObj = xmlhttp.responseText;
 						if(GetURL.indexOf("/RunBuild") != -1){
-							document.getElementById('RunTests').innerHTML = myObj;
+							doneRunningTests = true;
+							document.getElementById('RunTestsResults').innerHTML = myObj + "<img src='' id='RunTestsResultsImg' />";
 						}
 						else if(GetURL.indexOf("/TestSuite") != -1){
 							document.getElementById('testSuite').innerHTML = myObj;
@@ -292,10 +295,15 @@
 
 		function runTests() {
 			var GETurl = 'rest/webService/RunBuild';
+			displayRunningStatusForRunTestsResults();
 			var returnVal = doGET(GETurl);
 			return returnVal;
 		}
 
+		function displayRunningStatusForRunTestsResults(){
+			document.getElementById("RunTestsResults").innerHTML = "<img src='RunningTestsNowAnimated.gif' id='RunTestsResultsImg' />";
+		}
+		
 		function startNewProject() {
 			var POSTurl = 'rest/webService/StartNewProject';
 			var returnVal = doPOST(POSTurl);
@@ -429,7 +437,8 @@
 						//myObj = eval ( '(' + xmlhttp.responseText + ')' );
 						myObj = xmlhttp.responseText;
 						if(GetURL.indexOf("/RunBuild") != -1){
-							document.getElementById('RunTests').innerHTML = myObj;
+							doneRunningTests = true;
+							document.getElementById('RunTestsResults').innerHTML = myObj + "<img src='' id='RunTestsResultsImg' />";
 						}
 						else if(GetURL.indexOf("/TestSuite") != -1){
 							document.getElementById('testSuite').innerHTML = myObj;
@@ -495,7 +504,7 @@
 			return newString;
 		}
 		function clearDivs(){
-			document.getElementById('RunTests').innerHTML = "";
+			document.getElementById('RunTestsResults').innerHTML = "<img src='' id='RunTestsResultsImg' />";
 			document.getElementById('testSuite').innerHTML = "";
 		}
 

@@ -100,7 +100,7 @@ private String getValue(String objectType, String objectXPath){
 
 		value = getValue("div", "//div[@id='testSuite']");
 //		String expected = "<font color='orange'>WARNING: You tried to delete a file that does not exist. File [" + Constants.ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.</font>";
-		String expected = "WARNING: You tried to delete a file that does not exist. File [" + Constants.APP_UNDER_TEST_ROOT_FILE_PATH + "MySampleSuiteTest.java] was already deleted.";
+		String expected = "WARNING: You tried to delete a file that does not exist. File [" + Constants.APP_UNDER_TEST__TEST_FILE_PATH + "MySampleSuiteTest.java] was already deleted.";
 		System.out.println("Check 1 - Value = [" + value + "]");
 		Assert.assertTrue("value should be [Warning] text",
 				expected.equals(value));

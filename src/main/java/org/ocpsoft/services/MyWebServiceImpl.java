@@ -87,12 +87,13 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			Process p;
 			if(Constants.APP_UNDER_TEST_ROOT_FILE_PATH.startsWith("D:")){
 				//Currently on WINDOWS development
-				p = Runtime.getRuntime().exec("cmd.exe /C mvn test -PJBOSS_AS_REMOTE_7.X -f D:/_DEVELOPMENT_/projects/AppUnderTest/pom.xml");
+				p = Runtime.getRuntime().exec("cmd.exe /C mvn test -PJBOSS_AS_REMOTE_7.X -f " + Constants.APP_UNDER_TEST_ROOT_FILE_PATH + "pom.xml");
+				//Example: mvn test -PJBOSS_AS_REMOTE_7.X -f D:\DEVELOPMENT\projects\AppUnderTest\pom.xml
 			}
 			else {
 				//Currently on UNIX development
 				p = Runtime.getRuntime().exec(
-						"mvn test -PJBOSS_AS_REMOTE_7.X -f /home/fife/workspace/AppUnderTest/pom.xml");
+						"mvn test -PJBOSS_AS_REMOTE_7.X -f " + Constants.APP_UNDER_TEST_ROOT_FILE_PATH + "pom.xml");
 			}
 			p.waitFor();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -109,11 +110,13 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 				line = reader.readLine();
 			}
 
-		} catch (IOException e1) {
-		} catch (InterruptedException e2) {
+			p.destroy();
+		} catch (Exception e) {
+			System.out.println("ERROR - Failure to build: " + e);
+			return "Build Failed... Check Console for error";
 		}
 
-		System.out.println("Done");
+		System.out.println("Done Build Request - isSuccessful: " + isSuccessful + " - testLine: " + testLine);
 
 		if (isSuccessful) {
 			return "Build SUCCESSFUL!!!" + "<BR />" + testLine;
@@ -124,7 +127,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	}
 
 	public String getTestSuite(@PathParam("className") String className) {
-		String classPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
+		String classPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java";
 		System.out.println("Getting Test Suite: " + classPath);
 		
 		File file = new File(classPath);
@@ -143,7 +146,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			@PathParam("testCaseName") String testCaseName,
 			@PathParam("stepNumber") int stepNumber,
 			@PathParam("direction") String direction) {
-		String completePath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
+		String completePath = Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java";
 		System.out.println("Moving Step [" + stepNumber + "] in test {" + testCaseName + "} dirction: " + direction);
 
 		File file = new File(completePath);
@@ -190,11 +193,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	}
 	
 	public String getListOfTestMethodNames(@PathParam("className") String className) {
-		String classPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
+		String classPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java";
 		System.out.println("Getting List of all Tests in Suite: " + classPath);
 
 		try{
-			File testClassFile = new File(Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java");
+			File testClassFile = new File(Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java");
 			JavaClass testClass = (JavaClass) JavaParser.parse(testClassFile);
 			List<Member<JavaClass, ?>> allMembers = testClass.getMembers();
 			String returnVal = "";
@@ -217,7 +220,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	}
 
 	public String deleteTestSuite(@PathParam("className") String className) {
-		String rootPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH;
+		String rootPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH;
 		System.out.println("Deleting Test Suite: " + rootPath + className);
 
 		File file = new File(rootPath + className);
@@ -269,7 +272,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			
 			try {
 				PrintStream writetoTest = new PrintStream(new FileOutputStream(
-						Constants.APP_UNDER_TEST_ROOT_FILE_PATH + actionsClass.getName() + ".java"));
+						Constants.APP_UNDER_TEST__TEST_FILE_PATH + actionsClass.getName() + ".java"));
 				writetoTest.print(Formatter.format(actionsClass)); //TODO: This doesn't work, low priority to fix
 				writetoTest.close();
 			} catch (Exception e) {
@@ -471,7 +474,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	
 	public String startNewProject(){
 		//TODO: This should really create a totally new project, for now we'll just keep re-using AppUnderTest
-		String rootPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH;
+		String rootPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH;
 		File helperFile = new File(rootPath + "Helper.java");
 		
 		//First, if Helper.java exists, remove it so we can generate a fresh one we know will be up to date
@@ -509,7 +512,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 				+ ", inputArray: " + inputs + ", className=" + className);
 
 		Keyword keyword = factory.createKeyword(keywordkey);
-		String testPath = Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java";
+		String testPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java";
 		Instruction instruction = new Instruction();
 		instruction.setKeyword(keyword);
 		instruction.setInputs(inputs);
@@ -655,7 +658,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	private String reWriteTestClassFile(String className, JavaClass testClass) {
 		try {
 			PrintStream writetoTest = new PrintStream(new FileOutputStream(
-		        Constants.APP_UNDER_TEST_ROOT_FILE_PATH + className + ".java"));
+		        Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java"));
 		    writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 		    writetoTest.close();
 		} catch (Exception e) {

@@ -157,6 +157,12 @@ public class ExportTest {//Begin Class
 		String expectedFile = xmlParser.generateInstructionSetXMLDoc(keywords, inputs);
 		expectedFile += "\n"; //Since the entire file is going to have an extra newLine, make one here too since it's easier.
 		
+		//TODO: #DeploymentURL_HACK
+		//Need to add the CodeLine for the deploymentURL into the expected file
+		String depURLline = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<InstructionSet>\n\t<Instruction>\n\t\t<CodeLine>deploymentURL=new URL(\"http://localhost:8080/keword-testing/\")</CodeLine>\n\t</Instruction>";
+		expectedFile = depURLline + expectedFile.substring(expectedFile.indexOf("<InstructionSet>") + "<InstructionSet>".length());
+
+		
 		String entireFile = "";
 		File file = new File(exportFilePath);
 		if(file.exists()){
@@ -174,9 +180,7 @@ public class ExportTest {//Begin Class
 			Assert.assertTrue("Export did not work. Fail test...", false);
 		}
 		
-		Assert.assertEquals(expectedFile, entireFile);
-//		Assert.assertTrue("File should match pre-defined file string\n" +
-//				"actual file:\n" + entireFile + "\n\nexpected:\n" + expectedFile, expectedFile.equals(entireFile));
+		Assert.assertEquals("Exported file should match entire file", expectedFile, entireFile);
 	}
 
 	private void importTestFromFile(String testName) throws InterruptedException {
