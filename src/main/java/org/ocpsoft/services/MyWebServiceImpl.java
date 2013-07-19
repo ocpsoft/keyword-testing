@@ -152,6 +152,10 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			@PathParam("direction") String direction) {
 		String completePath = Constants.APP_UNDER_TEST__TEST_FILE_PATH + className + ".java";
 		System.out.println("Moving Step [" + stepNumber + "] in test {" + testCaseName + "} dirction: " + direction);
+		
+		//TODO: #DeploymentURL_HACK
+		//deploymentURL line is in the steps, but not displayed, so we need to subtract another 1
+		int top = 1; //should be 0, but we have the deploymentURL line
 
 		File file = new File(completePath);
 		try {
@@ -169,7 +173,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 						steps[stepNumber] = tempStep;
 					}
 					else if(direction.equalsIgnoreCase("up")){
-						if(stepNumber <= 0){
+						if(stepNumber <= top){
 							return "ERROR: Can not move the first step up.";
 						}
 						String tempStep = steps[stepNumber - 1];
@@ -178,7 +182,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 					}
 					String newBody = "";
 					for (String step : steps) {
-						newBody+=step + ";";
+						newBody += step;
+						//Add the ; back at the end of the statement, unless this step is really a block
+						if(!step.endsWith("}")){
+							newBody += ";";
+						}
 					}
 					testClass.getMethod(Utility.getTestCaseName(member))
 						.setBody(newBody);

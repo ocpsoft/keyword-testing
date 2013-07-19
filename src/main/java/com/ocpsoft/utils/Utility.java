@@ -110,10 +110,10 @@ public class Utility {
 	
 	public static String generateMoveButton(String testName, int index, String direction){
 		if(direction.equalsIgnoreCase("up")){
-			return "<a href='#top' onClick=\"moveTestStep('" + testName + "', " + index + ", '" + direction + "')\">|UP|</a>";
+			return "<a href='#top' id='upLink_" + index + "' onClick=\"moveTestStep('" + testName + "', " + index + ", '" + direction + "')\">|UP|</a>";
 		}
 		else if(direction.equalsIgnoreCase("down")){
-			return "<a href='#top' onClick=\"moveTestStep('" + testName + "', " + index + ", '" + direction + "')\">|DOWN|</a>";
+			return "<a href='#top' id='downLink_" + index + "' onClick=\"moveTestStep('" + testName + "', " + index + ", '" + direction + "')\">|DOWN|</a>";
 		}
 		return "ERROR: Invalid direction";
 	}
@@ -123,25 +123,80 @@ public class Utility {
 			return null;
 		}
 		String[] steps = member.getOrigin().getMethod(getTestCaseName(member)).getBody().split(";");
-		String[] returnArray = new String[ steps.length - 1 ];  //Last line is always just a newline
+		String[] returnArray;
+		if(steps[steps.length - 1].replace("\n", "").replace(" ", "").equals("")){
+			returnArray = new String[ steps.length - 1 ];  //Last line is sometimes just a newline
+		} else {
+			returnArray = new String[ steps.length];
+		}
+		boolean stepIsInABlock = false;
+		boolean stepEndsABlock = false;
+		boolean stepInMiddleOfBlock = false;
 		int pos = 0;
 		for (int i = 0; i < returnArray.length; i++) {
-			if(steps[i].replace("\n", "").replace(" ", "").contains("}else{")){
-				//This is a continuation of the prior step {conditional branch} step
-				//Go back to the last step, and re-assign it with the added else clause
+			String curStep = steps[i];
+			
+			if(stepIsInABlock){
+				stepInMiddleOfBlock = true;
+			}
+			if(curStep.contains("{")){
+				stepIsInABlock = true;
+			}
+			if(curStep.contains("}")){
+				stepEndsABlock = true;
+				stepInMiddleOfBlock = false;
+			}
+			
+			if(stepEndsABlock){
+				//Add up to the } to the last step, and make curStep the remainder to continue adding the rest of this step
+				String remainderOfBlock = curStep.substring(0, curStep.indexOf("}") + 1);
 				pos--;
-				returnArray[pos] = returnArray[pos] + clearNewLinesOutOfString(steps[i]);
+				returnArray[pos] = returnArray[pos] + clearNewLinesOutOfString(remainderOfBlock);
+				pos++;
+				curStep = curStep.substring(curStep.indexOf("}") + 1);
+				stepIsInABlock = curStep.contains("{");
+				stepEndsABlock = curStep.contains("}");
+			}
+			
+			String nonBlankCurStep = curStep.replace("\n", "").replace(" ", "");
+			if(stepIsInABlock && !nonBlankCurStep.equals("}") && !nonBlankCurStep.equals("")){
+				//Add the ; back to the end of this statement, since this step is going in the middle of a block
+				//Note the last step in the block is probably going to just be "}".
+				curStep+= ";";
+			}
+			if(stepInMiddleOfBlock || curStep.replace(" ", "").contains("else{")){
+				//This is part of a block or continuation of the prior step {conditional branch} step
+				//Go back to the last step, and re-assign it with this step as a continuation
+				pos--;
+				returnArray[pos] = returnArray[pos] + clearNewLinesOutOfString(curStep);
 			} else {
-				returnArray[pos] = clearNewLinesOutOfString(steps[i]);
+				returnArray[pos] = clearNewLinesOutOfString(curStep);
 			}
 			pos++;
+		}
+		
+		if(returnArray[returnArray.length -1] == null){
+			//We have at least 1 combined step, so our count is now off, remove all null steps
+			int count = 0;
+			for (String string : returnArray) {
+				if(string != null){	count++; }
+			}
+			String[] curReturnArray = new String[count];
+			pos = 0;
+			for (int i = 0; i < returnArray.length; i++) {
+				if(returnArray[i] != null){
+					curReturnArray[pos] = returnArray[i];
+					pos++;
+				}
+			}
+			returnArray = curReturnArray;
 		}
 		return returnArray;
 	}
 	
 	public static String reverseTranslateStep(String step){
 		String keywordName;
-		//Note: Some steps are ternary operators (?) for "if" conditions
+		//Note: Some steps "if" conditions
 		//Example: if({condition}) { Actions.trueCase(); } else { Actions.falseCase(); }
 		if(step.contains("if (")){
 			String condition = step.substring(step.indexOf("if (") + 4, step.indexOf(")"));

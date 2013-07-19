@@ -45,7 +45,8 @@ public class ConditionalsTest {//Begin Class
 	public void testBuildingATestWithAConditionalAndValidateUI() throws InterruptedException {//Begin Test Case
 		/* This test builds a new suite and 1 new test via the app.
 		 * That test will contain 2 conditional statements, 1 with only true case, and 1 with both true and false cases.
-		 * We will lastly verify the UI from loading the Suite.
+		 * Then verify the UI steps on the page from loading the Suite.
+		 * Lastly, we perform a few move step |UP| and |DOWN| commands and verify output on each
 		 */
 
 		//TODO: #DeploymentURL_HACK
@@ -70,6 +71,63 @@ public class ConditionalsTest {//Begin Class
 		buildTest();
 		verifyCorrectTestStepsOnUITest("testName");
 		
+		browser.click("id=downLink_3");
+		Thread.sleep(100);
+		verifyTextInTestSuiteField("ERROR: Can not move the last step down.");
+		browser.click("id=loadSuite");
+		browser.click("id=upLink_1");
+		verifyTextInTestSuiteField("ERROR: Can not move the first step up.");
+		browser.click("id=loadSuite");
+		
+		browser.click("id=upLink_3");
+		browser.click("id=loadSuite");
+		String expected = "Test Suite Named: MySuiteTest\n" +
+				"testName\n" +
+				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+				"if adding onto end of the domain): index.jsp\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case:";
+		verifyTextInTestSuiteField(expected);
+
+		browser.click("id=upLink_2");
+		browser.click("id=loadSuite");
+		expected = "Test Suite Named: MySuiteTest\n" +
+				"testName\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
+				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+				"if adding onto end of the domain): index.jsp\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case:";
+		verifyTextInTestSuiteField(expected);
+
+		browser.click("id=upLink_3");
+		browser.click("id=loadSuite");
+		expected = "Test Suite Named: MySuiteTest\n" +
+				"testName\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case: \n" +
+				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+				"if adding onto end of the domain): index.jsp";
+		verifyTextInTestSuiteField(expected);
+
+		browser.click("id=downLink_2");
+		browser.click("id=loadSuite");
+		expected = "Test Suite Named: MySuiteTest\n" +
+				"testName\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
+				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+				"if adding onto end of the domain): index.jsp\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case:";
+		verifyTextInTestSuiteField(expected);
+
+		browser.click("id=downLink_1");
+		browser.click("id=loadSuite");
+		expected = "Test Suite Named: MySuiteTest\n" +
+				"testName\n" +
+				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+				"if adding onto end of the domain): index.jsp\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
+				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case:";
+		verifyTextInTestSuiteField(expected);
 	}//End Test Case
 	
 	private void buildTest() throws InterruptedException {
@@ -156,14 +214,18 @@ public class ConditionalsTest {//Begin Class
 	}
 	
 	private void verifyCorrectTestStepsOnUITest(String testCaseName) {
-		String value = getValue("div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case: \n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction";
-		Assert.assertEquals(expected, value);
+		verifyTextInTestSuiteField(expected);
+	}
+	
+	private void verifyTextInTestSuiteField(String expectedText){
+		String value = getValue("div", "//div[@id='testSuite']");
+		Assert.assertEquals(expectedText, value);
 	}
 
 	private String getValue(String objectType, String objectXPath){
