@@ -43,6 +43,20 @@ public class Utility {
 		return null;
 	}
 	
+	public static Method<JavaClass> getTestCaseMethodFromName(String testName, JavaClass testClass){
+		if(testClass == null){
+			return null;
+		}
+		List<Method<JavaClass>> allMethods = testClass.getMethods();
+		for (Method<JavaClass> method : allMethods) {
+			if(method.getName().equalsIgnoreCase(testName)){
+				return method;
+			}
+		}
+		System.out.println("ERROR: Could not determine test with name: " + testName + ", in class: " + testClass.toString());
+		return null;
+	}
+	
 	public static String getTestCaseName(Member<JavaClass, ?> member){
 		if(memberIsATestCase(member)){
 			return member.getName();
@@ -110,14 +124,38 @@ public class Utility {
 		}
 		String[] steps = member.getOrigin().getMethod(getTestCaseName(member)).getBody().split(";");
 		String[] returnArray = new String[ steps.length - 1 ];  //Last line is always just a newline
+		int pos = 0;
 		for (int i = 0; i < returnArray.length; i++) {
-			returnArray[i] = clearNewLinesOutOfString(steps[i]);
+			if(steps[i].replace("\n", "").replace(" ", "").contains("}else{")){
+				//This is a continuation of the prior step {conditional branch} step
+				//Go back to the last step, and re-assign it with the added else clause
+				pos--;
+				returnArray[pos] = returnArray[pos] + clearNewLinesOutOfString(steps[i]);
+			} else {
+				returnArray[pos] = clearNewLinesOutOfString(steps[i]);
+			}
+			pos++;
 		}
 		return returnArray;
 	}
 	
 	public static String reverseTranslateStep(String step){
 		String keywordName;
+		//Note: Some steps are ternary operators (?) for "if" conditions
+		//Example: if({condition}) { Actions.trueCase(); } else { Actions.falseCase(); }
+		if(step.contains("if (")){
+			String condition = step.substring(step.indexOf("if (") + 4, step.indexOf(")"));
+			String trueCondition = step.substring(step.indexOf("Actions.") + 8, step.indexOf("(", step.indexOf("Actions.")));
+			String falseCondition = "";
+			if(step.contains("else")){
+				falseCondition = step.substring(step.indexOf("Actions.", step.indexOf("else")) + 8, step.indexOf("(", step.indexOf("else")));
+			}
+			return "<font color='blue'>" + Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch) + "</font>: " +
+					"true/false condition to test: " + "<em><font color='purple'>" + condition + "</em></font>" +
+					" - true case: " + "<em><font color='purple'>" + trueCondition + "</em></font>" +
+					" - false case: " + "<em><font color='purple'>" + falseCondition + "</em></font>";
+		}
+		
 		//Note: Some steps are Action calls like:
 		//Actions.callSomeMethod(deploymentURL, browser)
 		if(step.contains("Actions.")){

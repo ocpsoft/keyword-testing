@@ -45,7 +45,7 @@ public class BeginTestKeyword implements Keyword {
 
 	
 	@Override
-	public String performKeyword(JavaClass testClass, ArrayList<String> inputValues) {
+	public String performKeyword(JavaClass testClass, String nullTestName, ArrayList<String> inputValues) {
 		
 		testClass.addMethod().setName(inputValues.get(0))
 				.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()

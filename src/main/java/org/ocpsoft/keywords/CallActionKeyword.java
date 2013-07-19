@@ -39,7 +39,7 @@ public class CallActionKeyword implements Keyword {
 
 	
 	@Override
-	public String performKeyword(JavaClass testClass, ArrayList<String> inputValues) {
+	public String performKeyword(JavaClass testClass, String testCaseName, ArrayList<String> inputValues) {
 		System.out.println("SUCCESS: New Call to Actions [" + inputValues.get(0) + "] added successfully.");
 		return "SUCCESS: New Call to Actions [" + inputValues.get(0) + "] added successfully.";
 	}

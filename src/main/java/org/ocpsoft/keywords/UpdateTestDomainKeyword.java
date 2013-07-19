@@ -38,7 +38,7 @@ public class UpdateTestDomainKeyword implements KeywordAssignment {
 	
 	@Override
 	@Deprecated
-	public String performKeyword(JavaClass testClass, ArrayList<String> inputValues) {
+	public String performKeyword(JavaClass testClass, String testCaseName, ArrayList<String> inputValues) {
 		return "";
 	}
 	

@@ -15,10 +15,16 @@ public class Constants {
 	//public static final String EXPORT_FILE_PATH = "/home/fife/workspace/Keyword_Export_Files";
 	
 	/***********************  WINDOWWS FILE PATH *****************************************/
-	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/AppUnderTest/";
+//	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/AppUnderTest/";
+//	public static final String APP_UNDER_TEST__TEST_FILE_PATH = APP_UNDER_TEST_ROOT_FILE_PATH + "src/test/java/com/example/domain/";
+//	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/";
+//	public static final String EXPORT_FILE_PATH = "D:/DEVELOPMENT/projects/Keyword_Export_Files/";
+
+	/***********************  LAPTOP FILE PATH *****************************************/
+	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "C:/Development/projects/AppUnderTestProject/";
 	public static final String APP_UNDER_TEST__TEST_FILE_PATH = APP_UNDER_TEST_ROOT_FILE_PATH + "src/test/java/com/example/domain/";
-	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/";
-	public static final String EXPORT_FILE_PATH = "D:/DEVELOPMENT/projects/Keyword_Export_Files/";
+	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "C:/Development/projects/keword-testing/";
+	public static final String EXPORT_FILE_PATH = "C:/Development/projects/Keyword_Export_Files/";
 	
 	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
 	public static final String LIST_DELIMITER = "##";
@@ -37,8 +43,8 @@ public class Constants {
 
 	public static enum KEYWORD_KEYS
 	{
-		BeginClass, BeginTest, ClickElement, EnterTextInInput, OpenBrowser, SelectDropdownValue, VerifyObjectIsDisplayed, 
-		VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain, CallAction
+		BeginClass, BeginTest, ClickElement, ConditionalBranch, EnterTextInInput, OpenBrowser, SelectDropdownValue, 
+		VerifyObjectIsDisplayed, VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain, CallAction
 	}
 	public static final Map<KEYWORD_KEYS, String> KEYWORD_LONGNAMES = new LinkedHashMap<KEYWORD_KEYS, String>();
     static {
@@ -46,6 +52,7 @@ public class Constants {
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.BeginTest, "Begin New Test");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.OpenBrowser, "Open Browser");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.ClickElement, "Click Web Element");
+    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.ConditionalBranch, "Conditional Branch");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.EnterTextInInput, "Enter Text in Box");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectProperty, "Verify Object Property");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectIsDisplayed, "Verify Object Is Displayed");
@@ -68,6 +75,10 @@ public class Constants {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.ClickElement, Arrays.asList("with Identifyer [link/id/name/css/xpath] of:",
 											    			   	"and desired element key of:", 
 															   	"and desired Destination Path of (OPTIONAL FIELD - will wait for page to load):"));
+    	
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.ConditionalBranch, Arrays.asList("with true/false condition of:",
+											    			   	"Action to call in true case:", 
+															   	"Action to call in false case (OPTIONAL FIELD):"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("with xPath of Input:",
 				   												"and Text to enter:"));
@@ -106,6 +117,8 @@ public class Constants {
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.ClickElement, Arrays.asList("link","Get Your Info Here","myInfo.html"));
     	
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.ConditionalBranch, Arrays.asList("true/*condition here*/","trueCaseAction", "falseCaseAction"));
+
     	KEYWORD_VALUES.put(KEYWORD_KEYS.EnterTextInInput, Arrays.asList("//input[@id='className']","Assigning Input Text"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.OpenBrowser, Arrays.asList("index.jsp"));

@@ -85,10 +85,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		String testLine = "";
 		try {
 			Process p;
-			if(Constants.APP_UNDER_TEST_ROOT_FILE_PATH.startsWith("D:")){
+			if(Constants.APP_UNDER_TEST_ROOT_FILE_PATH.startsWith("D:") ||
+					Constants.APP_UNDER_TEST_ROOT_FILE_PATH.startsWith("C:")){
 				//Currently on WINDOWS development
 				p = Runtime.getRuntime().exec("cmd.exe /C mvn test -PJBOSS_AS_REMOTE_7.X -f " + Constants.APP_UNDER_TEST_ROOT_FILE_PATH + "pom.xml");
-				//Example: mvn test -PJBOSS_AS_REMOTE_7.X -f D:\DEVELOPMENT\projects\AppUnderTest\pom.xml
+				//Example: mvn test -PJBOSS_AS_REMOTE_7.X -f C:\Development\projects\AppUnderTest\pom.xml
 			}
 			else {
 				//Currently on UNIX development
@@ -98,6 +99,9 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			p.waitFor();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					p.getInputStream()));
+			BufferedReader errorReader = new BufferedReader(new InputStreamReader(
+					p.getErrorStream()));
+			String errorLine = errorReader.readLine();
 			String line = reader.readLine();
 			while (line != null) {
 				System.out.println(line);
@@ -550,7 +554,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 				}
 			}
 			
-			return keyword.performKeyword(testClass, inputs);
+			return keyword.performKeyword(testClass, testCaseName, inputs);
 		}
 		else if(KEYWORD_PROCESS_TYPES.UniqueProcess.equals(keyword.processType())){
 			//Each UniqueProcess keyword needs to add specific code directly to the testcase itself

@@ -49,7 +49,7 @@ public class BeginClassKeyword implements Keyword {
 	}
 
 	@Override
-	public String performKeyword(JavaClass nullClass, ArrayList<String> inputValues) {
+	public String performKeyword(JavaClass nullClass, String nullTestName, ArrayList<String> inputValues) {
 		JavaClass testClass = JavaParser.create(JavaClass.class);
 		testClass.setName(inputValues.get(0)).setPackage("com.example.domain")
 				.addAnnotation(Constants.RunWithAnnotationClass)

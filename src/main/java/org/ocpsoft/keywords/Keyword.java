@@ -24,7 +24,7 @@ public interface Keyword {
 	//One and only One of them.  Should really break this out into 2 different objects.
 	//For now seperate them to know which is which via KEYWORD_PROCESS_TYPES to know which method below to use:
 	void createKeywordHelperMethod(JavaClass helperClass);
-	String performKeyword(JavaClass testClass, ArrayList<String> inputValues);
+	String performKeyword(JavaClass testClass, String testCaseName, ArrayList<String> inputValues);
 	
 	/*NOTE: For creating new keywords, you must:
 	1) Create the new Keyword class implementing Keyword.
