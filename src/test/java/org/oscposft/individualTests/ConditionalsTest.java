@@ -14,6 +14,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ocpsoft.utils.TestUtility;
 
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
@@ -224,21 +225,8 @@ public class ConditionalsTest {//Begin Class
 	}
 	
 	private void verifyTextInTestSuiteField(String expectedText){
-		String value = getValue("div", "//div[@id='testSuite']");
+		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals(expectedText, value);
 	}
 
-	private String getValue(String objectType, String objectXPath){
-		if(objectType.equals("select")) {
-			return browser.getSelectedLabel(objectXPath);
-		} else if(objectType.equals("input")) {
-			return browser.getValue(objectXPath);
-		} else if(objectType.equals("div")) {
-			//TODO: Really should do innerHTML, but having problems getting that right now.
-			//Text will have to be good enough right now, there is no method to get innerHTML.
-			return browser.getText(objectXPath);
-		} else {
-			return browser.getText(objectXPath);
-		}
-	}
 }//End Class

@@ -18,6 +18,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ocpsoft.utils.TestUtility;
 
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
@@ -78,7 +79,7 @@ public class ActionsTest {//Begin Class
 		callActionInTest(ACTION_NAME);
 		
 		//Verfiy the correct message on the UI for the import step
-		String value = getValue("div", "//div[@id='testSuite']");
+		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\nmyNewTest\n|UP| |DOWN| Action Call: myAction";
 		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
 		    expected.equals(value));
@@ -255,7 +256,7 @@ public class ActionsTest {//Begin Class
 	}
 	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {
-		String value = getValue("div", "//div[@id='testSuite']");
+		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
@@ -268,7 +269,7 @@ public class ActionsTest {//Begin Class
 	}
 
 	private void verifyCorrectTestStepsOnUITest2(String testCaseName) {
-		String value = getValue("div", "//div[@id='testSuite']");
+		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
@@ -277,17 +278,4 @@ public class ActionsTest {//Begin Class
 		Assert.assertEquals(expected, value);
 	}
 
-	private String getValue(String objectType, String objectXPath){
-		if(objectType.equals("select")) {
-			return browser.getSelectedLabel(objectXPath);
-		} else if(objectType.equals("input")) {
-			return browser.getValue(objectXPath);
-		} else if(objectType.equals("div")) {
-			//TODO: Really should do innerHTML, but having problems getting that right now.
-			//Text will have to be good enough right now, there is no method to get innerHTML.
-			return browser.getText(objectXPath);
-		} else {
-			return browser.getText(objectXPath);
-		}
-	}
 }//End Class

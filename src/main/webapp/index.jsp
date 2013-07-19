@@ -162,7 +162,7 @@
 			if(keyword == "BeginClass"){
 				updateTestCaseNames("NewClass", null);
 			} else {
-				updateTestCaseNames("NewTest", document.getElementById("testCaseName"));
+				updateTestCaseNames("NewTest", getTestCaseName());
 			}
 			showAllNecessaryInputs(keyword);
 		}
@@ -359,7 +359,7 @@
 				encodeURLComp(inputListXML);
 			var returnVal = doPOST(POSTurl, "", false);
 			if(keyword == "BeginTest"){
-				updateTestCaseNames("NewTest", getTestCaseName());
+				updateTestCaseNames("NewTest", document.getElementById("Input1").value);
 			}
 			return returnVal;
 		}
@@ -401,6 +401,7 @@
 		
 		function performTestCaseSelectOptionUpdate(newOptions, newTestName){
 			var methodList = newOptions.split(",");
+			var selectObject = document.getElementById('testCaseName');
 			selectObject.options.length = methodList.length;
 			for (var i=0; i < methodList.length; i++){
 				selectObject.options[i] = new Option(methodList[i],i);

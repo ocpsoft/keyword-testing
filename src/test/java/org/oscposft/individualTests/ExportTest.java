@@ -18,6 +18,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ocpsoft.utils.TestUtility;
 
 import com.ocpsoft.utils.ConfigXMLParser;
 import com.ocpsoft.utils.Constants;
@@ -78,7 +79,7 @@ public class ExportTest {//Begin Class
 		System.out.println("***************** Imported test back successfully ****************");
 		
 		//Verfiy the correct message on the UI for the import step
-		String value = getValue("div", "//div[@id='testSuite']");
+		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Just finished importing the following Keywords:\n"+
 					//TODO: #DeploymentURL_HACK
 				  "deploymentURL=new URL(\"http://localhost:8080/keword-testing/\")\n"+
@@ -127,7 +128,7 @@ public class ExportTest {//Begin Class
 	}
 	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {
-		String value = getValue("div", "//div[@id='testSuite']");
+		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
@@ -201,21 +202,5 @@ public class ExportTest {//Begin Class
 		browser.type("//input[@id='ImportInput1']", exportFilePath);
 		browser.click("id=importSteps");
 		Thread.sleep(300);//Give time for server modify the test by adding all the steps from the inputFile.
-	}
-	
-	
-
-	private String getValue(String objectType, String objectXPath){
-		if(objectType.equals("select")) {
-			return browser.getSelectedLabel(objectXPath);
-		} else if(objectType.equals("input")) {
-			return browser.getValue(objectXPath);
-		} else if(objectType.equals("div")) {
-			//TODO: Really should do innerHTML, but having problems getting that right now.
-			//Text will have to be good enough right now, there is no method to get innerHTML.
-			return browser.getText(objectXPath);
-		} else {
-			return browser.getText(objectXPath);
-		}
 	}
 }//End Class
