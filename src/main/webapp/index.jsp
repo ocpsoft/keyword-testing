@@ -140,12 +140,14 @@
        <BR /><P />
        </center>
        <input type="submit" id="exportToAction" value="Export to Action" onClick='exportToAction()' />
-       <input type="text" id="exportToActionName" /><br />
+       <input type="text" id="exportToActionName" value="[Name of Action File] performed on current selected TestCase"/><br />
+       <input type="submit" id="exportTestCase" value="Export Current Test to XML File" onClick='exportTestCase()'/>
+       <input type="submit" id="importSteps" value="Import Steps To Current Test from XML File" onClick='importTestSteps()'/>
+       <input type="text" id="ImportInput1" value="Fully Qualified Path of XML File to import"/><br />
        <input type="submit" id="clearDivs" value="Clear Console" onClick='clearDivs()'/>
        <input type="submit" id="deleteSuite" onClick='deleteSuite()'/>
-       <input type="submit" id="exportTestCase" value="Export Current Test" onClick='exportTestCase()'/>
-       <input type="submit" id="importSteps" value="Import Steps" onClick='importTestSteps()'/>
-       <input type="text" id="ImportInput1" /><br />
+       <input type="submit" id="deleteTest" value="Delete Test Case" onClick='deleteTest()'/>
+       <input type="text" id="DeleteTestInput" value="Name of Test to Delete" /><br />
        			
 		Status:
 		<div id="testSuite"></div>
@@ -517,6 +519,14 @@
 			document.getElementById('testSuite').innerHTML = returnVal;		
 		}
 
+		function deleteTest(){
+			var className = document.getElementById("className").value;
+			var POSTurl = 'rest/webService/DeleteTestCase/' + className + '/' + document.getElementById("DeleteTestInput").value;
+			var returnVal = doPOST(POSTurl, "", false);
+			clearDivs();
+			document.getElementById('testSuite').innerHTML = returnVal;		
+		}
+		
 		function getAllInputValuesAsXML(){
 			var inputArray = "<InputsList>";
 			var count = 1;

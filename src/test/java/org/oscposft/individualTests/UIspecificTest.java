@@ -43,6 +43,8 @@ public class UIspecificTest {//Begin Class
 	public void testCreateNewTestWillAlwaysDefaultTestNameDropdown() throws InterruptedException {//Begin Test Case
 		/* This test create a new test and verify the TestName Dropdown apears and is populated.
 		 * It will then create a couple of new tests and ensure the value in the dropdown changes automatically each time.
+		 * Delete the tests one at a time and verify the UI each time.  Leave 1 test remaining.
+		 * Delete the entire suite and verify UI.
 		 */
 
 		//TODO: #DeploymentURL_HACK
@@ -64,7 +66,7 @@ public class UIspecificTest {//Begin Class
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(400);
 	    
 	    //Verify testName dropdown
 	    String value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -89,6 +91,29 @@ public class UIspecificTest {//Begin Class
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
 		Assert.assertEquals("otherTest4567", value);
+		
+		
+
+	    browser.type("//input[@id='DeleteTestInput']", "otherTest4567");
+	    browser.click("id=deleteTest");
+	    Thread.sleep(200);
+	    //Verify Status of deleted test
+	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
+		Assert.assertEquals("SUCCESS: Test Case Deleted named [otherTest4567].", value);
+
+	    browser.type("//input[@id='DeleteTestInput']", "testName");
+	    browser.click("id=deleteTest");
+	    Thread.sleep(200);
+	    //Verify Status of deleted test
+	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
+		Assert.assertEquals("SUCCESS: Test Case Deleted named [testName].", value);
+		
+
+	    browser.click("id=deleteSuite");
+	    Thread.sleep(200);
+	    //Verify Status of deleted test Suite
+	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
+		Assert.assertEquals("Successfully deleted all tests within " + Constants.APP_UNDER_TEST__TEST_FILE_PATH + "MySuiteTest.java", value);
 	}//End Test Case
 	
 }//End Class

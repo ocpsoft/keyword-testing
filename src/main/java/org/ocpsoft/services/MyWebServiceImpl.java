@@ -102,6 +102,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			BufferedReader errorReader = new BufferedReader(new InputStreamReader(
 					p.getErrorStream()));
 			String errorLine = errorReader.readLine();
+			while (errorLine != null) {
+				System.out.println("MAVEN TEST RUN ERROR: " + errorLine);
+				errorLine = reader.readLine();
+			}
+			
 			String line = reader.readLine();
 			while (line != null) {
 				System.out.println(line);
@@ -254,6 +259,36 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			e.printStackTrace();
 			return "<font color='red'>ERROR in the delete process.  System error: " + e + "</font>";
 		}
+	}
+	
+	public String deleteTestCase(@PathParam("className") String className, @PathParam("testCaseName") String testCaseName){
+		System.out.println("Deleting Test Case: " + testCaseName);
+
+		JavaClass testClass = Utility.getJavaClass(className);
+		Method<JavaClass> testCaseMethod = Utility.getTestCaseMethodFromName(testCaseName, testClass);
+		if(testCaseMethod == null) {
+			System.out.println("ERROR: Could not retrieve test: " + testCaseName + " to delete.  No action was taken.");
+			return "ERROR: Could not retrieve test: " + testCaseName + " to delete.  No action was taken.";
+		}
+		String testClassText = testClass.toString();
+		testClass.removeMethod(testCaseMethod);
+		if(testClass.toString().equals(testClassText)){
+			System.out.println("ERROR: Removing test from class did not change the class at all.  No action was taken");
+			return "ERROR: Removing test from class did not change the class at all.  No action was taken";
+		}
+		
+		try {
+			PrintStream writetoTest = new PrintStream(new FileOutputStream(
+					Constants.APP_UNDER_TEST__TEST_FILE_PATH + testClass.getName() + ".java"));
+			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
+			writetoTest.close();
+		} catch (Exception e) {
+			System.err.println("Failure in create deleting Test Case: " + e);
+			return "ERROR: Could not delete Test Case.";
+		}
+		
+		System.out.println("SUCCESS: Test Case Deleted named [" + testCaseName + "].");
+		return "SUCCESS: Test Case Deleted named [" + testCaseName + "].";
 	}
 	
 	public String exportTestToAction(@PathParam("testClassName") String testClassName, 

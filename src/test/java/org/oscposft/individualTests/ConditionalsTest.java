@@ -76,12 +76,15 @@ public class ConditionalsTest {//Begin Class
 		Thread.sleep(100);
 		verifyTextInTestSuiteField("ERROR: Can not move the last step down.");
 		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		browser.click("id=upLink_1");
+		Thread.sleep(100);
 		verifyTextInTestSuiteField("ERROR: Can not move the first step up.");
 		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		
 		browser.click("id=upLink_3");
-		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
@@ -91,7 +94,7 @@ public class ConditionalsTest {//Begin Class
 		verifyTextInTestSuiteField(expected);
 
 		browser.click("id=upLink_2");
-		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
@@ -101,7 +104,7 @@ public class ConditionalsTest {//Begin Class
 		verifyTextInTestSuiteField(expected);
 
 		browser.click("id=upLink_3");
-		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
@@ -111,7 +114,7 @@ public class ConditionalsTest {//Begin Class
 		verifyTextInTestSuiteField(expected);
 
 		browser.click("id=downLink_2");
-		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
@@ -121,7 +124,7 @@ public class ConditionalsTest {//Begin Class
 		verifyTextInTestSuiteField(expected);
 
 		browser.click("id=downLink_1");
-		browser.click("id=loadSuite");
+		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 

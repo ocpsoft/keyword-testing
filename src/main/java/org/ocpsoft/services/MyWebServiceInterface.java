@@ -70,6 +70,10 @@ public interface MyWebServiceInterface {
 	public String deleteTestSuite(@PathParam("className") String className);
 	
 	@POST
+	@Path("/DeleteTestCase/{className}/{testCaseName}")
+	public String deleteTestCase(@PathParam("className") String className, @PathParam("testCaseName") String testCaseName);
+	
+	@POST
 	@Path("/ExportTestToAction/{testClassName}/{testName}/{actionName}")
 	public String exportTestToAction(@PathParam("testClassName") String testClassName, 
 			@PathParam("testName") String testName, 
