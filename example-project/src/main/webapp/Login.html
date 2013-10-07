@@ -22,7 +22,63 @@ Sample users are: <BR />
 <P />
 Passwords are always:<BR />
 test123
-</center>
+</center><P />
+Status: <div id="loggedInStatus">Please log in with userID and password.</div><P /><BR />
+<div id="UserID">User ID: <input type="text" id="UserIDInput" /></div><P />
+<div id="password">Password: <input type="text" id="passwordInput" /></div><P />
+<input type="submit" value="Login" id="LoginButton" onClick='doLogin()'/><P />
+<input type="submit" value="Log out" id="LogOutButton" onClick='doLogOut()'/><P />
 
+
+        <script type="text/javascript">
+		function doLogin(){
+			var userID = document.getElementById("UserID");
+			var pwd = document.getElementById("password");
+			var userIDInput = document.getElementById("UserIDInput");
+			var pwdInput = document.getElementById("passwordInput");
+			var logInBtn = document.getElementById("LoginButton");
+			var logOutBtn = document.getElementById("LogOutButton");
+			if(pwdInput.value == "test123"){
+				if(userIDInput.value == "Craig"){
+					document.getElementById("loggedInStatus").innerHTML = "Welcome Craig!";
+					userID.style.visibility = 'hidden';
+					pwd.style.visibility = 'hidden';
+					logInBtn.style.visibility = 'hidden';
+					logOutBtn.style.visibility = 'visible';
+					return;
+				}
+				if(userIDInput.value == "Bob"){
+					document.getElementById("loggedInStatus").innerHTML = "Welcome Bob!";
+					userID.style.visibility = 'hidden';
+					pwd.style.visibility = 'hidden';
+					logInBtn.style.visibility = 'hidden';
+					logOutBtn.style.visibility = 'visible';
+					return;
+				}
+				if(userIDInput.value == "Jane"){
+					document.getElementById("loggedInStatus").innerHTML = "Welcome Jane!";
+					userID.style.visibility = 'hidden';
+					pwd.style.visibility = 'hidden';
+					logInBtn.style.visibility = 'hidden';
+					logOutBtn.style.visibility = 'visible';
+					return;
+				}
+			}
+			document.getElementById("loggedInStatus").innerHTML = "Invalid login attempt";
+		}
+
+		function doLogOut(){
+			var userID = document.getElementById("UserID");
+			var pwd = document.getElementById("password");
+			var logInBtn = document.getElementById("LoginButton");
+			var logOutBtn = document.getElementById("LogOutButton");
+			userID.style.visibility = 'visible';
+			pwd.style.visibility = 'visible';
+			logInBtn.style.visibility = 'visible';
+			logOutBtn.style.visibility = 'hidden';
+			document.getElementById("loggedInStatus").innerHTML = "Please log in with userID and password.";
+		}
+		document.getElementById("LogOutButton").style.visibility = 'hidden';
+		</script>
 </body>
 </html>

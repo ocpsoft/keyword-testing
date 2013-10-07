@@ -671,11 +671,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		  
 		  String newStep = "";
 		  if(instruction.getNonConformingCodeLine() == null || instruction.getNonConformingCodeLine().equals("")){
-			  String setpPrefix = "";
+			  String stepPrefix = "";
 			  if(keyword instanceof KeywordAssignment){
-			    setpPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
+			    stepPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
 			  }
-			  newStep = setpPrefix + "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
+			  newStep = stepPrefix + "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
 			  addThrowsToMethodIfNeededForKeyword(keyword, currentMethod);
 		  } else {
 			  newStep = instruction.getNonConformingCodeLine();
