@@ -11,6 +11,7 @@ target/
 *.swp
 *.*~
 bin/
+/example-project/src/test/java
 /*/src/main/java/META-INF
 /*/src/META-INF
 .gitignore.swp
