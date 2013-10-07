@@ -42,7 +42,7 @@ public class ConfigXMLParser implements Serializable{
 	 * or
 	 * 
 	 * <Instruction>
-	 * 		<CodeLine>deploymentURL = new URL("http://localhost:8080/keword-testing/");</CodeLine>
+	 * 		<CodeLine>deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);</CodeLine>
 	 * </Instruction>
 	 */
 	public Instruction getInstructionObjectFromXMLDoc(String XMLdoc){

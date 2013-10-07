@@ -9,18 +9,13 @@
 		<property name="jbossHome">D:\DEVELOPMENT\JBossAS\jboss-as-7.1.1.Final\bin</property>
 	</extension>
 	
-	<!-- 
-	<extension qualifier="graphene">
-	   <property name="seleniumPort">12345</property>
-	</extension>
-	
-	<extension qualifier="webdriver">
-	   <property name="iePort">12345</property>
-	</extension>
-	 -->
-	 
+	<!-- selenium-server qualifier code must be present in order to open and run
+		 a second Selenium instance from within an already running one.  Leave this
+		 code present if running the test from within tests from the framework.
+		 NOTE: If you want to simply run a test manually in the example project,
+		 you MUST comment this code out first! -->	 
 	<extension qualifier="selenium-server">
    		<property name="port">12345</property>
-   		<property name="skip">true</property>
 	</extension>
+
 </arquillian>

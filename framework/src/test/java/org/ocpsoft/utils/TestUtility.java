@@ -1,5 +1,7 @@
 package org.ocpsoft.utils;
 
+import org.junit.Assert;
+
 import com.thoughtworks.selenium.DefaultSelenium;
 
 public class TestUtility {
@@ -20,9 +22,15 @@ public class TestUtility {
 	
 	public static void waitUntilTestRunCompletes(DefaultSelenium browser) throws InterruptedException{
 		int count = 0;
-		while(browser.getElementHeight("id=RunTestsResultsImg").doubleValue() > 0 && count < 1000){
+		while(browser.getElementHeight("id=RunTestsResultsImg").doubleValue() > 0 && count < 500){
 			Thread.sleep(100);
 			count++;
 		}
+	}
+
+	public static boolean validateRunDidCompleteSuccessfully(DefaultSelenium browser) throws InterruptedException{
+		waitUntilTestRunCompletes(browser);
+		Assert.assertTrue("Build Success", browser.isTextPresent("Build SUCCESSFUL!!!"));
+		return browser.isTextPresent("Build SUCCESSFUL!!!");
 	}
 }

@@ -58,7 +58,7 @@ public class ExportTest {//Begin Class
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +82,7 @@ public class ExportTest {//Begin Class
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Just finished importing the following Keywords:\n"+
 					//TODO: #DeploymentURL_HACK
-				  "deploymentURL=new URL(\"http://localhost:8080/keword-testing/\")\n"+
+				  "deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\")\n"+
 		          "OpenBrowser\n"+
 		          "VerifyObjectIsNotDisplayed\n"+
 		          "VerifyObjectProperty\n"+
@@ -160,7 +160,7 @@ public class ExportTest {//Begin Class
 		
 		//TODO: #DeploymentURL_HACK
 		//Need to add the CodeLine for the deploymentURL into the expected file
-		String depURLline = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<InstructionSet>\n\t<Instruction>\n\t\t<CodeLine>deploymentURL=new URL(\"http://localhost:8080/keword-testing/\")</CodeLine>\n\t</Instruction>";
+		String depURLline = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<InstructionSet>\n\t<Instruction>\n\t\t<CodeLine>deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\")</CodeLine>\n\t</Instruction>";
 		expectedFile = depURLline + expectedFile.substring(expectedFile.indexOf("<InstructionSet>") + "<InstructionSet>".length());
 
 		

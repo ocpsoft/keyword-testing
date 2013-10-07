@@ -42,7 +42,7 @@ public class ParserExampleTest
 						.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 
-	String webServiceTargetURL_hardcode = "http://localhost:8080/keword-testing/rest";	
+	String webServiceTargetURL_hardcode = Constants.FRAMEWORK_LOCALHOST_URL + "rest";	
 	
    	String packageLocation = getClass().getPackage().toString().substring("package ".length());
    	String packagePath = packageLocation.replace(".", "/");

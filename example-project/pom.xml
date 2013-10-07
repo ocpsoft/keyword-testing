@@ -139,6 +139,29 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>selenium-maven-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>start-server</id>
+			            <phase>pre-integration-test</phase>
+			            <goals>
+			                <goal>start-server</goal>
+			            </goals>
+			            <configuration>
+			                <background>true</background>
+			            </configuration>
+			        </execution>
+			        <execution>
+			            <id>stop-server</id>
+			            <phase>post-integration-test</phase>
+			            <goals>
+			                <goal>stop-server</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>

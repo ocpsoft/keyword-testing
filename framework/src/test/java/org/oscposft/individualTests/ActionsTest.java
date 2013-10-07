@@ -56,7 +56,7 @@ public class ActionsTest {//Begin Class
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -95,7 +95,7 @@ public class ActionsTest {//Begin Class
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -156,7 +156,7 @@ public class ActionsTest {//Begin Class
 		Assert.assertTrue("Method does not have the correct signature", exportedAction.toSignature().equals("public myAction(URL, DefaultSelenium) : void"));
 		
 		String expectedBody = "" + 
-							"deploymentURL=new URL(\"http://localhost:8080/keword-testing/\"); " + 
+							"deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\"); " + 
 							"Helper.OpenBrowser(browser,Arrays.asList(\"index.jsp\"),deploymentURL); " + 
 							"Helper.EnterTextInInput(browser,Arrays.asList(" + 
 									"\"//input[@id='className']\",\"Assigning Input Text\")); " + 

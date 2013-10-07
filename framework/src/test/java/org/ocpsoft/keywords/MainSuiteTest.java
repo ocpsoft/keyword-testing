@@ -18,6 +18,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.common.services.ServiceLoader;
@@ -85,7 +86,7 @@ private String getValue(String objectType, String objectXPath){
 		
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -147,7 +148,7 @@ private String getValue(String objectType, String objectXPath){
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -204,7 +205,7 @@ private String getValue(String objectType, String objectXPath){
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -246,7 +247,7 @@ private String getValue(String objectType, String objectXPath){
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -372,7 +373,7 @@ private String getValue(String objectType, String objectXPath){
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -405,12 +406,12 @@ private String getValue(String objectType, String objectXPath){
 	public void testBuildingASuiteAndRunning() throws InterruptedException {//Begin Test Case
 		/* This test builds a new suite via the app.
 		 * Once constructed, it will click the [Run Tests] button to kick it off.
-		 * 		NOT CURRENTLY KICKING OFF TEST SUITE.  Need to do something with port number, or other fix, see below.
+		 * We then test to make sure the test we created in example-project is run successfully.
 		 */
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -431,16 +432,8 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=AddInstruction");
 		
 		browser.click("id=RunTests");
-		TestUtility.waitUntilTestRunCompletes(browser);
-		Assert.assertTrue("Build Success", browser.isTextPresent("Build SUCCESSFUL!!!"));
-//		MyWebServiceImpl webService = new MyWebServiceImpl();
-//		webService.runBuild();
+		TestUtility.validateRunDidCompleteSuccessfully(browser);
 	}//End Test Case
 
-	@Test
-	public void testRunTestSuite() throws InterruptedException {//Begin Test Case
-		MyWebServiceImpl webService = new MyWebServiceImpl();
-		webService.runBuild();
-	}
 	
 }//End Class

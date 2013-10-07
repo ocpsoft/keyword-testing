@@ -49,7 +49,7 @@ public class UIspecificTest {//Begin Class
 
 		//TODO: #DeploymentURL_HACK
 		try {
-			deploymentURL = new URL("http://localhost:8080/keword-testing/");
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}

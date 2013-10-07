@@ -414,7 +414,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		 * 		Or direct Code lines like the following:
 		 * 		Actions.myActionCall(deploymentURL, browser)
 		 * 		//TODO: #DeploymentURL_HACK
-		 * 		deploymentURL = new URL("http://localhost:8080/keword-testing/");
+		 * 		deploymentURL = new URL("Constants.FRAMEWORK_LOCALHOST_URL");
 		 */
 		String keyword = "";
 		Instruction instruction = null;
