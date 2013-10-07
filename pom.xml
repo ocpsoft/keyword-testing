@@ -1,223 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.ocpsoft</groupId>
-	<artifactId>KeywordApp</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<properties>
-		<version.junit>4.10</version.junit>
+
+<!-- Copyright 2011 Lincoln Baxter, III Licensed under the Apache License, 
+   Version 2.0 (the "License"); you may not use this file except in compliance 
+   with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+   Unless required by applicable law or agreed to in writing, software distributed 
+   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+   OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+   the specific language governing permissions and limitations under the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.ocpsoft.testing</groupId>
+   <artifactId>keyword-parent</artifactId>
+   <version>1.0.0-SNAPSHOT</version>
+   <packaging>pom</packaging>
+
+   <parent>
+      <groupId>org.ocpsoft</groupId>
+      <artifactId>ocpsoft-parent</artifactId>
+      <version>9</version>
+   </parent>
+
+   <properties>
+   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      	<version.junit>4.10</version.junit>
 		<version.arquillian_core>1.0.0.Final</version.arquillian_core>
-	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.jboss.spec</groupId>
-				<artifactId>jboss-javaee-6.0</artifactId>
-				<version>2.0.0.Final</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.arquillian</groupId>
-				<artifactId>arquillian-bom</artifactId>
-				<version>${version.arquillian_core}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.arquillian.extension</groupId>
-				<artifactId>arquillian-drone-bom</artifactId>
-				<version>1.0.0.CR3</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.forge</groupId>
-			<artifactId>forge-parser-java</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.forge</groupId>
-			<artifactId>forge-parser-xml</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.annotation</groupId>
-			<artifactId>jboss-annotations-api_1.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.ejb</groupId>
-			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.servlet</groupId>
-			<artifactId>jboss-servlet-api_3.0_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.ws.rs</groupId>
-			<artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ocpsoft.common</groupId>
-			<artifactId>common-api</artifactId>
-			<version>1.0.4.Final</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
-			<version>2.3.6.Final</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.jboss.resteasy</groupId>
-		    <artifactId>resteasy-jaxrs</artifactId>
-		    <version>2.3.5.Final</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.jboss.resteasy</groupId>
-		    <artifactId>resteasy-jackson-provider</artifactId>
-		    <version>2.3.4.Final</version>
-		    <scope>test</scope>
-	   	</dependency>
+   </properties>
+
+   <modules>
+      <module>framework</module>
+      <module>example-project</module>
+   </modules>
    
-   
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${version.junit}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.arquillian.junit</groupId>
-			<artifactId>arquillian-junit-container</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.arquillian.extension</groupId>
-			<artifactId>arquillian-drone-impl</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.arquillian.extension</groupId>
-			<artifactId>arquillian-drone-selenium</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.arquillian.extension</groupId>
-			<artifactId>arquillian-drone-selenium-server</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
-			<scope>test</scope>
-		</dependency>		
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-server</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>servlet-api-2.5</artifactId>
-					<groupId>org.mortbay.jetty</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>		
-	</dependencies>
-	<repositories>
-		<repository>
-			<id>JBOSS_NEXUS</id>
-			<url>http://repository.jboss.org/nexus/content/groups/public</url>
-		</repository>
-	</repositories>
-	<build>
-		<finalName>KeywordApp</finalName>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
-				<extensions>false</extensions>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<profiles>
-		<profile>
-			<id>openshift</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-war-plugin</artifactId>
-						<version>2.1.1</version>
-						<extensions>false</extensions>
-						<configuration>
-							<outputDirectory>deployments</outputDirectory>
-							<warName>ROOT</warName>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>JBOSS_AS_MANAGED_7.X</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.jboss.as</groupId>
-					<artifactId>jboss-as-arquillian-container-managed</artifactId>
-					<version>7.1.1.Final</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>JBOSS_AS_REMOTE_7.X</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.jboss.as</groupId>
-					<artifactId>jboss-as-arquillian-container-remote</artifactId>
-					<version>7.1.1.Final</version>
-					  <exclusions>
-						<exclusion>
-							<groupId>org.jboss.arquillian.testenricher</groupId>
-							<artifactId>arquillian-testenricher-osgi</artifactId>
-						</exclusion>
-					  </exclusions>					
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+               <!-- Use local git repository instead of cloning the origin 
+                  repository -->
+               <localCheckout>true</localCheckout>
+               <!-- All submodules share the same version -->
+               <autoVersionSubmodules>true</autoVersionSubmodules>
+               <!-- The tag should be named exactly like the version -->
+               <tagNameFormat>@{project.version}</tagNameFormat>
+            </configuration>
+         </plugin>
+      </plugins>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-surefire-plugin</artifactId>
+               <version>2.12</version>
+               <configuration>
+                  <argLine>-Xms256m -Xmx512m -XX:MaxPermSize=512m</argLine>
+               </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <version>2.9</version>
+               <configuration>
+                  <links>
+                     <link>http://docs.oracle.com/javase/7/docs/api/</link>
+                     <link>http://docs.oracle.com/javaee/6/api/</link>
+                  </links>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
+
+   <dependencyManagement>
+      <dependencies>
+         
+      </dependencies>
+   </dependencyManagement>
+
+   <dependencies>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+         <version>${version.junit}</version>
+      </dependency>
+   </dependencies>
+
+
+   <profiles>
+      <profile>
+         
+      </profile>
+
+   </profiles>
+
+   <developers>
+      <developer>
+         <id>CraigSchwarzwald</id>
+         <name>Craig Schwarzwald</name>
+         <email>Craig.Schwarzwald@gmail.com</email>
+         <timezone>-5</timezone>
+      </developer>
+   </developers>
+
+	<!-- 
+   	<url>http://ocpsoft.org/rewrite/</url>
+
+ 	
+   <licenses>
+      <license>
+         <name>Apache License</name>
+         <url>http://www.apache.org/licenses/</url>
+         <distribution>repo</distribution>
+      </license>
+   </licenses>
+ 	-->
+ 	
+   <scm>
+      <connection>scm:git:git://github.com/ocpsoft/keyword-testing.git</connection>
+      <developerConnection>scm:git:git@github.com:ocpsoft/keyword-testing.git</developerConnection>
+      <url>http://github.com/ocpsoft/keyword-testing</url>
+      <tag>HEAD</tag>
+   </scm>
+
+   <issueManagement>
+      <system>GitHub</system>
+      <url>https://github.com/ocpsoft/keyword-testing/issues</url>
+   </issueManagement>
+
 </project>
