@@ -87,6 +87,7 @@ public class ConditionalsTest {//Begin Class
 		Thread.sleep(100);
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
@@ -97,6 +98,7 @@ public class ConditionalsTest {//Begin Class
 		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
@@ -107,6 +109,7 @@ public class ConditionalsTest {//Begin Class
 		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case: \n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
@@ -117,6 +120,7 @@ public class ConditionalsTest {//Begin Class
 		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
@@ -127,6 +131,7 @@ public class ConditionalsTest {//Begin Class
 		Thread.sleep(100);
 		expected = "Test Suite Named: MySuiteTest\n" +
 				"testName\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 1 - true case: trueAction - false case: falseAction\n" +
@@ -220,6 +225,7 @@ public class ConditionalsTest {//Begin Class
 	private void verifyCorrectTestStepsOnUITest(String testCaseName) {
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| Conditional Branch: true/false condition to test: 0 == 0 - true case: trueAction - false case: \n" +

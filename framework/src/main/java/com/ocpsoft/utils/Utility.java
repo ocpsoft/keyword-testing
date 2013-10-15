@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
@@ -219,6 +220,27 @@ public class Utility {
 					"<em><font color='purple'>" + actionName + "</em></font>";
 		}
 		
+		//Note: Some steps are variable creations/assignments like:
+		//String varName = "SomeValue"
+		if(step.contains("=") && !step.contains("Helper.")){
+			int equalPos = step.indexOf("=");
+			int firstSpacePos = step.indexOf(" ");
+			if (isVariableCreationStep(step)){
+				String returnString = "<font color='blue'>" + KEYWORD_KEYS.CreateVariable + "</font>: ";
+				if(!variableHasDefaultValue(step.substring(equalPos + 1))){
+					returnString += " with name: <em><font color='purple'>" + step.substring(firstSpacePos + 1, equalPos) + "</em></font>" +
+							", with value of: " + "<em><font color='purple'>" + step.substring(equalPos + 1) + "</em></font>";
+				}
+				return returnString;
+			} else {
+				//Variable Assignment
+				String returnString = "<font color='blue'>" + KEYWORD_KEYS.AssignVariable + "</font>: ";
+				returnString += " with name: <em><font color='purple'>" + step.substring(0, equalPos) + "</em></font>" +
+						", with value of: " + "<em><font color='purple'>" + step.substring(equalPos + 1) + "</em></font>";
+				return returnString;
+			}
+		}
+		
 		//Note: All the rest of the steps look the same, like: 
 		//Helper.OpenBrowser(browser,Arrays.asList("index.jsp","assigned_null","assigned_null","assigned_null"),deploymentURL);
 		keywordName = step.substring(step.indexOf("Helper.") + 7, step.indexOf("("));
@@ -234,12 +256,15 @@ public class Utility {
 			}
 		}
 		if(thisKeywordsDescriptions == null){
-			//TODO: #DeploymentURL_HACK
-			//If this is from chaning the deployment URL, just completely ignore that line and don't print
-			//anything in the UI status for it at all.
-			if(step.startsWith("deploymentURL=new URL(")){
+			/*We now have AssnmentKeyword that this will fall under
+				TODO: #DeploymentURL_HACK
+				If this is from chaning the deployment URL, just completely ignore that line and don't print
+				anything in the UI status for it at all.*/
+			/*if(step.startsWith("deploymentURL=new URL(")){
 				return "IGNORE";
-			}
+			}*/
+			//TODO:See if we still need "IGNORE" for anything
+			
 			return "ERROR: Could not get back Descriptions for Keyword: " + keywordName;
 		}
 		
@@ -264,7 +289,28 @@ public class Utility {
 			return returnVal;
 		}
 	}
-	
+
+	private static boolean isVariableCreationStep(String step) {
+		//Must be: 
+		//String varName = "Something"; or
+		//String varName="Something";
+		//Use Regex: 1 or more word chars + exactly 1 space + 1 or more word chars + optional space + "="
+		String regex = "^\\w+\\s{1}\\w+\\s?=.*";
+		boolean matches = Pattern.matches(regex, step);
+		return matches;
+	}
+	private static boolean variableHasDefaultValue(String value) {
+		if(value.equals("null")){
+			return true;
+		}
+		int newPos = value.indexOf("new");
+		int parenPos = value.indexOf("()");
+		if(newPos != -1 && parenPos != -1 && newPos < parenPos){
+			return true;
+		}
+		return false;
+	}
+
 	public static boolean stringIsNullValue(String string){
 		if(string==null || string.equalsIgnoreCase("null") || string.equalsIgnoreCase("assigned_null") ||
 				string.equalsIgnoreCase("\"assigned_null\"") || string.equals("")){
@@ -309,7 +355,7 @@ public class Utility {
 			if(Utility.memberIsATestCase(member)){
 				returnVal += "<P /><BR />" + Utility.generateUserReadableStepsFromMethod(member);
 			}
-			else {/*It's probably a variable or something, not an actual test method, we don't want that*/}
+			else {/*It's probably a variable or something, not an actual test method, we don't want to print that*/}
 		}
 		return returnVal;
 	}
@@ -320,6 +366,16 @@ public class Utility {
 			if(exception.equalsIgnoreCase(exceptionClassToAdd.getSimpleName())){
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	public static boolean isVariableAlreadyPresentInMethod(String methodBody, String varName){
+		if(methodBody.contains(" " + varName + " ") ||
+			methodBody.contains(" " + varName + "=") ||
+			methodBody.contains("\n" + varName + " ") ||
+			methodBody.contains("\n" + varName + "=")){
+			return true;
 		}
 		return false;
 	}

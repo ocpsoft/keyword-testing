@@ -556,8 +556,14 @@
 				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
 			}
 			else{
-				postInstruction(keyword, getAllInputValuesAsXML());
-				getTestSuite();
+				var output = postInstruction(keyword, getAllInputValuesAsXML());
+
+				if(output.indexOf("ERROR") == -1){
+					getTestSuite();
+				} else {
+					//There was an error, display it in the status:
+					document.getElementById('testSuite').innerHTML = "<font color = 'red'>" + output + "</font>"
+				}
 			}
 		}
 

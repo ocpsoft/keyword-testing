@@ -397,6 +397,7 @@ private String getValue(String objectType, String objectXPath){
 		value = getValue("div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 							"testName\n" +
+							"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 							"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 							"if adding onto end of the domain): index.jsp";
 		Assert.assertEquals(expected, value);

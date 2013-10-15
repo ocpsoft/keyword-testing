@@ -10,7 +10,6 @@ import org.jboss.forge.parser.java.JavaClass;
 
 import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Utility;
-import com.thoughtworks.selenium.DefaultSelenium;
 
 public class ActionsFileCreator {
 

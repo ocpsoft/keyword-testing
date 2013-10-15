@@ -29,7 +29,8 @@ public class Constants {
 	
 	
 	public static final String FRAMEWORK_LOCALHOST_URL = "http://localhost:8080/framework/";
-	public static final String VARIABLE_INPUT_PREFIX = "<**<>**>";
+	public static final String VARIABLE_INPUT_MARKER = "||var||";
+	public static final String CODE_INPUT_PREFIX = "||code||";
 	public static final String LIST_DELIMITER = "##";
 	public static final String OBJECT_DELIMITER = "~~";
 	
@@ -47,7 +48,8 @@ public class Constants {
 	public static enum KEYWORD_KEYS
 	{
 		BeginClass, BeginTest, ClickElement, ConditionalBranch, EnterTextInInput, OpenBrowser, SelectDropdownValue, 
-		VerifyObjectIsDisplayed, VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain, CallAction
+		VerifyObjectIsDisplayed, VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain, CallAction,
+		CreateVariable, AssignVariable
 	}
 	public static final Map<KEYWORD_KEYS, String> KEYWORD_LONGNAMES = new LinkedHashMap<KEYWORD_KEYS, String>();
     static {
@@ -63,6 +65,8 @@ public class Constants {
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.SelectDropdownValue, "Select Dropdown Value");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.UpdateTestDomain, "Update Test Domain");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.CallAction, "Call Action");
+    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.CreateVariable, "Create new Variable");
+    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.AssignVariable, "Assign Variable Value");
     }
 	public static Map<KEYWORD_KEYS, String> getKeywordLongnames() {
 		return KEYWORD_LONGNAMES;
@@ -105,6 +109,14 @@ public class Constants {
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("New test domain is:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CallAction, Arrays.asList("with Action Name:"));
+    	
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("variable name:", 
+    															"varible type:", 
+    															"with default value of:"));
+
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.AssignVariable, Arrays.asList("variable name:",  
+    															"varible type:",
+    															"to new value of:"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordDescriptions() {
@@ -137,6 +149,10 @@ public class Constants {
     	KEYWORD_VALUES.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("http://www.facebook.com"));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction"));
+    	
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("varName", "String", "initialization value"));
+    	
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.AssignVariable, Arrays.asList("varName", "String", "My New Value"));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordValues() {

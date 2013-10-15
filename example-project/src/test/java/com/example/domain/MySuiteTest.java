@@ -25,4 +25,4 @@ import org.junit.Test;@RunWith(org.jboss.arquillian.junit.Arquillian.class) publ
 
 	@Deployment(testable=false) static public WebArchive createDeployment(){return ShrinkWrap.create(WebArchive.class,"FBTutorialDemo.war").addAsWebInfResource(EmptyAsset.INSTANCE,"beans.xml");}
 
-	@Test public void testName() throws InterruptedException,MalformedURLException{deploymentURL=new URL("http://localhost:8080/framework/");Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);} }
+	@Test public void testViaImport() throws InterruptedException,MalformedURLException{Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);Helper.VerifyObjectIsNotDisplayed(browser,Arrays.asList("User should NOT see message [Error: invalid action]!","div[@id='myFBdata']"));Helper.VerifyObjectProperty(browser,Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));} }

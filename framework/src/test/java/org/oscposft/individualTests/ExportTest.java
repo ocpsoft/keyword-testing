@@ -131,6 +131,7 @@ public class ExportTest {//Begin Class
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| VerifyObjectIsNotDisplayed: with Verification Message of: User " +

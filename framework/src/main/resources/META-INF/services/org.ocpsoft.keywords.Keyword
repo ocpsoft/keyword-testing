@@ -1,7 +1,9 @@
+org.ocpsoft.keywords.AssignVariableKeyword
 org.ocpsoft.keywords.BeginClassKeyword
 org.ocpsoft.keywords.BeginTestKeyword
 org.ocpsoft.keywords.ClickElementKeyword
 org.ocpsoft.keywords.ConditionalBranchKeyword
+org.ocpsoft.keywords.CreateVariableKeyword
 org.ocpsoft.keywords.CallActionKeyword
 org.ocpsoft.keywords.EnterTextInInputKeyword
 org.ocpsoft.keywords.OpenBrowserKeyword

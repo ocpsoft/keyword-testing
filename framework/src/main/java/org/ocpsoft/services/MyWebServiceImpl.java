@@ -23,6 +23,7 @@ import org.jboss.forge.parser.java.Visibility;
 import org.jboss.forge.parser.java.util.Formatter;
 import org.ocpsoft.dataBeans.Instruction;
 import org.ocpsoft.keywords.CallActionKeyword;
+import org.ocpsoft.keywords.CreateVariableKeyword;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
 import org.ocpsoft.keywords.KeywordAssignment;
@@ -644,16 +645,40 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	private String printOutArrayListAsList(ArrayList<String> list){
 		String returnVal = "Arrays.asList(";
 		for (String element : list) {
-			//TODO:Find a better way of passing variables, for now, do it with a simple replace
-			if(element.startsWith(Constants.VARIABLE_INPUT_PREFIX)){
-				//This is a variable, we want to preserve it with no quotes
-				returnVal = returnVal + element.substring(Constants.VARIABLE_INPUT_PREFIX.length()) + ", ";
+			if(element.contains(Constants.VARIABLE_INPUT_MARKER)){
+				element = resolveVariables(element);
+				returnVal = returnVal + element + ", ";
 			}
 			else {
 				returnVal = returnVal + "\"" + element + "\", ";
 			}
 		}
-		return returnVal.substring(0, returnVal.length() - 2) + ")";
+		return returnVal.substring(0, returnVal.length() - 2) + ")"; //Remove last [, ] from the list
+	}
+	private String resolveVariables(String currInput) {
+		String newInput = currInput;
+		while(newInput.contains(Constants.VARIABLE_INPUT_MARKER)){
+			int posOfFirstMarker = newInput.indexOf(Constants.VARIABLE_INPUT_MARKER);
+			int posOfSecondMarker = newInput.indexOf(Constants.VARIABLE_INPUT_MARKER, posOfFirstMarker + 1);
+			String beginning = newInput.substring(0, posOfFirstMarker);
+			String var = newInput.substring(posOfFirstMarker + Constants.VARIABLE_INPUT_MARKER.length(), posOfSecondMarker);
+			String end = newInput.substring(posOfSecondMarker + Constants.VARIABLE_INPUT_MARKER.length());
+			//add quotes to the input as needed
+			if(beginning.length() != 0){
+				var = "\" + " + var;
+				if(!beginning.startsWith("\"")){
+					beginning = "\"" + beginning;
+				}
+			}
+			if(end.length() != (newInput.length() - Constants.VARIABLE_INPUT_MARKER.length())){
+				var += " + \"";
+				if(!end.endsWith("\"")){
+					end += "\"";
+				}
+			}
+			newInput = beginning + var + end;
+		}
+		return newInput;
 	}
 	
 	private String addInstructionToTest(String className, String testName, Instruction instruction){

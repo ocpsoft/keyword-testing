@@ -56,7 +56,7 @@ public class BeginTestKeyword implements Keyword {
 				//without making the deployment name "keword-testing.war".  This is a temp stop-gap.
 				//NOTE: This is going to show up as an error right now on the UI in the status section.
 				.addThrows(MalformedURLException.class)
-				.setBody("deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\");")
+				.setBody("deploymentURL = new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\");")
 				
 				.addAnnotation(Constants.TestAnnotationClass);
 		

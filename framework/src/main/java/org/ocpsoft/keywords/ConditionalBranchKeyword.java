@@ -37,8 +37,8 @@ public class ConditionalBranchKeyword implements Keyword {
 
 		Method<JavaClass> testCase = Utility.getTestCaseMethodFromName(testCaseName, testClass);
 		if(testCase == null){
-			System.out.println("Could not perform Conditional Branch.  Could not find testName: " + testCaseName);
-			return "Could not perform Conditional Branch.  Could not find testName: " + testCaseName;
+			System.out.println("Could not perform " + shortName() + ".  Could not find testName: " + testCaseName);
+			return "Could not perform " + shortName() + ".  Could not find testName: " + testCaseName;
 		}
 		String curBody = testCase.getBody();
 		String newLines = "\nif(" + inputValues.get(0) + ") {" +
@@ -59,12 +59,12 @@ public class ConditionalBranchKeyword implements Keyword {
 			writetoTest.print(Formatter.format(testClass)); //TODO: This doesn't work, low priority to fix
 			writetoTest.close();
 		} catch (Exception e) {
-			System.err.println("Failure in Conditional Branch: " + e);
-			return "ERROR: Could not execute Conditional Branch.";
+			System.err.println("Failure in " + shortName() + ": " + e);
+			return "ERROR: Could not execute " + shortName();
 		}
 		
-		System.out.println("SUCCESS: Conditional Branch for [" + inputValues.get(0) + "] created successfully.");
-		return "SUCCESS: Conditional Branch for [" + inputValues.get(0) + "] created successfully.";
+		System.out.println("SUCCESS: " + shortName() + " for [" + inputValues.get(0) + "] created successfully.");
+		return "SUCCESS: " + shortName() + " for [" + inputValues.get(0) + "] created successfully.";
 	}
 
 	@Override

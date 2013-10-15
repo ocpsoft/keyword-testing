@@ -80,7 +80,7 @@ public class ActionsTest {//Begin Class
 		
 		//Verfiy the correct message on the UI for the import step
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
-		String expected = "Test Suite Named: MySuiteTest\nmyNewTest\n|UP| |DOWN| Action Call: myAction";
+		String expected = "Test Suite Named: MySuiteTest\nmyNewTest\n|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n|UP| |DOWN| Action Call: myAction";
 		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
 		    expected.equals(value));
 		
@@ -259,6 +259,7 @@ public class ActionsTest {//Begin Class
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| EnterTextInInput: with xPath of Input: //input[@id='className']" +
@@ -272,6 +273,7 @@ public class ActionsTest {//Begin Class
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +
 				testCaseName + "\n" +
+				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
 				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
 				"if adding onto end of the domain): index.jsp\n" +
 				"|UP| |DOWN| Action Call: nestedMiniAction";
