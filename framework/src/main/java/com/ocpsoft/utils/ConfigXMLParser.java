@@ -42,7 +42,7 @@ public class ConfigXMLParser implements Serializable{
 	 * or
 	 * 
 	 * <Instruction>
-	 * 		<CodeLine>deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);</CodeLine>
+	 * 		<CodeLine>Any generic code line that does not conform to a known keyword</CodeLine>
 	 * </Instruction>
 	 */
 	public Instruction getInstructionObjectFromXMLDoc(String XMLdoc){

@@ -12,9 +12,7 @@ import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.ocpsoft.utils.Utility;
 
-public class CreateVariableKeyword implements KeywordAssignment {
-
-	private String newVariableName = "";
+public class CreateVariableKeyword implements VariableKeywordInterface {
 
 	public CreateVariableKeyword() {
 	}
@@ -48,11 +46,10 @@ public class CreateVariableKeyword implements KeywordAssignment {
 			return "Could not perform " + shortName() + ".  Could not find testName: " + testCaseName;
 		}
 		String curBody = testCase.getBody();
-		setNewVariableName(inputValues.get(0));
 		
 		//NOTE: Framework does NOT support creating multiple variables of different types with the same name.
 		//Once you use a name for any variable, you can NOT create any other variable with that name within the same test.
-		if(Utility.isVariableAlreadyPresentInMethod(curBody, getNewVariableName())){
+		if(Utility.isVariableAlreadyPresentInMethod(curBody, inputValues.get(0))){
 			System.err.println("ERROR: Varibale already exists, can not create it again.");
 			return "ERROR: Varibale already exists, can not create it again.";
 		}
@@ -76,7 +73,8 @@ public class CreateVariableKeyword implements KeywordAssignment {
 	}
 	
 	//0:Name, 1:Type, 2:DefaultValue
-	private String determineNewLine(ArrayList<String> inputValues) {
+	@Override
+	public String determineNewLine(ArrayList<String> inputValues) {
 		String newLine = inputValues.get(1) + " " + inputValues.get(0) + " = " + determineAssignment(inputValues.get(1), inputValues.get(2)) + ";";
 		return newLine;
 	}
@@ -106,23 +104,10 @@ public class CreateVariableKeyword implements KeywordAssignment {
 	public void createKeywordHelperMethod(JavaClass helperClass){
 	}
 
-	@Override
-	public String variableName() {
-		return getNewVariableName();
-	}
-	
 	/* EXAMPLE:
 	 * Note: This will add a single line to the end of the method creating a new variable and initializing it.
 	 * 		If no default value is given, we will default the value to null if variable type is a primitive.
 	 * 		If the variable type is NOT a primitive, we assume a default constructor exists, and we use it
 	 */
-
 	
-	public String getNewVariableName() {
-		return newVariableName;
-	}
-
-	public void setNewVariableName(String newVariableName) {
-		this.newVariableName = newVariableName;
-	}
 }

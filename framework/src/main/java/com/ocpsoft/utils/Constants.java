@@ -33,6 +33,7 @@ public class Constants {
 	public static final String CODE_INPUT_PREFIX = "||code||";
 	public static final String LIST_DELIMITER = "##";
 	public static final String OBJECT_DELIMITER = "~~";
+	public static final String DOUBLE_QUOTE_REPLACEMENT = "_quote_";
 	
 	//Fully Qualified Paths for adding annotations to test files via the parser
 	public static final String RunWithAnnotationClass = "org.junit.runner.RunWith";
@@ -48,7 +49,7 @@ public class Constants {
 	public static enum KEYWORD_KEYS
 	{
 		BeginClass, BeginTest, ClickElement, ConditionalBranch, EnterTextInInput, OpenBrowser, SelectDropdownValue, 
-		VerifyObjectIsDisplayed, VerifyObjectIsNotDisplayed, VerifyObjectProperty, UpdateTestDomain, CallAction,
+		VerifyObjectIsDisplayed, VerifyObjectIsNotDisplayed, VerifyObjectProperty, CallAction,
 		CreateVariable, AssignVariable
 	}
 	public static final Map<KEYWORD_KEYS, String> KEYWORD_LONGNAMES = new LinkedHashMap<KEYWORD_KEYS, String>();
@@ -63,7 +64,6 @@ public class Constants {
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectIsDisplayed, "Verify Object Is Displayed");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.VerifyObjectIsNotDisplayed, "Verify Object Is NOT Displayed");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.SelectDropdownValue, "Select Dropdown Value");
-    	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.UpdateTestDomain, "Update Test Domain");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.CallAction, "Call Action");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.CreateVariable, "Create new Variable");
     	KEYWORD_LONGNAMES.put(KEYWORD_KEYS.AssignVariable, "Assign Variable Value");
@@ -106,8 +106,6 @@ public class Constants {
 																"with XPath property to verify of:",
 																"with value to verify of:"));
     	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("New test domain is:"));
-    	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CallAction, Arrays.asList("with Action Name:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("variable name:", 
@@ -115,7 +113,6 @@ public class Constants {
     															"with default value of:"));
 
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.AssignVariable, Arrays.asList("variable name:",  
-    															"varible type:",
     															"to new value of:"));
     }
     
@@ -146,16 +143,18 @@ public class Constants {
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.UpdateTestDomain, Arrays.asList("http://www.facebook.com"));
-    	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("varName", "String", "initialization value"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("newVarName", "String", "initialization value"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.AssignVariable, Arrays.asList("varName", "String", "My New Value"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.AssignVariable, Arrays.asList("existingVarName", DOUBLE_QUOTE_REPLACEMENT + "My New Value" + DOUBLE_QUOTE_REPLACEMENT));
     }
     
 	public static Map<KEYWORD_KEYS, List<String>> getKeywordValues() {
 		return KEYWORD_VALUES;
+	}
+	
+	public static String resolveValue(String value){
+		return value.replace(DOUBLE_QUOTE_REPLACEMENT, "\"");
 	}
 }

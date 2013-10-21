@@ -12,9 +12,7 @@ import com.ocpsoft.utils.Constants;
 import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.ocpsoft.utils.Utility;
 
-public class AssignVariableKeyword implements KeywordAssignment {
-
-	private String curVariableName = "";
+public class AssignVariableKeyword implements VariableKeywordInterface {
 
 	public AssignVariableKeyword() {
 	}
@@ -48,11 +46,10 @@ public class AssignVariableKeyword implements KeywordAssignment {
 			return "Could not perform " + shortName() + ".  Could not find testName: " + testCaseName;
 		}
 		String curBody = testCase.getBody();
-		setCurVariableName(inputValues.get(0));
 		
 		//NOTE: Framework does NOT support creating multiple variables of different types with the same name.
 		//Therefore, if we find a variable with the specified name, we will assume your new value is acceptable for the type.
-		if(Utility.isVariableAlreadyPresentInMethod(curBody, getCurVariableName()) == false){
+		if(Utility.isVariableAlreadyPresentInMethod(curBody, inputValues.get(0)) == false){
 			System.err.println("ERROR: Varibale does NOT exist, can not re-assign it.");
 			return "ERROR: Varibale does NOT exist, can not re-assign it.";
 		}
@@ -75,20 +72,11 @@ public class AssignVariableKeyword implements KeywordAssignment {
 		return "SUCCESS: " + shortName() + " for [" + inputValues.get(0) + "] updated successfully.";
 	}
 	
-	//0:Name, 1:NewValue
-	private String determineNewLine(ArrayList<String> inputValues) {
+	//0:Name, 1:NewValue  NOTE: We don't know the type, so the assignment must be exactly as inputed (can't add quotes if a string cause we wont know)
+	@Override
+	public String determineNewLine(ArrayList<String> inputValues) {
 		String newLine = inputValues.get(0) + " = ";
-		if(inputValues.get(1).equals("String")){
-			if(!inputValues.get(2).startsWith("\"")){
-				newLine += "\"" + inputValues.get(2);
-			}
-			if(!inputValues.get(2).endsWith("\"")){
-				newLine +=  "\"";
-			}
-			newLine += ";";
-		} else {
-			newLine += inputValues.get(2) + ";";
-		}
+		newLine += Constants.resolveValue(inputValues.get(1)) + ";";
 		return newLine;
 	}
 
@@ -97,21 +85,7 @@ public class AssignVariableKeyword implements KeywordAssignment {
 	public void createKeywordHelperMethod(JavaClass helperClass){
 	}
 
-	@Override
-	public String variableName() {
-		return getCurVariableName();
-	}
-	
 	/* EXAMPLE:
 	 * Note: This will re-assign a new value to an existing variable.
 	 */
-
-	
-	public String getCurVariableName() {
-		return curVariableName;
-	}
-
-	public void setCurVariableName(String newVariableName) {
-		this.curVariableName = newVariableName;
-	}
 }

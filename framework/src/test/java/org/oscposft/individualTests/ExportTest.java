@@ -81,13 +81,10 @@ public class ExportTest {//Begin Class
 		//Verfiy the correct message on the UI for the import step
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Just finished importing the following Keywords:\n"+
-					//TODO: #DeploymentURL_HACK
-				  "deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\")\n"+
-		          "OpenBrowser\n"+
-		          "VerifyObjectIsNotDisplayed\n"+
-		          "VerifyObjectProperty\n"+
-		          	//TODO: #DeploymentURL_HACK
-		          "[4] total instructions have been imported.";
+				  Constants.KEYWORD_KEYS.OpenBrowser.toString() + "\n"+
+				  Constants.KEYWORD_KEYS.VerifyObjectIsNotDisplayed.toString() + "\n"+
+				  Constants.KEYWORD_KEYS.VerifyObjectProperty.toString() + "\n"+
+		          "[3] total instructions have been imported.";
 		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
 		    expected.equals(value));
 		
@@ -138,11 +135,13 @@ public class ExportTest {//Begin Class
 				"should NOT see message [Error: invalid action]!, with XPath property to verify of: div[@id='myFBdata']\n" +
 				"|UP| |DOWN| VerifyObjectProperty: with Verification Message of: Selected Value should be Begin New Suite, " +
 				"with object Type of: select, with XPath property to verify of: //select[@id='keyword'], with value to verify of: Begin New Suite";
-		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
-				expected.equals(value));
+		Assert.assertEquals("value should be equal", expected, value);
 	}
 	
 	private void verifyOutputFileOfExport() {
+		//TODO: #DeploymentURL_HACK
+		//Note: We need to specifically NOT export the AssignVariableKeyword step for the deploymentURL
+		//Since this is auto imported at the beginning of every test (and we dont want 2 when we import these steps)
 		ArrayList<String> inputs1 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.OpenBrowser));
 		ArrayList<String> inputs2 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed));
 		ArrayList<String> inputs3 = Utility.convertListStringToArrayListString(Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.VerifyObjectProperty));
@@ -158,13 +157,7 @@ public class ExportTest {//Begin Class
 		ConfigXMLParser xmlParser = new ConfigXMLParser();
 		String expectedFile = xmlParser.generateInstructionSetXMLDoc(keywords, inputs);
 		expectedFile += "\n"; //Since the entire file is going to have an extra newLine, make one here too since it's easier.
-		
-		//TODO: #DeploymentURL_HACK
-		//Need to add the CodeLine for the deploymentURL into the expected file
-		String depURLline = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<InstructionSet>\n\t<Instruction>\n\t\t<CodeLine>deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\")</CodeLine>\n\t</Instruction>";
-		expectedFile = depURLline + expectedFile.substring(expectedFile.indexOf("<InstructionSet>") + "<InstructionSet>".length());
 
-		
 		String entireFile = "";
 		File file = new File(exportFilePath);
 		if(file.exists()){

@@ -53,8 +53,7 @@ public class BeginTestKeyword implements Keyword {
 				
 				//TODO: #DeploymentURL_HACK
 				//TODO: This is a temporary measure.  We need to figure out a way of running the tests on our app server
-				//without making the deployment name "keword-testing.war".  This is a temp stop-gap.
-				//NOTE: This is going to show up as an error right now on the UI in the status section.
+				//without making the deployment name "framework.war".  This is a temp stop-gap.
 				.addThrows(MalformedURLException.class)
 				.setBody("deploymentURL = new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\");")
 				

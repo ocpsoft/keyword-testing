@@ -11,4 +11,3 @@ org.ocpsoft.keywords.SelectDropdownValueKeyword
 org.ocpsoft.keywords.VerifyObjectIsDisplayedKeyword
 org.ocpsoft.keywords.VerifyObjectIsNotDisplayedKeyword
 org.ocpsoft.keywords.VerifyObjectPropertyKeyword
-org.ocpsoft.keywords.UpdateTestDomainKeyword

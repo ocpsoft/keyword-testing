@@ -222,10 +222,10 @@ public class Utility {
 		
 		//Note: Some steps are variable creations/assignments like:
 		//String varName = "SomeValue"
-		if(step.contains("=") && !step.contains("Helper.")){
+		if(isVariableAssignmentORcreationStep(step)){
 			int equalPos = step.indexOf("=");
-			int firstSpacePos = step.indexOf(" ");
 			if (isVariableCreationStep(step)){
+				int firstSpacePos = step.indexOf(" ");
 				String returnString = "<font color='blue'>" + KEYWORD_KEYS.CreateVariable + "</font>: ";
 				if(!variableHasDefaultValue(step.substring(equalPos + 1))){
 					returnString += " with name: <em><font color='purple'>" + step.substring(firstSpacePos + 1, equalPos) + "</em></font>" +
@@ -289,8 +289,12 @@ public class Utility {
 			return returnVal;
 		}
 	}
+	
+	public static boolean isVariableAssignmentORcreationStep(String step){
+		return step.contains("=") && !step.contains("Helper.") && !step.contains("Actions.");
+	}
 
-	private static boolean isVariableCreationStep(String step) {
+	public static boolean isVariableCreationStep(String step) {
 		//Must be: 
 		//String varName = "Something"; or
 		//String varName="Something";
@@ -396,6 +400,14 @@ public class Utility {
 		ArrayList<String> returnVal = new ArrayList<String>();
 		for (String string : strings) {
 			returnVal.add(string);
+		}
+		return returnVal;
+	}
+
+	public static ArrayList<String> convertStringToArrayListString(String string, String delim){
+		ArrayList<String> returnVal = new ArrayList<String>();
+		for (String element : string.split(delim)) {
+			returnVal.add(element.trim());
 		}
 		return returnVal;
 	}

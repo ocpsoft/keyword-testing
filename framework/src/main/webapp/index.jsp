@@ -194,7 +194,10 @@
 			input.value = "assigned_null";	
 		}
 
-
+		String.prototype.replaceAll = function (find, replace) {
+		    var str = this;
+		    return str.replace(new RegExp(find, 'g'), replace);
+		};
 		function showAllNecessaryInputs(keyword){
 			//First clear all input fields
 			hideAllInputs();
@@ -205,13 +208,15 @@
 					//So we can just use the same index for each of the arrays here.
 			var keywordDescs = keywordDescMap[keyword].split(", ");
 			var keywordVals = keywordValueMap[keyword].split(", ");
+			var quoteReplaceStr = "<%=Constants.DOUBLE_QUOTE_REPLACEMENT%>";
 			for (var i=0; i < keywordDescs.length; i++){
 				showSpecificInput(i+1);
 				document.getElementById("input" + (i+1) + "Desc").innerHTML = keywordDescs[i];
-				document.getElementById("Input" + (i+1)).value = keywordVals[i];
+				document.getElementById("Input" + (i+1)).value = keywordVals[i].replaceAll(quoteReplaceStr, "\"");
 			}
 		}
 
+		
 		function doGET(GetURL){
 			var myObj = null;
 			var xmlhttp = null;

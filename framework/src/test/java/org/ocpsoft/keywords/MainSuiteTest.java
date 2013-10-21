@@ -18,13 +18,11 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ocpsoft.common.services.ServiceLoader;
 import org.ocpsoft.common.util.Iterators;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
-import org.ocpsoft.services.MyWebServiceImpl;
 import org.ocpsoft.utils.TestUtility;
 
 import com.ocpsoft.utils.Constants;
@@ -165,14 +163,15 @@ private String getValue(String objectType, String objectXPath){
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
 		Thread.sleep(500);
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		Thread.sleep(500);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "deploymentURL");
+	    browser.type("//input[@id='Input3']", "\"http://www.facebook.com\"");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
 		
 		String testSuiteName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
 		String testCaseName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
-		validateTestCaseContainsCorrectStep(KEYWORD_KEYS.UpdateTestDomain, testCaseName, testSuiteName, null);
 		
 		//Validate we added the throws MalformedURLException to the test
 		JavaClass testClass = null;
@@ -182,11 +181,12 @@ private String getValue(String objectType, String objectXPath){
 		Assert.assertTrue("Test should have 2 total Exceptions", testMethod.getThrownExceptions().size() == 2);
 		
 		//Add another Update, make sure that line is in there correctly too, and make sure we only have 1 Malformed Exception on the testcase (not 2).
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.UpdateTestDomain);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.type("//input[@id='Input1']", "http://www.cnn.com");
-		browser.click("id=AddInstruction");
-		Thread.sleep(500);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "deploymentURL");
+	    browser.type("//input[@id='Input3']", "\"http://www.cnn.com\"");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
 		
 		testClass = Utility.getJavaClass(testSuiteName);
 		testMethod = testClass.getMethod(testCaseName);
@@ -275,9 +275,8 @@ private String getValue(String objectType, String objectXPath){
 						expected.equals(value));
 				
 				value = getValue("input", "//input[@id='Input" + (x+1) + "']"); //UI starts counting divs and Inputs at 1
-				expected = Constants.KEYWORD_VALUES.get(keyword).get(x);
-				Assert.assertTrue("DefaultInputValue - value should be [" + expected + "]",
-						expected.equals(value));
+				expected = Constants.resolveValue(Constants.KEYWORD_VALUES.get(keyword).get(x)); //Note we do this manually in the index.jsp file
+				Assert.assertEquals("DefaultInputValue incorrect for Keyword: " + keyword + ", Input: " + x, expected, value);
 			}
 			
 			browser.click("id=AddInstruction");
@@ -312,6 +311,18 @@ private String getValue(String objectType, String objectXPath){
 		}
 		return curKeyword;
 	}
+	private Keyword getKeyword(String keyword) {
+		Keyword curKeyword = null;
+		@SuppressWarnings("unchecked")
+		List<Keyword> keywords = Iterators.asList(ServiceLoader.load(Keyword.class));
+		for (Keyword key : keywords) {
+			if(key.shortName().toString().equals(keyword)){
+				curKeyword = key;
+				break;
+			}
+		}
+		return curKeyword;
+	}
 	private void validateTestCaseContainsCorrectStep(KEYWORD_KEYS keywordKey, String testCaseName, String testSuiteName, String optionallyStepMustContainThisString) {
 		Member<JavaClass, ?> member = null;
 		member = Utility.getMemberFromTestCaseName(testCaseName, testSuiteName);
@@ -324,21 +335,23 @@ private String getValue(String objectType, String objectXPath){
 		String additionalParams = "";
 		for (String step : steps) {
 			if(isStepWeAreLookingFor(step, keywordKey.toString(), optionallyStepMustContainThisString)){
-				//Validate this step
+				//Validate this default step
 				//Example: Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);
 				//ie: "Helper." + keyword.getShortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.getAdditionalInputParams() + ");";
-				//NOTE: For Assignment keywords, we'll have a variable assignment prefixing the Helper call
+				//NOTE: For Variable keywords, we'll have to create them a different way
+				String actualValue = step;
 				
 				inputList = buildInputValueStringFromList(Constants.KEYWORD_VALUES.get(keywordKey));
 				Keyword keyword = getKeyword(keywordKey);
 				additionalParams = keyword.additionalInputParams();
-				String prefix = "";
-				if(keyword instanceof KeywordAssignment){
-					prefix = ((KeywordAssignment) keyword).variableName() + "=";
+				String expected = "";
+				if(keyword instanceof VariableKeywordInterface){
+					expected = ((VariableKeywordInterface) keyword).determineNewLine(
+								Utility.convertStringToArrayListString(inputList, ","));
+				} else {
+					expected = "Helper." + keywordKey.toString() + "(browser,Arrays.asList(" + inputList + ")" + additionalParams + ")";
 				}
-				String value = step;
-				String expected = prefix + "Helper." + keywordKey.toString() + "(browser,Arrays.asList(" + inputList + ")" + additionalParams + ")";
-				Assert.assertEquals("Keyword: "+ keywordKey.toString() + " failed adding correct step call to testCase.", expected, value);
+				Assert.assertEquals("Keyword: "+ keywordKey.toString() + " failed adding correct step call to testCase.", expected, actualValue);
 				validatedStep = true;
 				break;
 			}
@@ -346,7 +359,7 @@ private String getValue(String objectType, String objectXPath){
 		Assert.assertTrue("Need to find the right step to validate containing: " + keywordKey.toString(), validatedStep);
 	}
 	private boolean isStepWeAreLookingFor(String step, String keyword, String optionallyStepMustContainThisString) {
-		boolean containsKeyword = step.contains(keyword);
+		boolean containsKeyword = stepDoesContainKeyword(step, keyword);
 		boolean containsPhrase;
 		if(optionallyStepMustContainThisString == null){
 			containsPhrase = true;
@@ -356,12 +369,28 @@ private String getValue(String objectType, String objectXPath){
 		}
 		return (containsKeyword && containsPhrase);
 	}
+	private boolean stepDoesContainKeyword(String step, String keyword) {
+		Keyword actualKeyword = getKeyword(keyword);
+		if(actualKeyword instanceof VariableKeywordInterface){
+			if(actualKeyword instanceof CreateVariableKeyword){
+				return Utility.isVariableCreationStep(step);
+			} else if (actualKeyword instanceof AssignVariableKeyword) {
+				return Utility.isVariableAssignmentORcreationStep(step) && !Utility.isVariableCreationStep(step);
+			} else {
+				System.err.println("Unknown instance of VariableKeywordInterface");
+				return false;
+			}
+		}
+		return step.contains(keyword);
+	}
+
 	private String buildInputValueStringFromList(List<String> inputValueList){
 		String returnVal = "";
 		for (String input : inputValueList) {
-			returnVal+="\"" + input + "\",";
+			returnVal+="\"" + input + "\"" + Constants.LIST_DELIMITER;
 		}
 		
+		returnVal = returnVal.replace(Constants.LIST_DELIMITER, ",");
 		return returnVal.substring(0, returnVal.length() - 1); //Remove last comma
 	}
 	

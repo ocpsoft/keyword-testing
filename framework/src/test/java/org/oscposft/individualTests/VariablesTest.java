@@ -64,7 +64,7 @@ public class VariablesTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "myVariable");
-	    browser.type("//input[@id='Input3']", "RunTestsResults");
+	    browser.type("//input[@id='Input2']", "\"RunTestsResults\"");
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
 	    

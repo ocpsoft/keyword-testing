@@ -22,12 +22,12 @@ import org.jboss.forge.parser.java.Method;
 import org.jboss.forge.parser.java.Visibility;
 import org.jboss.forge.parser.java.util.Formatter;
 import org.ocpsoft.dataBeans.Instruction;
+import org.ocpsoft.keywords.AssignVariableKeyword;
 import org.ocpsoft.keywords.CallActionKeyword;
-import org.ocpsoft.keywords.CreateVariableKeyword;
 import org.ocpsoft.keywords.Keyword;
 import org.ocpsoft.keywords.Keyword.KEYWORD_PROCESS_TYPES;
-import org.ocpsoft.keywords.KeywordAssignment;
 import org.ocpsoft.keywords.KeywordFactory;
+import org.ocpsoft.keywords.VariableKeywordInterface;
 
 import com.ocpsoft.projectStarter.ActionsFileCreator;
 import com.ocpsoft.projectStarter.HelperFileCreator;
@@ -160,8 +160,9 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		System.out.println("Moving Step [" + stepNumber + "] in test {" + testCaseName + "} dirction: " + direction);
 		
 		//TODO: #DeploymentURL_HACK
-		//deploymentURL line is in the steps, but not displayed, so we need to subtract another 1
-		int top = 1; //should be 0, but we have the deploymentURL line
+		//Even though we are displaying the AssignKeyword for deploymentURL,
+		//We don't actually want to be able to move that line.  It MUST be the first in the test.
+		int top = 1; //If we could move the first line, then top should be 0.
 
 		File file = new File(completePath);
 		try {
@@ -400,7 +401,16 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			if(!Utility.isEmptyStep(statement)){
 				Instruction i = getInstructionFromCodeStatement(statement);
 				if(i != null){
-					returnString+=  i.toXMLString(xmlParser) + "\n";
+					//TODO: #DeploymentURL_HACK
+					ArrayList<String> deployURLInputs = new ArrayList<String>();
+					deployURLInputs.add("deploymentURL");
+					deployURLInputs.add("new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\")");
+					if(i.getKeyword() instanceof AssignVariableKeyword && i.getInputs().equals(deployURLInputs)){
+						//do nothing for #DeploymentURL_HACK
+						//We don't want to translate this step as something to export.
+					} else {
+						returnString+=  i.toXMLString(xmlParser) + "\n";
+					}
 				}
 			}
 		}
@@ -414,8 +424,8 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		 * 
 		 * 		Or direct Code lines like the following:
 		 * 		Actions.myActionCall(deploymentURL, browser)
-		 * 		//TODO: #DeploymentURL_HACK
-		 * 		deploymentURL = new URL("Constants.FRAMEWORK_LOCALHOST_URL");
+		 * 
+		 * 		Or variable creation or assignments
 		 */
 		String keyword = "";
 		Instruction instruction = null;
@@ -425,26 +435,44 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			//TODO: Note: This makes assumption that there are no ")" chars in any of the input elements.
 			String inputsString = statement.substring(statement.indexOf("asList(") + "asList(".length(), statement.indexOf(")"));
 			inputsString = inputsString.replace("\"", "");
+			//TODO: Note: This makes assumption that there are no "," chars in any of the input elements.
+			ArrayList<String> inputs = Utility.convertStringToArrayListString(inputsString, ",");
 			
 			instruction = new Instruction();
 			instruction.setKeyword(factory.createKeyword(keyword));
-			//TODO: Note: This makes assumption that there are no "," chars in any of the input elements.
-			ArrayList<String> inputs = new ArrayList<>();
-			for (String string : inputsString.split(",")) {
-				inputs.add(string);
-			}
 			instruction.setInputs(inputs);
 			return instruction;
 		} else if(statement.contains("Actions.")){
 			instruction = new Instruction();
 			instruction.setNonConformingCodeLine(statement);
 			return instruction;
-		//TODO: #DeploymentURL_HACK
-		} else if(statement.replace(" ", "").startsWith("deploymentURL=newURL(")){
+		} else if(Utility.isVariableAssignmentORcreationStep(statement)){
+			if(Utility.isVariableCreationStep(statement)){
+				keyword = Constants.KEYWORD_KEYS.CreateVariable.toString();
+				String varType = (String) statement.subSequence(0, statement.indexOf(" "));
+				String varName = (String) statement.subSequence(statement.indexOf(" "), statement.indexOf("="));
+				String initialization = statement.substring(statement.indexOf("=") + 1);
+				String inputsString = varName.trim() + Constants.LIST_DELIMITER + varType.trim() + Constants.LIST_DELIMITER + initialization.trim();
+				ArrayList<String> inputs = Utility.convertStringToArrayListString(inputsString, Constants.LIST_DELIMITER);
+				
+				instruction = new Instruction();
+				instruction.setKeyword(factory.createKeyword(keyword));
+				instruction.setInputs(inputs);
+				return instruction;
+			}
+			//Must be Assignment Keyword
+			keyword = Constants.KEYWORD_KEYS.AssignVariable.toString();
+			String varName = (String) statement.subSequence(0, statement.indexOf("="));
+			String assignValue = statement.substring(statement.indexOf("=") + 1);
+			String inputsString = varName.trim() + Constants.LIST_DELIMITER + assignValue.trim();
+			ArrayList<String> inputs = Utility.convertStringToArrayListString(inputsString, Constants.LIST_DELIMITER);
+			
 			instruction = new Instruction();
-			instruction.setNonConformingCodeLine(statement);
+			instruction.setKeyword(factory.createKeyword(keyword));
+			instruction.setInputs(inputs);
 			return instruction;
 		} else {
+			//TODO: Might need to make anything in the else block just a nonConformingCodeLine
 			System.out.println("ERROR - Can't parse into Instrcution object. Unknown type of statement:" + statement);
 			return null;
 		}
@@ -696,11 +724,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		  
 		  String newStep = "";
 		  if(instruction.getNonConformingCodeLine() == null || instruction.getNonConformingCodeLine().equals("")){
-			  String stepPrefix = "";
-			  if(keyword instanceof KeywordAssignment){
-			    stepPrefix = ((KeywordAssignment) keyword).variableName() + " = ";
+			  if(keyword instanceof VariableKeywordInterface){
+				  newStep = ((VariableKeywordInterface) keyword).determineNewLine(instruction.getInputs());
+			  } else {
+				  newStep = "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
 			  }
-			  newStep = stepPrefix + "Helper." + keyword.shortName() + "(browser, " + printOutArrayListAsList(inputs) + keyword.additionalInputParams() + ");";
 			  addThrowsToMethodIfNeededForKeyword(keyword, currentMethod);
 		  } else {
 			  newStep = instruction.getNonConformingCodeLine();
