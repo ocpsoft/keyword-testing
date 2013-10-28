@@ -1,4 +1,4 @@
-package org.oscposft.individualTests;
+package org.ocpsoft.individualTests;
 
 import java.net.MalformedURLException;
 import java.net.URL;

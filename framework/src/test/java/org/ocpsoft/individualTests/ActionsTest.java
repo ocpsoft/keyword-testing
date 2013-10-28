@@ -1,4 +1,4 @@
-package org.oscposft.individualTests;
+package org.ocpsoft.individualTests;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -112,25 +112,9 @@ public class ActionsTest {//Begin Class
 		createNewTest(null);
 		buildTest2();
 		verifyCorrectTestStepsOnUITest2("testName");
-		
-		//TODO: We can't start a selenium server within a Selenium test
-				//We can't click the [Run Tests] button until we find a way around this
-				//We can run the test manually from the AppUnderTest project for now if we want.
-//		browser.click("id=RunTests");
-//		Thread.sleep(100);
-//		String value = getValue("div", "//div[@id='RunTestsResults']");
-//		Assert.assertTrue("RunTestsResults div should not have any text while tests are running", value.equals(""));
-//		
-//		//We don't know exactly how long the test will take to run.
-//		//Keep checking until we have results, or we "time out".
-//		long x = 0;
-//		while(x < 999999999999l && value.equals("")){
-//			value = getValue("div", "//div[@id='RunTestsResults']");
-//			x++;
-//		}
-//		System.out.println("\n\n\nValue of x: " + x);
-//		System.out.println("*******************");
-//		Assert.assertTrue("RunTestsResults div should say Success after completing", value.startsWith("Build SUCCESSFUL!!!"));
+
+		browser.click("id=RunTests");
+		TestUtility.validateRunDidCompleteSuccessfully(browser, 12);
 	}//End Test Case
 	
 	private void callActionInTest(String actionName) throws InterruptedException {

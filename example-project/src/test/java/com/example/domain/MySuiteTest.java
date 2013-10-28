@@ -25,4 +25,4 @@ import org.junit.Test;@RunWith(org.jboss.arquillian.junit.Arquillian.class) publ
 
 	@Deployment(testable=false) static public WebArchive createDeployment(){return ShrinkWrap.create(WebArchive.class,"FBTutorialDemo.war").addAsWebInfResource(EmptyAsset.INSTANCE,"beans.xml");}
 
-	@Test public void testName() throws InterruptedException,MalformedURLException{deploymentURL=new URL("http://localhost:8080/framework/");Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);String myVariable="SomeWrongValue";Helper.VerifyObjectIsNotDisplayed(browser,Arrays.asList("User should NOT see message [Error: invalid action]!","div[@id='" + myVariable+"']"));myVariable="RunTestsResults";Helper.VerifyObjectIsDisplayed(browser,Arrays.asList("User should be on index.jsp Page!","div[@id='" + myVariable+"']"));} }
+	@Test public void testName() throws InterruptedException,MalformedURLException{deploymentURL=new URL("http://localhost:8080/framework/");Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);Actions.nestedMiniAction(deploymentURL,browser);} }

@@ -1,4 +1,4 @@
-package org.oscposft.individualTests;
+package org.ocpsoft.individualTests;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -77,7 +77,7 @@ public class VariablesTest {//Begin Class
 	    verifyCorrectTestStepsOnUITest2("testName");
 	    
 		browser.click("id=RunTests");
-		TestUtility.validateRunDidCompleteSuccessfully(browser);
+		TestUtility.validateRunDidCompleteSuccessfully(browser, 10);
 	}//End Test Case
 
 	@Test

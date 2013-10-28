@@ -20,16 +20,19 @@ public class TestUtility {
 		}
 	}
 	
-	public static void waitUntilTestRunCompletes(DefaultSelenium browser) throws InterruptedException{
+	public static void waitUntilTestRunCompletes(DefaultSelenium browser, int timeOutSeconds) throws InterruptedException{
 		int count = 0;
-		while(browser.getElementHeight("id=RunTestsResultsImg").doubleValue() > 0 && count < 500){
+		if(timeOutSeconds <= 0){
+			timeOutSeconds = 20;
+		}
+		while(browser.getElementHeight("id=RunTestsResultsImg").doubleValue() > 0 && count < timeOutSeconds * 10){
 			Thread.sleep(100);
 			count++;
 		}
 	}
 
-	public static boolean validateRunDidCompleteSuccessfully(DefaultSelenium browser) throws InterruptedException{
-		waitUntilTestRunCompletes(browser);
+	public static boolean validateRunDidCompleteSuccessfully(DefaultSelenium browser, int timeOutSeconds) throws InterruptedException{
+		waitUntilTestRunCompletes(browser, timeOutSeconds);
 		Assert.assertTrue("Build Success", browser.isTextPresent("Build SUCCESSFUL!!!"));
 		return browser.isTextPresent("Build SUCCESSFUL!!!");
 	}

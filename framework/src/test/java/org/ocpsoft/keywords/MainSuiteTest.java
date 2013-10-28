@@ -462,7 +462,7 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=AddInstruction");
 		
 		browser.click("id=RunTests");
-		TestUtility.validateRunDidCompleteSuccessfully(browser);
+		TestUtility.validateRunDidCompleteSuccessfully(browser, 13);
 	}//End Test Case
 
 	
