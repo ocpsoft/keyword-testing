@@ -25,4 +25,4 @@ import org.junit.Test;@RunWith(org.jboss.arquillian.junit.Arquillian.class) publ
 
 	@Deployment(testable=false) static public WebArchive createDeployment(){return ShrinkWrap.create(WebArchive.class,"FBTutorialDemo.war").addAsWebInfResource(EmptyAsset.INSTANCE,"beans.xml");}
 
-	@Test public void testName() throws InterruptedException,MalformedURLException{deploymentURL=new URL("http://localhost:8080/framework/");Helper.OpenBrowser(browser,Arrays.asList("index.jsp"),deploymentURL);Actions.nestedMiniAction(deploymentURL,browser);} }
+	@Test public void testName() throws InterruptedException,MalformedURLException{deploymentURL=new URL("http://localhost:8080/framework/");deploymentURL=new URL("http://localhost:8080/AppUnderTest/");Helper.OpenBrowser(browser,Arrays.asList("Login.html"),deploymentURL);String user="Craig";Actions.performLogin(deploymentURL,browser,user,"badPassword");Actions.verifyLogin(deploymentURL,browser,false,user);Actions.performLogin(deploymentURL,browser,user,"test123");Actions.verifyLogin(deploymentURL,browser,true,user);} }

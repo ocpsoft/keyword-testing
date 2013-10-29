@@ -1,17 +1,14 @@
 package org.ocpsoft.individualTests;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.forge.parser.JavaParser;
-import org.jboss.forge.parser.java.JavaClass;
-import org.jboss.forge.parser.java.Method;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -52,8 +49,10 @@ public class ComplicatedActionsTest {//Begin Class
 
 	private final String ACTION_TYPE_INPUT = "setInputValue";
 	private final String ACTION_CLICK_LOGIN = "clickLogin";
-	private final String ACTION_VERIFY_SUCCESS = "verifySuccess";
-	private final String ACTION_LOGIN = "performLogin";
+	private final String ACTION_VERIFY_SUCCESSFUL_LOGIN = "verifySuccessfulLogin";
+	private final String ACTION_VERIFY_UNSUCCESSFUL_LOGIN = "verifyUnsuccessLogin";
+	private final String ACTION_VERIFY_LOGIN = "verifyLogin";
+	private final String ACTION_PERFORM_LOGIN = "performLogin";
 	private final String actionsFilePath = Constants.APP_UNDER_TEST__TEST_FILE_PATH + "Actions.java";
 
 	@Test
@@ -74,172 +73,268 @@ public class ComplicatedActionsTest {//Begin Class
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		buildTest();
-		verifyCorrectTestStepsOnUI("testName");
+		startNewTestSuite();
 		
-		//Export the current Test as a new Action
-		exportToAction(ACTION_NAME);
+		createTypeInputAction();
+		createClickLoginAction();
+		createPerformLoginAction();
+		createVerifySuccessLoginAction();
+		createVerifyUnsuccessLoginAction();
+		createVerifyLoginAction();
 		
-		verifyActionsFile();
+		//Start from scratch and use the Actions we created to make a really good test.
+		deleteTest(null);
+		startNewTestCase();
 		
-		//Clear the entire class, then create a new test and try to call the newly created action
-		browser.click("id=deleteSuite");
-		createNewTest("myNewTest");
-		callActionInTest(ACTION_NAME);
-		
-		//Verfiy the correct message on the UI for the import step
-		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
-		String expected = "Test Suite Named: MySuiteTest\nmyNewTest\n|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n|UP| |DOWN| Action Call: myAction";
-		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
-		    expected.equals(value));
-		
-	}//End Test Case
-
-	@Test
-	public void testExportingNestedActionsThenCreatingNewTestThatCallsTheNestedAction() throws InterruptedException {//Begin Test Case
-		/* This test builds a miniAction and a nestedMiniAction (which contains miniAction).
-		 * We then create a new test that calls nestedMiniAction (which calls miniAction).
-		 * Lastly, we will kick off the test through the [Run Tests] button and validate success.
-		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
-		ParserExampleTest.removeClassFile(actionsFilePath);
-		File actionsFile = new File(actionsFilePath);
-		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
-		
-		setupForNewTestCase();
-		
-		createMiniAction();
-		createNestedMiniAction();
-		
-		createNewTest(null);
-		buildTest2();
-		verifyCorrectTestStepsOnUITest2("testName");
-
-		browser.click("id=RunTests");
-		TestUtility.validateRunDidCompleteSuccessfully(browser, 12);
-	}//End Test Case
-	
-	private void callActionInTest(String actionName) throws InterruptedException {
-	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
+		//Note, this test goes against Login.html of the example-project (not index.jsp)
+		//TODO: #DeploymentURL_HACK - we must set the URL to the example-project manually through an assignment 
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.type("//input[@id='Input1']", actionName);
+	    browser.type("//input[@id='Input1']", "deploymentURL");
+	    browser.type("//input[@id='Input2']", "new URL(\"http://localhost:8080/AppUnderTest/\")");
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
-	}
-
-	private void verifyActionsFile() {
-		File actionsClassFile = new File(actionsFilePath);
-		JavaClass actionsClass = null;
-		try {
-			actionsClass = (JavaClass) JavaParser.parse(actionsClassFile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			Assert.assertTrue("Error in Parsing actionsFile: " + e, false);
-		}
-		Method<JavaClass> exportedAction = actionsClass.getMethod(ACTION_NAME, "URL", "DefaultSelenium");
-		
-		Assert.assertTrue("Method does not exists in Actions.java: " + ACTION_NAME, exportedAction != null);
-		Assert.assertTrue("Method does not have the correct signature", exportedAction.toSignature().equals("public myAction(URL, DefaultSelenium) : void"));
-		
-		String expectedBody = "" + 
-							"deploymentURL=new URL(\"" + Constants.FRAMEWORK_LOCALHOST_URL + "\"); " + 
-							"Helper.OpenBrowser(browser,Arrays.asList(\"index.jsp\"),deploymentURL); " + 
-							"Helper.EnterTextInInput(browser,Arrays.asList(" + 
-									"\"//input[@id='className']\",\"Assigning Input Text\")); " + 
-							"Helper.SelectDropdownValue(browser," + 
-									"Arrays.asList(\"keyword\",\"Begin New Suite\")); ";
-		
-		expectedBody = expectedBody.replace("\n", "");
-		String actualBody = exportedAction.getBody().replace("\n", "");
-		Assert.assertEquals("Action method does not have correct body", expectedBody, actualBody);
-	}
-
-	private void buildTest() throws InterruptedException {
-		setupForNewTestCase();
-		createNewTest(null);
 	    
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "Login.html"); //Note: Login.html
 	    Thread.sleep(100);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "user");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "Craig");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    //Prove that we can pass in new variables we create and they cascade down
+	    //Also prove that we can pass direct values in, and those values get set to the variables in the calls
+	    String userInput = Constants.VARIABLE_INPUT_MARKER + "user" + Constants.VARIABLE_INPUT_MARKER;
+		callActionInTest(ACTION_PERFORM_LOGIN, userInput + ", \"badPassword\"");
+		callActionInTest(ACTION_VERIFY_LOGIN, "false, " + userInput);
+		callActionInTest(ACTION_PERFORM_LOGIN, userInput + ", \"test123\"");
+		callActionInTest(ACTION_VERIFY_LOGIN, "true, " + userInput);
+		
+		//Verfiy that we can run the test and validate non-successful and successful login attempts.
+		browser.click("id=RunTests");
+		TestUtility.validateRunDidCompleteSuccessfully(browser, 20);
+		
+	}//End Test Case
+
+	private void createTypeInputAction() throws InterruptedException {
+		//Build Action for Entering a value into an input box
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "fieldID");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "UserIDInput");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "value");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "//input[@id='" + Constants.VARIABLE_INPUT_MARKER + "fieldID" + Constants.VARIABLE_INPUT_MARKER +"']");
+	    browser.type("//input[@id='Input2']", Constants.VARIABLE_INPUT_MARKER + "value" + Constants.VARIABLE_INPUT_MARKER);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+		
+		//Export the current Test as a new Action
+	    ArrayList<String> ckboxes = new ArrayList<String>();
+	    ckboxes.add("ckbx_String_fieldID");
+	    ckboxes.add("ckbx_String_value");
+		exportToAction(ACTION_TYPE_INPUT, ckboxes);
+	}
+
+	private void createClickLoginAction() throws InterruptedException {
+		deleteTest(null);
+		startNewTestCase();
+		
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "id");
+	    browser.type("//input[@id='Input2']", "LoginButton");
+	    browser.type("//input[@id='Input3']", "");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+
+		//Export the current Test as a new Action
+	    ArrayList<String> ckboxes = new ArrayList<String>();
+		exportToAction(ACTION_CLICK_LOGIN, ckboxes);
+	}
+
+	private void createPerformLoginAction() throws InterruptedException {
+		deleteTest(null);
+		startNewTestCase();
+		
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "userName");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
 	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
-	}
-
-	private void buildTest2() throws InterruptedException {
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    Thread.sleep(100);
+	    browser.type("//input[@id='Input1']", "password");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "test123");
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
 	    
-	    callActionInTest("nestedMiniAction");
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", ACTION_TYPE_INPUT);
+	    browser.type("//input[@id='Input2']", "\"UserIDInput\", " + Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", ACTION_TYPE_INPUT);
+	    browser.type("//input[@id='Input2']", "\"passwordInput\", " + Constants.VARIABLE_INPUT_MARKER + "password" + Constants.VARIABLE_INPUT_MARKER);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", ACTION_CLICK_LOGIN);
+	    browser.type("//input[@id='Input2']", "");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+
+		//Export the current Test as a new Action
+	    ArrayList<String> ckboxes = new ArrayList<String>();
+	    ckboxes.add("ckbx_String_userName");
+	    ckboxes.add("ckbx_String_password");
+		exportToAction(ACTION_PERFORM_LOGIN, ckboxes);
 	}
 
-	private void exportToAction(String actionName) throws InterruptedException {
-		browser.type("//input[@id='exportToActionName']", actionName);
-		browser.click("id=exportToAction");
-		Thread.sleep(600);//Give time for server to add all steps to Actions class as a new method
+	private void createVerifySuccessLoginAction() throws InterruptedException {
+		deleteTest(null);
+		startNewTestCase();
+		
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "userName");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "Craig");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "Should have successful login.");
+	    browser.type("//input[@id='Input2']", "other");
+	    browser.type("//input[@id='Input3']", "//div[@id='loggedInStatus']");
+	    browser.type("//input[@id='Input4']", "Welcome " + Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER + "!");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+
+		//Export the current Test as a new Action
+	    ArrayList<String> ckboxes = new ArrayList<String>();
+	    ckboxes.add("ckbx_String_userName");
+		exportToAction(ACTION_VERIFY_SUCCESSFUL_LOGIN, ckboxes);
+	}
+
+	private void createVerifyUnsuccessLoginAction() throws InterruptedException {
+		deleteTest(null);
+		startNewTestCase();
+
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "Should have successful login.");
+	    browser.type("//input[@id='Input2']", "other");
+	    browser.type("//input[@id='Input3']", "//div[@id='loggedInStatus']");
+	    browser.type("//input[@id='Input4']", "Invalid login attempt");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+
+		//Export the current Test as a new Action
+	    ArrayList<String> ckboxes = new ArrayList<String>();
+		exportToAction(ACTION_VERIFY_UNSUCCESSFUL_LOGIN, ckboxes);
+	}
+
+	private void createVerifyLoginAction() throws InterruptedException {
+		deleteTest(null);
+		startNewTestCase();
+		
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "shouldBeSuccessful");
+	    browser.type("//input[@id='Input2']", "boolean");
+	    browser.type("//input[@id='Input3']", "true");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", "userName");
+	    browser.type("//input[@id='Input2']", "String");
+	    browser.type("//input[@id='Input3']", "");
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+	    
+		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", Constants.VARIABLE_INPUT_MARKER + "shouldBeSuccessful" + Constants.VARIABLE_INPUT_MARKER);
+	    //TODO: Note at present we have to pass the extraInputs that these Actions require in the same UI Input as the Action itslef
+	    //TODO: And just seperate it with the Constants.ObjectDelimiter
+	    browser.type("//input[@id='Input2']", ACTION_VERIFY_SUCCESSFUL_LOGIN + Constants.OBJECT_DELIMITER + 
+	    		Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER);
+	    browser.type("//input[@id='Input3']", ACTION_VERIFY_UNSUCCESSFUL_LOGIN);
+	    browser.click("id=AddInstruction");
+	    Thread.sleep(200);
+
+		//Export the current Test as a new Action
+	    ArrayList<String> ckboxes = new ArrayList<String>();
+	    ckboxes.add("ckbx_boolean_shouldBeSuccessful");
+	    ckboxes.add("ckbx_String_userName");
+		exportToAction(ACTION_VERIFY_LOGIN, ckboxes);
 	}
 	
-	private void createNestedMiniAction() throws InterruptedException {
-		createNewTest(null);
-		
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
+	
+	
+	private void callActionInTest(String actionName, String additionalInputs) throws InterruptedException {
+	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.type("//input[@id='Input1']", actionName);
+	    browser.type("//input[@id='Input2']", additionalInputs);
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
-	    
-	    callActionInTest("miniAction");
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
-	    
-	    exportToAction("nestedMiniAction");
 	}
 
-	private void createMiniAction() throws InterruptedException {
-		createNewTest(null);
-		
-	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
-	    
-	    exportToAction("miniAction");
+
+	private void startNewTestSuite() throws InterruptedException {
+		setupForNewTestSuite();
+		startNewTestCase();
 	}
-	
-	private void setupForNewTestCase() throws InterruptedException {
+	private void setupForNewTestSuite() throws InterruptedException {
 		browser.open(deploymentURL + "index.jsp");
 		browser.click("id=BeginNewProject");
 		browser.click("id=deleteSuite");
-	}
-	
-	private void createNewTest(String testName) throws InterruptedException{
+		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+	}
+	private void startNewTestCase()  throws InterruptedException {
+		createNewTest(null);
+	}
+	private void createNewTest(String testName) throws InterruptedException{
+	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    if(testName != null && !testName.equals("")){
 	    	browser.type("//input[@id='Input1']", testName);
@@ -247,30 +342,28 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(200);
 	}
+
+	private void exportToAction(String actionName, ArrayList<String> iDsOfvarsToClick) throws InterruptedException {
+		browser.type("//input[@id='exportToActionName']", actionName);
+		browser.click("id=exportToAction");
+		Thread.sleep(300); //To call server to get all variables and display them in iFrame if there are any.
+		if(iDsOfvarsToClick.size() > 0){
+			//Click each var checkbox we need to
+			for (String id : iDsOfvarsToClick) {
+				browser.click("id=" + id);
+			}
+			Thread.sleep(50);
+			browser.click("id=continueExportToAction");
+		}
+		Thread.sleep(600);//Give time for server to add all steps to Actions class as a new method
+	}
 	
-	private void verifyCorrectTestStepsOnUI(String testCaseName) {
-		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
-		String expected = "Test Suite Named: MySuiteTest\n" +
-				testCaseName + "\n" +
-				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
-				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
-				"if adding onto end of the domain): index.jsp\n" +
-				"|UP| |DOWN| EnterTextInInput: with xPath of Input: //input[@id='className']" +
-				", and Text to enter: Assigning Input Text\n" +
-				"|UP| |DOWN| SelectDropdownValue: with Dropdown object's ID of: keyword, " +
-				"selecting the value of: Begin New Suite";
-		Assert.assertEquals(expected, value);
+	private void deleteTest(String testName){
+		if(testName == null || testName.equals("")){
+			testName = "testName";
+		}
+		browser.type("//input[@id='DeleteTestInput']", testName);
+		browser.click("id=deleteTest");
 	}
-
-	private void verifyCorrectTestStepsOnUITest2(String testCaseName) {
-		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
-		String expected = "Test Suite Named: MySuiteTest\n" +
-				testCaseName + "\n" +
-				"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
-				"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
-				"if adding onto end of the domain): index.jsp\n" +
-				"|UP| |DOWN| Action Call: nestedMiniAction";
-		Assert.assertEquals(expected, value);
-	}
-
+	
 }//End Class

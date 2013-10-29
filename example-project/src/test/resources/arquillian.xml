@@ -14,6 +14,7 @@
 		 code present if running the test from within tests from the framework.
 		 NOTE: If you want to simply run a test manually in the example project,
 		 you MUST comment this code out first! -->	 
+
 	<extension qualifier="selenium-server">
    		<property name="port">12345</property>
 	</extension>

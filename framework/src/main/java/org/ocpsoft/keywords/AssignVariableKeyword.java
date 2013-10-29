@@ -49,7 +49,8 @@ public class AssignVariableKeyword implements VariableKeywordInterface {
 		
 		//NOTE: Framework does NOT support creating multiple variables of different types with the same name.
 		//Therefore, if we find a variable with the specified name, we will assume your new value is acceptable for the type.
-		if(Utility.isVariableAlreadyPresentInMethod(curBody, inputValues.get(0)) == false){
+		if(Utility.isVariableAlreadyPresentInMethod(curBody, inputValues.get(0)) == false &&
+				Utility.isVariableGlobal(testClass, inputValues.get(0)) == false){
 			System.err.println("ERROR: Varibale does NOT exist, can not re-assign it.");
 			return "ERROR: Varibale does NOT exist, can not re-assign it.";
 		}

@@ -15,23 +15,23 @@ public class Constants {
 	//public static final String EXPORT_FILE_PATH = "/home/fife/workspace/Keyword_Export_Files";
 	
 	/***********************  WINDOWWS FILE PATH *****************************************/
-//	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/example-project/";
-//	public static final String APP_UNDER_TEST__TEST_FILE_PATH = APP_UNDER_TEST_ROOT_FILE_PATH + "src/test/java/com/example/domain/";
-//	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/framework/";
-//	public static final String EXPORT_FILE_PATH = "D:/DEVELOPMENT/projects/Keyword_Export_Files/";
+	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/example-project/";
+	public static final String APP_UNDER_TEST__TEST_FILE_PATH = APP_UNDER_TEST_ROOT_FILE_PATH + "src/test/java/com/example/domain/";
+	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "D:/DEVELOPMENT/projects/keword-testing/framework/";
+	public static final String EXPORT_FILE_PATH = "D:/DEVELOPMENT/projects/Keyword_Export_Files/";
 
 	/***********************  LAPTOP FILE PATH *****************************************/
-	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "C:/Development/projects/keyword-testing/example-project/";
-	public static final String APP_UNDER_TEST__TEST_FILE_PATH = APP_UNDER_TEST_ROOT_FILE_PATH + "src/test/java/com/example/domain/";
-	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "C:/Development/projects/keyword-testing/framework/";
-	public static final String EXPORT_FILE_PATH = "C:/Development/projects/Keyword_Export_Files/";
+//	public static final String APP_UNDER_TEST_ROOT_FILE_PATH = "C:/Development/projects/keyword-testing/example-project/";
+//	public static final String APP_UNDER_TEST__TEST_FILE_PATH = APP_UNDER_TEST_ROOT_FILE_PATH + "src/test/java/com/example/domain/";
+//	public static final String KEYWORD_PROJECT_ROOT_FILE_PATH = "C:/Development/projects/keyword-testing/framework/";
+//	public static final String EXPORT_FILE_PATH = "C:/Development/projects/Keyword_Export_Files/";
 	
 	
 	
 	public static final String FRAMEWORK_LOCALHOST_URL = "http://localhost:8080/framework/";
 	public static final String VARIABLE_INPUT_MARKER = "||var||";
 	public static final String CODE_INPUT_PREFIX = "||code||";
-	public static final String LIST_DELIMITER = "##";
+	public static final String LIST_DELIMITER = "__,__";
 	public static final String OBJECT_DELIMITER = "~~";
 	public static final String DOUBLE_QUOTE_REPLACEMENT = "_quote_";
 	
@@ -106,7 +106,8 @@ public class Constants {
 																"with XPath property to verify of:",
 																"with value to verify of:"));
     	
-    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CallAction, Arrays.asList("with Action Name:"));
+    	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CallAction, Arrays.asList("with Action Name:",
+    															"with values for additional inputs:"));
     	
     	KEYWORD_DESCRIPTIONS.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("variable name:", 
     															"varible type:", 
@@ -143,7 +144,7 @@ public class Constants {
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction"));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction, "));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("newVarName", "String", "initialization value"));
     	

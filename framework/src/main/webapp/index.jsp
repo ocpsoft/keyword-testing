@@ -139,8 +139,9 @@
        <div id="RunTestsResults"><img src="" id="RunTestsResultsImg" /></div><P />
        <BR /><P />
        </center>
+       <div id='iframeSlot'></div>
        <input type="submit" id="exportToAction" value="Export to Action" onClick='exportToAction()' />
-       <input type="text" id="exportToActionName" value="[Name of Action File] performed on current selected TestCase"/><br />
+       <input type="text" id="exportToActionName" value="NameOfActionToCreate"/><br />
        <input type="submit" id="exportTestCase" value="Export Current Test to XML File" onClick='exportTestCase()'/>
        <input type="submit" id="importSteps" value="Import Steps To Current Test from XML File" onClick='importTestSteps()'/>
        <input type="text" id="ImportInput1" value="Fully Qualified Path of XML File to import"/><br />
@@ -339,8 +340,40 @@
 		}
 
 		function exportToAction(){
+			//First we check to see if there are any variables getting created in the test so we can ask the user about them
+			var GETurl = 'rest/webService/ListOfVariablesCreatedInTest/' + document.getElementById("className").value + '/' + getTestCaseName();
+			doGETwithCallback(GETurl, showIFrameIfNeeded, getTestCaseName());
+		}
+		function showIFrameIfNeeded(variables, testName){
+			if(variables == null || variables == ""){
+				//There are no variables created, just export the to the action class
+				performExportToActionsClass();
+			} else if(variables.indexOf("ERROR:") != -1){
+				return variables;
+			} else {
+				//Display page with all the variables so the user can select which ones should be parameterized instead of created.
+				makeVariableChoiceFrame(variables);
+			}
+		}
+		function makeVariableChoiceFrame(variables) { 
+			   ifrm = document.createElement("IFRAME"); 
+			   ifrm.id = "varListIframe";
+			   ifrm.setAttribute("src", "variableList.html?variables=" + variables); 
+			   ifrm.style.width = 430+"px"; 
+			   ifrm.style.height = (120+(variables.split(",").length * 22))+"px"; 
+			   document.getElementById('iframeSlot').appendChild(ifrm); 
+		} 
+		function closeVariableChoiceFrame() {
+           	var iframe = document.getElementById('varListIframe');
+           	iframe.parentNode.removeChild(iframe);
+        }
+		function performExportToActionsClass(variablesArray){
 			var actionName = document.getElementById("exportToActionName").value;
-			var POSTurl = 'rest/webService/ExportTestToAction/' + document.getElementById("className").value + '/' + getTestCaseName() + '/' + actionName;
+			var variablesAsParams = ""
+			if(variablesArray != null && variablesArray.length > 0){
+				variablesAsParams = variablesArray.join('<%=Constants.LIST_DELIMITER%>');
+			}
+			var POSTurl = 'rest/webService/ExportTestToAction/' + document.getElementById("className").value + '/' + getTestCaseName() + '/' + actionName + '/' + variablesAsParams;
 			var returnVal = doPOSTwithCallback(POSTurl, "", true, updateTestSuiteDisplay);
 			return returnVal;
 		}
@@ -506,7 +539,7 @@
 		function encodeURLComp(component){
 			//TODO: For some reason encodeURIComponent isn't working for WebService, seems like Java is Decoding it before the @Path takes a look, don't know why...
 			var newString
-			newString = component.replace("//", "^^^***");
+			newString = component.replaceAll("//", "^^^***");
 			newString = newString.split('/').join('^**^');
 			newString = newString.split('\\').join('*^*');//Note: Need one \ to escape, so this is looking for only "\"
 			return newString;

@@ -176,7 +176,7 @@ public class Utility {
 			pos++;
 		}
 		
-		if(returnArray[returnArray.length -1] == null){
+		if(returnArray.length > 0 && returnArray[returnArray.length -1] == null){
 			//We have at least 1 combined step, so our count is now off, remove all null steps
 			int count = 0;
 			for (String string : returnArray) {
@@ -303,6 +303,22 @@ public class Utility {
 		boolean matches = Pattern.matches(regex, step);
 		return matches;
 	}
+	public static String getVariableTypeInCreationStep(String step){
+		if(Utility.isVariableCreationStep(step)){
+			int begin = 0;
+			int end = step.indexOf(" ");
+			return step.substring(begin, end).trim();
+		}
+		return "";
+	}
+	public static String getVariableNameInCreationStep(String step){
+		if(Utility.isVariableCreationStep(step)){
+			int begin = step.indexOf(" ");
+			int end = step.indexOf("=");
+			return step.substring(begin, end).trim();
+		}
+		return "";
+	}
 	private static boolean variableHasDefaultValue(String value) {
 		if(value.equals("null")){
 			return true;
@@ -383,6 +399,59 @@ public class Utility {
 		}
 		return false;
 	}
+
+	public static boolean isVariableGlobal(JavaClass javaClass, String varName) {
+		List<Member<JavaClass, ?>> allMembers = javaClass.getMembers();
+		for (Member<JavaClass, ?> member : allMembers) {
+			String memberName = member.getName();
+			if(memberName.equals(varName)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static String resolveExtraInputs(String extraInputs) {
+		if(extraInputs != null && !extraInputs.equals("")){
+			String[] inputsArray = extraInputs.split(",");
+			extraInputs = "";
+			for (String input : inputsArray) {
+				extraInputs += resolveVariables(input.trim()) + ", ";
+			}
+			if(extraInputs.length() > 0){
+				extraInputs = extraInputs.substring(0, extraInputs.length() - 2);//remove last ", "
+				if(!extraInputs.startsWith(",")){
+					extraInputs = ", " + extraInputs;
+				}
+			}
+		}
+		return extraInputs;
+	}
+	public static String resolveVariables(String currInput) {
+		String newInput = currInput;
+		while(newInput.contains(Constants.VARIABLE_INPUT_MARKER)){
+			int posOfFirstMarker = newInput.indexOf(Constants.VARIABLE_INPUT_MARKER);
+			int posOfSecondMarker = newInput.indexOf(Constants.VARIABLE_INPUT_MARKER, posOfFirstMarker + 1);
+			String beginning = newInput.substring(0, posOfFirstMarker);
+			String var = newInput.substring(posOfFirstMarker + Constants.VARIABLE_INPUT_MARKER.length(), posOfSecondMarker);
+			String end = newInput.substring(posOfSecondMarker + Constants.VARIABLE_INPUT_MARKER.length());
+			//add quotes to the input as needed
+			if(beginning.length() != 0){
+				var = "\" + " + var;
+				if(!beginning.startsWith("\"")){
+					beginning = "\"" + beginning;
+				}
+			}
+			if(posOfSecondMarker != (newInput.length() - Constants.VARIABLE_INPUT_MARKER.length())){
+				var += " + \"";
+				if(!end.endsWith("\"")){
+					end += "\"";
+				}
+			}
+			newInput = beginning + var + end;
+		}
+		return newInput;
+	}
 	
 	//TODO: This doesn't work right now, low priority, at least find a work around at some point.
 	public static String formatJavaClassFile(JavaClass classFile){
@@ -411,5 +480,14 @@ public class Utility {
 		}
 		return returnVal;
 	}
+	
+	public static String convertToPrintableList(ArrayList<String> list){
+		String returnVal = "";
+		for (String string : list) {
+			returnVal += string + ", ";
+		}
+		return returnVal.substring(0, returnVal.length() - 2); //Remove the last ", "
+	}
+
 
 }

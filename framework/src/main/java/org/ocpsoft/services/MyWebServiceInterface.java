@@ -65,6 +65,10 @@ public interface MyWebServiceInterface {
 	@Path("/ListOfTestMethodNames/{className}")
 	public String getListOfTestMethodNames(@PathParam("className") String className);
 
+	@GET
+	@Path("/ListOfVariablesCreatedInTest/{className}/{testCaseName}")
+	public String getListOfVariablesCreatedInTest(@PathParam("className") String className, @PathParam("testCaseName") String testCaseName);
+
 	@POST
 	@Path("/DeleteTestSuite/{className}")
 	public String deleteTestSuite(@PathParam("className") String className);
@@ -74,8 +78,15 @@ public interface MyWebServiceInterface {
 	public String deleteTestCase(@PathParam("className") String className, @PathParam("testCaseName") String testCaseName);
 	
 	@POST
-	@Path("/ExportTestToAction/{testClassName}/{testName}/{actionName}")
+	@Path("/ExportTestToAction/{testClassName}/{testName}/{actionName}/{variablesToBeParams}")
 	public String exportTestToAction(@PathParam("testClassName") String testClassName, 
+			@PathParam("testName") String testName, 
+			@PathParam("actionName") String actionName, 
+			@PathParam("variablesToBeParams") String variablesToBeParams);
+
+	@POST
+	@Path("/ExportTestToAction/{testClassName}/{testName}/{actionName}")
+	public String exportTestToActionWithNoVars(@PathParam("testClassName") String testClassName, 
 			@PathParam("testName") String testName, 
 			@PathParam("actionName") String actionName);
 	

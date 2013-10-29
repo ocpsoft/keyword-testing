@@ -47,7 +47,7 @@ public class ClickElementKeyword implements Keyword {
           .setReturnTypeVoid()
           .setParameters("DefaultSelenium browser, List inputValues")
           .setBody(	"browser.click(inputValues.get(0) + \"=\" + inputValues.get(1));" +
-					"if(inputValues.get(2) != null){" +
+					"if(inputValues.get(2) != null && !inputValues.get(2).equals(\"\")){" +
 					"	/*wait for the  page to load*/" +
 					"	browser.waitForPageToLoad(Integer.toString(MAX_PAGE_LOAD_TIME_in_seconds * 1000));" +
 					"}"

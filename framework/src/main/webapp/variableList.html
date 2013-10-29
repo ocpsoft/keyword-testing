@@ -1,0 +1,64 @@
+<html>
+<title>Variable List for Exporting to an Action</title>
+<body>
+<div id='container'>
+Here are the variables being created.<br />
+Do you want any of them to be input parameters instead of creating them in this new action?<br />
+<P />
+</div>
+<script type="text/javascript">
+	function get(name){
+	   if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+	      return decodeURIComponent(name[1]);
+	}
+
+	String.prototype.replaceAll = function (find, replace) {
+	    var str = this;
+	    return str.replace(new RegExp(find, 'g'), replace);
+	};
+	
+	var variableList = get('variables');
+	var variableArray = variableList.split(",");
+	for(i=0; i<variableArray.length; i++){
+		var checkbox = document.createElement('input');
+		checkbox.type = "checkbox";
+		checkbox.name = variableArray[i];
+		checkbox.value = variableArray[i];
+		checkbox.id = "ckbx_" + variableArray[i].replaceAll(" ", "_");
+
+		var label = document.createElement('label')
+		label.htmlFor = "lbl" + variableArray[i];
+		label.appendChild(document.createTextNode(variableArray[i]));
+
+		var container = document.getElementById("container");
+		container.appendChild(checkbox);
+		container.appendChild(label);
+		container.appendChild(document.createElement('br'));
+	}
+
+	function getCheckedVariables(){
+		var checkedVariableArray = new Array();
+		var count = 0;
+		for(i=0; i<variableArray.length; i++){
+			var curCheckBox = document.getElementById("ckbx_" + variableArray[i].replaceAll(" ", "_"));
+			if(curCheckBox.checked){
+				checkedVariableArray[count] = variableArray[i];
+				count ++;
+			}
+		}
+		return checkedVariableArray;
+	}
+
+	function continueExport(){
+		parent.performExportToActionsClass(getCheckedVariables());
+		parent.closeVariableChoiceFrame();
+	}
+	function cancelExport(){
+		parent.closeVariableChoiceFrame();
+	}
+</script>
+
+<input type="submit" id="continueExportToAction" value="Continue Export to Action" onClick='continueExport()' />
+<input type="submit" id="cancel" value="Cancel" onClick='cancelExport()' />
+</body>
+</html>

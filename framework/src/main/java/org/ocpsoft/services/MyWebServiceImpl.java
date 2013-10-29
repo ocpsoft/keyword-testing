@@ -237,6 +237,31 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			return "";
 		}
 	}
+	
+	public String getListOfVariablesCreatedInTest(@PathParam("className") String className, @PathParam("testCaseName") String testCaseName){
+		System.out.println("Getting all Variables created in Test Case: " + testCaseName);
+
+		JavaClass testClass = Utility.getJavaClass(className);
+		Method<JavaClass> testCaseMethod = Utility.getTestCaseMethodFromName(testCaseName, testClass);
+		if(testCaseMethod == null) {
+			System.out.println("ERROR: Could not retrieve test: " + testCaseName + " to look through.  No known variables.");
+			return "ERROR: Could not retrieve test: " + testCaseName + " to look through.  No known variables.";
+		}
+		String[] steps = Utility.getStepsFromMethod(testCaseMethod);
+		String variableNames = "";
+		for (String step : steps) {
+			if(Utility.isVariableCreationStep(step)){
+				variableNames += Utility.getVariableTypeInCreationStep(step) + " " + Utility.getVariableNameInCreationStep(step) + ",";
+			}
+		}
+		if(variableNames.equals("")){
+			System.out.println("No variables");
+			return "";
+		} else {
+			System.out.println("Returning: " + variableNames.substring(0, variableNames.length() - 1));
+			return variableNames.substring(0, variableNames.length() - 1); //Remove the last ","
+		}
+	}
 
 	public String deleteTestSuite(@PathParam("className") String className) {
 		String rootPath = Constants.APP_UNDER_TEST__TEST_FILE_PATH;
@@ -295,9 +320,80 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 	
 	public String exportTestToAction(@PathParam("testClassName") String testClassName, 
 			@PathParam("testName") String testName, 
+			@PathParam("actionName") String actionName, 
+			@PathParam("variablesToBeParams") String variablesToBeParams) {
+		
+		System.out.println("Exporting a test [" + testName + "] to a new Action [" + actionName + "].");
+		System.out.println("Moving the following created variables to input parameters: " + variablesToBeParams.replace(Constants.LIST_DELIMITER, ", "));
+		ArrayList<String> varsToParamatize = Utility.convertStringToArrayListString(variablesToBeParams, Constants.LIST_DELIMITER);
+		String testBody = "";
+		JavaClass testClass = Utility.getJavaClass(testClassName);
+		Method<JavaClass> testCaseMethod;
+		if(testClass != null) {
+			testCaseMethod = Utility.getTestCaseMethodFromName(testName, testClass);
+		} else {
+			System.out.println("ERROR: Could not retrieve " + testName + ".java class.  Could not export your new Action [" + actionName + "]");
+			return "ERROR: Could not retrieve " + testName + ".java class.  Could not export your new Action [" + actionName + "]";
+		}
+		if(testCaseMethod == null) {
+			System.out.println("ERROR: Could not retrieve test: " + testName + " to export.  No action taken.");
+			return "ERROR: Could not retrieve test: " + testName + " to export.  No action taken.";
+		}
+		
+		String[] steps = Utility.getStepsFromMethod(testCaseMethod);
+		for (String step : steps) {
+			if(Utility.isVariableCreationStep(step) && stepVariableMatchesAnyParamatizedOnes(step, varsToParamatize)){
+				//Skip adding this variable creation step, it's going to be an input param instead in the new action
+			} else {
+				testBody += step +";\n";
+			}
+		}
+		
+		JavaClass actionsClass = Utility.getJavaClass("Actions");
+		if(actionsClass != null) {
+			actionsClass.addMethod().setName(actionName)
+			.setVisibility(Visibility.PUBLIC).setReturnTypeVoid()
+			.setStatic(true)
+			
+			//TODO: #DeploymentURL_HACK
+			.addThrows(MalformedURLException.class)
+						
+			.setParameters("URL deploymentURL, DefaultSelenium browser, " + Utility.convertToPrintableList(varsToParamatize))
+			.setBody(testBody);
+			
+			try {
+				PrintStream writetoTest = new PrintStream(new FileOutputStream(
+						Constants.APP_UNDER_TEST__TEST_FILE_PATH + actionsClass.getName() + ".java"));
+				writetoTest.print(Formatter.format(actionsClass)); //TODO: This doesn't work, low priority to fix
+				writetoTest.close();
+			} catch (Exception e) {
+				System.err.println("Failure in create new Test Case: " + e);
+				return "ERROR: Could not create new Test.";
+			}
+			
+			System.out.println("SUCCESS: New Action [" + actionName + "] created successfully.");
+			return "SUCCESS: New Action [" + actionName + "] created successfully.";
+		} else {
+			System.out.println("ERROR: Could not retrieve Actions.java class.  Could not export your new Action [" + actionName + "]");
+			return "ERROR: Could not retrieve Actions.java class.  Could not export your new Action [" + actionName + "]";
+		}
+	}
+
+	private boolean stepVariableMatchesAnyParamatizedOnes(String step, ArrayList<String> varsToParamatize) {
+		for (String var : varsToParamatize) {
+			if(step.contains(var)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String exportTestToActionWithNoVars(@PathParam("testClassName") String testClassName, 
+			@PathParam("testName") String testName, 
 			@PathParam("actionName") String actionName) {
 		
 		System.out.println("Exporting a test [" + testName + "] to a new Action [" + actionName + "].");
+		System.out.println("No variables to move to input parameters.");
 		String testBody = "";
 		JavaClass testClass = Utility.getJavaClass(testClassName);
 		if(testClass != null) {
@@ -630,11 +726,11 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 		else if(KEYWORD_PROCESS_TYPES.UniqueProcess.equals(keyword.processType())){
 			//Each UniqueProcess keyword needs to add specific code directly to the testcase itself
-			System.out.println(keyword.shortName().toString() +"," + inputs.get(0) + ", " + testCaseName);
 			switch (keyword.shortName().toString()) {
 			case "CallAction":
 				String actionName = inputs.get(0);
-				return processCallActionKeyword(className, testCaseName, actionName);
+				String extraInputs = inputs.get(1);
+				return processCallActionKeyword(className, testCaseName, actionName, extraInputs);
 			default:
 				System.out.println("ERROR - Unknown keyword with UniqueProcess type: " + keyword.shortName().toString());
 				return "ERROR - Unknown keyword with UniqueProcess type: " + keyword.shortName().toString();
@@ -647,7 +743,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		}
 	}
 		
-	private String processCallActionKeyword(String className, String testName, String actionName) {
+	private String processCallActionKeyword(String className, String testName, String actionName, String extraInputs) {
 		JavaClass testClass = Utility.getJavaClass(className);
 		if(testClass != null) {
 			Method<JavaClass> currentMethod = testClass.getMethod(testName);
@@ -655,8 +751,9 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 				System.out.println("Could not find current testCaseName method: " + testName + ", keyword NOT processed");
 				return "ERROR - Did not find the testCase Named: " + testName + ", we could not process your last keyword: " + KEYWORD_KEYS.CallAction;
 			}
-		  
-			String newStep = "Actions." + actionName + "(deploymentURL, browser);";
+			
+			extraInputs = Utility.resolveExtraInputs(extraInputs);
+			String newStep = "Actions." + actionName + "(deploymentURL, browser" + extraInputs + ");";
 			currentMethod.setBody(currentMethod.getBody() + newStep);
 		  
 			addThrowsToMethodIfNeededForKeyword(new CallActionKeyword(), currentMethod); //In case we ever need to add some later.
@@ -674,7 +771,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		String returnVal = "Arrays.asList(";
 		for (String element : list) {
 			if(element.contains(Constants.VARIABLE_INPUT_MARKER)){
-				element = resolveVariables(element);
+				element = Utility.resolveVariables(element);
 				returnVal = returnVal + element + ", ";
 			}
 			else {
@@ -682,31 +779,6 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			}
 		}
 		return returnVal.substring(0, returnVal.length() - 2) + ")"; //Remove last [, ] from the list
-	}
-	private String resolveVariables(String currInput) {
-		String newInput = currInput;
-		while(newInput.contains(Constants.VARIABLE_INPUT_MARKER)){
-			int posOfFirstMarker = newInput.indexOf(Constants.VARIABLE_INPUT_MARKER);
-			int posOfSecondMarker = newInput.indexOf(Constants.VARIABLE_INPUT_MARKER, posOfFirstMarker + 1);
-			String beginning = newInput.substring(0, posOfFirstMarker);
-			String var = newInput.substring(posOfFirstMarker + Constants.VARIABLE_INPUT_MARKER.length(), posOfSecondMarker);
-			String end = newInput.substring(posOfSecondMarker + Constants.VARIABLE_INPUT_MARKER.length());
-			//add quotes to the input as needed
-			if(beginning.length() != 0){
-				var = "\" + " + var;
-				if(!beginning.startsWith("\"")){
-					beginning = "\"" + beginning;
-				}
-			}
-			if(end.length() != (newInput.length() - Constants.VARIABLE_INPUT_MARKER.length())){
-				var += " + \"";
-				if(!end.endsWith("\"")){
-					end += "\"";
-				}
-			}
-			newInput = beginning + var + end;
-		}
-		return newInput;
 	}
 	
 	private String addInstructionToTest(String className, String testName, Instruction instruction){

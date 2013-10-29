@@ -41,13 +41,18 @@ public class ConditionalBranchKeyword implements Keyword {
 			return "Could not perform " + shortName() + ".  Could not find testName: " + testCaseName;
 		}
 		String curBody = testCase.getBody();
-		String newLines = "\nif(" + inputValues.get(0) + ") {" +
-						"Actions." + inputValues.get(1) + "(deploymentURL, browser);";
+		String condition = Utility.resolveVariables(inputValues.get(0));
+		String trueAction = getActionNameFromInput(inputValues.get(1));
+		String trueActionExtraInputs = Utility.resolveExtraInputs(getExtraInputsFromInput(inputValues.get(1)));
+		String falseAction = getActionNameFromInput(inputValues.get(2));
+		String falseActionExtraInputs = Utility.resolveExtraInputs(getExtraInputsFromInput(inputValues.get(2)));
+		String newLines = "\nif(" + condition + ") {" +
+						"Actions." + trueAction + "(deploymentURL, browser" + trueActionExtraInputs + ");";
 		if(inputValues.get(2) == null || inputValues.get(2).equals("") || inputValues.get(2).equals("assigned_null")){
 			newLines += "}";
 		} else {
 			newLines += "} else {" +
-						"Actions." + inputValues.get(2) + "(deploymentURL, browser);" +
+						"Actions." + falseAction + "(deploymentURL, browser" + falseActionExtraInputs + ");" +
 						"}";
 		}
 		
@@ -67,6 +72,21 @@ public class ConditionalBranchKeyword implements Keyword {
 		return "SUCCESS: " + shortName() + " for [" + inputValues.get(0) + "] created successfully.";
 	}
 
+	private String getActionNameFromInput(String input){
+		int cutoff = input.indexOf(Constants.OBJECT_DELIMITER);
+		if(cutoff == -1){
+			return input;
+		}
+		return input.substring(0, cutoff);
+	}
+	private String getExtraInputsFromInput(String input){
+		int start = input.indexOf(Constants.OBJECT_DELIMITER);
+		if(start == -1){
+			return "";
+		}
+		start = input.indexOf(Constants.OBJECT_DELIMITER) + Constants.OBJECT_DELIMITER.length();
+		return input.substring(start, input.length());
+	}
 	@Override
 	@Deprecated
 	public String additionalInputParams(){
