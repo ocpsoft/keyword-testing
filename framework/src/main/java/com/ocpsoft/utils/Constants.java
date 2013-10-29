@@ -144,7 +144,7 @@ public class Constants {
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.VerifyObjectProperty, Arrays.asList("Selected Value should be Begin New Suite","select","//select[@id='keyword']","Begin New Suite"));
     	
-    	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction, "));
+    	KEYWORD_VALUES.put(KEYWORD_KEYS.CallAction, Arrays.asList("myAction", ""));
     	
     	KEYWORD_VALUES.put(KEYWORD_KEYS.CreateVariable, Arrays.asList("newVarName", "String", "initialization value"));
     	
