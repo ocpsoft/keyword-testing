@@ -1,6 +1,5 @@
 package org.ocpsoft.individualTests;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -51,13 +50,6 @@ public class VariablesTest {//Begin Class
 		 * Runs the test and verifies we were successful
 		 */
 
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
 		buildTest();
 		verifyCorrectTestStepsOnUI("testName");
 		
@@ -87,15 +79,7 @@ public class VariablesTest {//Begin Class
 		 * Should get an error condition
 		 */
 
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
-		setupForNewTestCase();
-		createNewTest("testError1");
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -129,16 +113,8 @@ public class VariablesTest {//Begin Class
 		/* This test tries to assign a variable that was never created.
 		 * Should get an error condition
 		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
-		setupForNewTestCase();
-		createNewTest("testError2");
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -159,11 +135,8 @@ public class VariablesTest {//Begin Class
 	}
 	
 	
-	
-	
 	private void buildTest() throws InterruptedException {
-		setupForNewTestCase();
-		createNewTest(null);
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 	    
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -185,27 +158,6 @@ public class VariablesTest {//Begin Class
 	    Thread.sleep(100);
 	}
 
-	private void setupForNewTestCase() throws InterruptedException {
-		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=BeginNewProject");
-		browser.click("id=deleteSuite");
-	}
-	
-	private void createNewTest(String testName) throws InterruptedException{
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    if(testName != null && !testName.equals("")){
-	    	browser.type("//input[@id='Input1']", testName);
-	    }
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	}
-	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\n" +

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -56,13 +55,6 @@ public class ExportTest {//Begin Class
 		 * We will then open a new FileStream to read the file contents and verify they are correct.
 		 */
 
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
 		buildTest();
 		System.out.println("***************** Built test successfully ****************");
 		verifyCorrectTestStepsOnUI("testName");
@@ -97,17 +89,9 @@ public class ExportTest {//Begin Class
 	private void buildTest() throws InterruptedException {
 		browser.open(deploymentURL + "index.jsp");
 		
-		browser.click("id=deleteSuite");
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
+	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");

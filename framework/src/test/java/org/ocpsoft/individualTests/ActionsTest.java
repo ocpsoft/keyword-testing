@@ -2,7 +2,6 @@ package org.ocpsoft.individualTests;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -53,13 +52,6 @@ public class ActionsTest {//Begin Class
 		 * Once constructed, it will click the [Export to Actions] button to make it an action called {ACTION_NAME}
 		 * We will create a new test which calls the newly created action in it.
 		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
 		ParserExampleTest.removeClassFile(actionsFilePath);
 		File actionsFile = new File(actionsFilePath);
@@ -74,15 +66,14 @@ public class ActionsTest {//Begin Class
 		verifyActionsFile();
 		
 		//Clear the entire class, then create a new test and try to call the newly created action
-		browser.click("id=deleteSuite");
-		createNewTest("myNewTest");
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, "myNewTest");
 		callActionInTest(ACTION_NAME);
 		
 		//Verfiy the correct message on the UI for the import step
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "Test Suite Named: MySuiteTest\nmyNewTest\n|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n|UP| |DOWN| Action Call: myAction";
-		Assert.assertTrue("value should be [" + expected + "]\n\n\n value is [" + value + "]",
-		    expected.equals(value));
+		Assert.assertEquals("value should be same", expected, value);
 		
 	}//End Test Case
 
@@ -92,19 +83,12 @@ public class ActionsTest {//Begin Class
 		 * We then create a new test that calls nestedMiniAction (which calls miniAction).
 		 * Lastly, we will kick off the test through the [Run Tests] button and validate success.
 		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
 		ParserExampleTest.removeClassFile(actionsFilePath);
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		setupForNewTestCase();
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
 		createMiniAction();
 		createNestedMiniAction();
@@ -153,8 +137,7 @@ public class ActionsTest {//Begin Class
 	}
 
 	private void buildTest() throws InterruptedException {
-		setupForNewTestCase();
-		createNewTest(null);
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 	    
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -216,14 +199,6 @@ public class ActionsTest {//Begin Class
 	    Thread.sleep(100);
 	    
 	    exportToAction("miniAction");
-	}
-	
-	private void setupForNewTestCase() throws InterruptedException {
-		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=deleteSuite");
-		Thread.sleep(100);
-		browser.click("id=BeginNewProject");
-		Thread.sleep(100);
 	}
 	
 	private void createNewTest(String testName) throws InterruptedException{

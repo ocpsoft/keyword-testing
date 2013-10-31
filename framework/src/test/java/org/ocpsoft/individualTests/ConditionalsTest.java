@@ -1,7 +1,6 @@
 package org.ocpsoft.individualTests;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -49,25 +48,17 @@ public class ConditionalsTest {//Begin Class
 		 * Then verify the UI steps on the page from loading the Suite.
 		 * Lastly, we perform a few move step |UP| and |DOWN| commands and verify output on each
 		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
 		ParserExampleTest.removeClassFile(actionsFilePath);
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		setupForNewTestCase();
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
 		createFalseAction();
 		createTrueAction();
 		
-		//Delete suite so the output is only the new test we create (not the actions we've already exported
-		browser.click("id=deleteSuite");
+		TestUtility.deleteTest(browser, null);
 		
 		buildTest();
 		verifyCorrectTestStepsOnUITest("testName");
@@ -140,8 +131,7 @@ public class ConditionalsTest {//Begin Class
 	}//End Test Case
 	
 	private void buildTest() throws InterruptedException {
-		setupForNewTestCase();
-		createNewTest(null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 	    
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -175,7 +165,8 @@ public class ConditionalsTest {//Begin Class
 	}
 	
 	private void createTrueAction() throws InterruptedException {
-		createNewTest(null);
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -191,7 +182,8 @@ public class ConditionalsTest {//Begin Class
 	}
 
 	private void createFalseAction() throws InterruptedException {
-		createNewTest(null);
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -199,27 +191,6 @@ public class ConditionalsTest {//Begin Class
 	    Thread.sleep(100);
 	    
 	    exportToAction("falseAction");
-	}
-	
-	private void setupForNewTestCase() throws InterruptedException {
-		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=BeginNewProject");
-		browser.click("id=deleteSuite");
-	}
-	
-	private void createNewTest(String testName) throws InterruptedException{
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    if(testName != null && !testName.equals("")){
-	    	browser.type("//input[@id='Input1']", testName);
-	    }
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
 	}
 	
 	private void verifyCorrectTestStepsOnUITest(String testCaseName) {

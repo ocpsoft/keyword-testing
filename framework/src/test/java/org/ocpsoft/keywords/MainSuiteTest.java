@@ -403,29 +403,10 @@ private String getValue(String objectType, String objectXPath){
 		 * Finally, it will click the [Run Tests] button to kick it off.
 		 * We then test to make sure the test we created in example-project is run successfully.
 		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
-		browser.open(deploymentURL + "index.jsp");
-
-		browser.click("id=deleteSuite");
-		Thread.sleep(100);
-		browser.click("id=BeginNewProject");
-		Thread.sleep(100);
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		//The Default
-		browser.click("id=AddInstruction");
-
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		
+		String valToSelect;
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
@@ -442,5 +423,5 @@ private String getValue(String objectType, String objectXPath){
 		browser.click("id=RunTests");
 		TestUtility.validateRunDidCompleteSuccessfully(browser, 12);
 	}//End Test Case
-	
+
 }//End Class

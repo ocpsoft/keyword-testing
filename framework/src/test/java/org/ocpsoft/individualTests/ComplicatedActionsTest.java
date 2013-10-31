@@ -1,7 +1,6 @@
 package org.ocpsoft.individualTests;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -61,19 +60,12 @@ public class ComplicatedActionsTest {//Begin Class
 		 * It will build multiple actions and nest some of them.
 		 * We will finally run the test and ensure Build Success.
 		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
 		ParserExampleTest.removeClassFile(actionsFilePath);
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		startNewTestSuite();
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
 		createTypeInputAction();
 		createClickLoginAction();
@@ -83,8 +75,8 @@ public class ComplicatedActionsTest {//Begin Class
 		createVerifyLoginAction();
 		
 		//Start from scratch and use the Actions we created to make a really good test.
-		deleteTest(null);
-		startNewTestCase();
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 		//Note, this test goes against Login.html of the example-project (not index.jsp)
 		//TODO: #DeploymentURL_HACK - we must set the URL to the example-project manually through an assignment 
@@ -157,8 +149,8 @@ public class ComplicatedActionsTest {//Begin Class
 	}
 
 	private void createClickLoginAction() throws InterruptedException {
-		deleteTest(null);
-		startNewTestCase();
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -174,8 +166,8 @@ public class ComplicatedActionsTest {//Begin Class
 	}
 
 	private void createPerformLoginAction() throws InterruptedException {
-		deleteTest(null);
-		startNewTestCase();
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -222,8 +214,8 @@ public class ComplicatedActionsTest {//Begin Class
 	}
 
 	private void createVerifySuccessLoginAction() throws InterruptedException {
-		deleteTest(null);
-		startNewTestCase();
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -249,8 +241,8 @@ public class ComplicatedActionsTest {//Begin Class
 	}
 
 	private void createVerifyUnsuccessLoginAction() throws InterruptedException {
-		deleteTest(null);
-		startNewTestCase();
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -267,8 +259,8 @@ public class ComplicatedActionsTest {//Begin Class
 	}
 
 	private void createVerifyLoginAction() throws InterruptedException {
-		deleteTest(null);
-		startNewTestCase();
+		TestUtility.deleteTest(browser, null);
+		TestUtility.beginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -304,41 +296,11 @@ public class ComplicatedActionsTest {//Begin Class
 		exportToAction(ACTION_VERIFY_LOGIN, ckboxes);
 	}
 	
-	
-	
 	private void callActionInTest(String actionName, String additionalInputs) throws InterruptedException {
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", actionName);
 	    browser.type("//input[@id='Input2']", additionalInputs);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	}
-
-
-	private void startNewTestSuite() throws InterruptedException {
-		setupForNewTestSuite();
-		startNewTestCase();
-	}
-	private void setupForNewTestSuite() throws InterruptedException {
-		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=BeginNewProject");
-		browser.click("id=deleteSuite");
-		
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	}
-	private void startNewTestCase()  throws InterruptedException {
-		createNewTest(null);
-	}
-	private void createNewTest(String testName) throws InterruptedException{
-	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    if(testName != null && !testName.equals("")){
-	    	browser.type("//input[@id='Input1']", testName);
-	    }
 	    browser.click("id=AddInstruction");
 	    Thread.sleep(100);
 	}
@@ -356,14 +318,6 @@ public class ComplicatedActionsTest {//Begin Class
 			browser.click("id=continueExportToAction");
 		}
 		TestUtility.waitForCallbackToComplete(browser, "SUCCESS: New Action [");
-	}
-	
-	private void deleteTest(String testName){
-		if(testName == null || testName.equals("")){
-			testName = "testName";
-		}
-		browser.type("//input[@id='DeleteTestInput']", testName);
-		browser.click("id=deleteTest");
 	}
 	
 }//End Class

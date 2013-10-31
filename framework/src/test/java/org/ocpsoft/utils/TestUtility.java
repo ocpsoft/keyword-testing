@@ -1,7 +1,12 @@
 package org.ocpsoft.utils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.junit.Assert;
 
+import com.ocpsoft.utils.Constants;
+import com.ocpsoft.utils.Constants.KEYWORD_KEYS;
 import com.thoughtworks.selenium.DefaultSelenium;
 
 public class TestUtility {
@@ -18,6 +23,59 @@ public class TestUtility {
 		} else {
 			return browser.getText(objectXPath);
 		}
+	}
+	
+	public static void beginNewSuiteAndTest(DefaultSelenium browser, URL deploymentURL) throws InterruptedException {
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+				
+		browser.open(deploymentURL + "index.jsp");
+		browser.click("id=deleteSuite");
+		Thread.sleep(100);
+		browser.click("id=BeginNewProject");
+		Thread.sleep(100);
+		
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		browser.select("id=keyword", "label=" + valToSelect);
+	    browser.click("id=AddInstruction");
+	    TestUtility.waitForCallbackToComplete(browser, "Test Suite Named: MySuiteTest");
+	    
+	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    browser.click("id=AddInstruction");
+	    TestUtility.waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
+	}
+
+	public static void beginNewTest(DefaultSelenium browser, URL deploymentURL, String testName) throws InterruptedException {
+		//TODO: #DeploymentURL_HACK
+		try {
+			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+				
+		browser.open(deploymentURL + "index.jsp");
+	    
+	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+	    browser.select("id=keyword", "label=" + valToSelect);
+	    if(testName != null && !testName.equals("")){
+	    	browser.type("//input[@id='Input1']", testName);
+	    }
+	    browser.click("id=AddInstruction");
+	    TestUtility.waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
+	}
+	
+	public static void deleteTest(DefaultSelenium browser, String testName){
+		if(testName == null || testName.equals("")){
+			browser.type("//input[@id='DeleteTestInput']", Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0));
+		} else {
+			browser.type("//input[@id='DeleteTestInput']", testName);
+		}
+		browser.click("id=deleteTest");
 	}
 	
 	public static void waitUntilTestRunCompletes(DefaultSelenium browser, int timeOutSeconds) throws InterruptedException{

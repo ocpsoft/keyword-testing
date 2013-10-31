@@ -1,6 +1,5 @@
 package org.ocpsoft.individualTests;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -47,38 +46,17 @@ public class UIspecificTest {//Begin Class
 		 * Delete the entire suite and verify UI.
 		 */
 
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
 		
-		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=deleteSuite");
-		Thread.sleep(100);
-		browser.click("id=BeginNewProject");
-		Thread.sleep(100);
-		
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    TestUtility.waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
-	    
 	    //Verify testName dropdown
 	    String value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
 		Assert.assertEquals("testName", value);
 		
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
+	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "otherTest");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
+	    Thread.sleep(150);
 	    
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -88,24 +66,18 @@ public class UIspecificTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "otherTest4567");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
+	    Thread.sleep(150);
 	    
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
 		Assert.assertEquals("otherTest4567", value);
-		
-		
 
-	    browser.type("//input[@id='DeleteTestInput']", "otherTest4567");
-	    browser.click("id=deleteTest");
-	    Thread.sleep(100);
+		TestUtility.deleteTest(browser, "otherTest4567");
 	    //Verify Status of deleted test
 	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals("SUCCESS: Test Case Deleted named [otherTest4567].", value);
 
-	    browser.type("//input[@id='DeleteTestInput']", "testName");
-	    browser.click("id=deleteTest");
-	    Thread.sleep(100);
+		TestUtility.deleteTest(browser, "testName");
 	    //Verify Status of deleted test
 	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals("SUCCESS: Test Case Deleted named [testName].", value);

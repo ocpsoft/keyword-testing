@@ -397,12 +397,7 @@
 			var POSTurl = 'rest/webService/NewInstruction/' + 
 				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + encodeURLComp(testCaseName) + '/' +
 				encodeURLComp(inputListXML);
-			var returnVal = doPOST(POSTurl, "", false);
 			doPOSTwithCallback(POSTurl, "", true, addInstructionCallBack);
-			if(keyword == "BeginTest"){
-				updateTestCaseNames("NewTest", document.getElementById("Input1").value);
-			}
-			return returnVal;
 		}
 
 		function getTestCaseName(){
@@ -595,11 +590,12 @@
 				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
 			}
 			else{
-				var output = postInstruction(keyword, getAllInputValuesAsXML());
+				postInstruction(keyword, getAllInputValuesAsXML());
 			}
 		}
 		function addInstructionCallBack(output){
 			if(output.indexOf("ERROR") == -1){
+				updateTestCaseNames("NewTest", document.getElementById("Input1").value);
 				getTestSuite();
 			} else {
 				//There was an error, display it in the status:
