@@ -55,18 +55,20 @@ public class UIspecificTest {//Begin Class
 		}
 		
 		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=BeginNewProject");
 		browser.click("id=deleteSuite");
+		Thread.sleep(100);
+		browser.click("id=BeginNewProject");
+		Thread.sleep(100);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(400);
+	    TestUtility.waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
 	    
 	    //Verify testName dropdown
 	    String value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -76,7 +78,7 @@ public class UIspecificTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "otherTest");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -86,7 +88,7 @@ public class UIspecificTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "otherTest4567");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -96,21 +98,21 @@ public class UIspecificTest {//Begin Class
 
 	    browser.type("//input[@id='DeleteTestInput']", "otherTest4567");
 	    browser.click("id=deleteTest");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    //Verify Status of deleted test
 	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals("SUCCESS: Test Case Deleted named [otherTest4567].", value);
 
 	    browser.type("//input[@id='DeleteTestInput']", "testName");
 	    browser.click("id=deleteTest");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    //Verify Status of deleted test
 	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals("SUCCESS: Test Case Deleted named [testName].", value);
 		
 
 	    browser.click("id=deleteSuite");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    //Verify Status of deleted test Suite
 	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals("Successfully deleted all tests within " + Constants.APP_UNDER_TEST__TEST_FILE_PATH + "MySuiteTest.java", value);

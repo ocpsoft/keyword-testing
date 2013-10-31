@@ -398,6 +398,7 @@
 				encodeURLComp(keyword) + '/' + encodeURLComp(className) + '/' + encodeURLComp(testCaseName) + '/' +
 				encodeURLComp(inputListXML);
 			var returnVal = doPOST(POSTurl, "", false);
+			doPOSTwithCallback(POSTurl, "", true, addInstructionCallBack);
 			if(keyword == "BeginTest"){
 				updateTestCaseNames("NewTest", document.getElementById("Input1").value);
 			}
@@ -595,13 +596,14 @@
 			}
 			else{
 				var output = postInstruction(keyword, getAllInputValuesAsXML());
-
-				if(output.indexOf("ERROR") == -1){
-					getTestSuite();
-				} else {
-					//There was an error, display it in the status:
-					document.getElementById('testSuite').innerHTML = "<font color = 'red'>" + output + "</font>"
-				}
+			}
+		}
+		function addInstructionCallBack(output){
+			if(output.indexOf("ERROR") == -1){
+				getTestSuite();
+			} else {
+				//There was an error, display it in the status:
+				document.getElementById('testSuite').innerHTML = "<font color = 'red'>" + output + "</font>"
 			}
 		}
 

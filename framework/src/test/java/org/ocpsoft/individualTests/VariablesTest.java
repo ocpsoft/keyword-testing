@@ -66,13 +66,13 @@ public class VariablesTest {//Begin Class
 	    browser.type("//input[@id='Input1']", "myVariable");
 	    browser.type("//input[@id='Input2']", "\"RunTestsResults\"");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input2']", "div[@id='||var||myVariable||var||']");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    verifyCorrectTestStepsOnUITest2("testName");
 	    
@@ -101,7 +101,7 @@ public class VariablesTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -109,7 +109,7 @@ public class VariablesTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "Double");
 	    browser.type("//input[@id='Input3']", "3.14159");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -117,7 +117,7 @@ public class VariablesTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "Double");
 	    browser.type("//input[@id='Input3']", "0.99999");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "ERROR: Varibale already exists, can not create it again.";
@@ -144,14 +144,14 @@ public class VariablesTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "myVar");
 	    browser.type("//input[@id='Input2']", "This should error");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		String expected = "ERROR: Varibale does NOT exist, can not re-assign it.";
@@ -169,20 +169,20 @@ public class VariablesTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "myVariable");
 	    browser.type("//input[@id='Input3']", "SomeWrongValue");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input2']", "div[@id='||var||myVariable||var||']");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 
 	private void setupForNewTestCase() throws InterruptedException {
@@ -195,7 +195,7 @@ public class VariablesTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -203,7 +203,7 @@ public class VariablesTest {//Begin Class
 	    	browser.type("//input[@id='Input1']", testName);
 	    }
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {

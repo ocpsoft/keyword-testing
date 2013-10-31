@@ -84,6 +84,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 		// Java code to run the build
 		boolean isSuccessful = false;
 		String testLine = "";
+		String entireResult = "";
 		try {
 			Process p;
 			if(Constants.APP_UNDER_TEST_ROOT_FILE_PATH.startsWith("D:") ||
@@ -118,12 +119,13 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 					testLine = line;
 				}
 				line = reader.readLine();
+				entireResult += line + "\n<BR />";
 			}
 
 			p.destroy();
 		} catch (Exception e) {
 			System.out.println("ERROR - Failure to build: " + e);
-			return "Build Failed... Check Console for error";
+			return "Build Failed... Check Console for error\n\n" + entireResult;
 		}
 
 		System.out.println("Done Build Request - isSuccessful: " + isSuccessful + " - testLine: " + testLine);
@@ -132,7 +134,7 @@ public class MyWebServiceImpl implements MyWebServiceInterface{
 			return "Build SUCCESSFUL!!!" + "<BR />" + testLine;
 		} else {
 			return "Build Failed... Check Console for error" + "<BR />"
-					+ testLine;
+					+ testLine + "<BR /><P />Stacktrace:<BR />" + entireResult;
 		}
 	}
 

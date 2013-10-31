@@ -25,15 +25,45 @@ public class TestUtility {
 		if(timeOutSeconds <= 0){
 			timeOutSeconds = 20;
 		}
-		while(browser.getElementHeight("id=RunTestsResultsImg").doubleValue() > 0 && count < timeOutSeconds * 10){
-			Thread.sleep(100);
+		while(browser.getElementHeight("id=RunTestsResultsImg").doubleValue() > 0 && count < timeOutSeconds * 20){
+			Thread.sleep(50);
 			count++;
 		}
 	}
 
+	static int trialNumber = 0;
 	public static boolean validateRunDidCompleteSuccessfully(DefaultSelenium browser, int timeOutSeconds) throws InterruptedException{
 		waitUntilTestRunCompletes(browser, timeOutSeconds);
-		Assert.assertTrue("Build Success", browser.isTextPresent("Build SUCCESSFUL!!!"));
-		return browser.isTextPresent("Build SUCCESSFUL!!!");
+		if(!browser.isTextPresent("Build SUCCESSFUL!!!") && trialNumber < 1){
+			//Try to run 1 more time, maybe there was a timing issue.
+			browser.click("id=RunTests");
+			trialNumber++;
+			validateRunDidCompleteSuccessfully(browser, timeOutSeconds);
+		}
+		if(!browser.isTextPresent("Build SUCCESSFUL!!!"))
+		{
+			//Display what the issue is
+			Assert.assertEquals("Build SUCCESSFUL!!!", getValue(browser, "div", "//div[@id='RunTestsResults']"));
+			return false;
+		}
+		Assert.assertTrue("Build SUCCESSFUL!!!", true);
+		trialNumber = 0;
+		return true;
+	}
+	
+	public static void waitForCallbackToComplete(DefaultSelenium browser, String browserText) throws InterruptedException{
+		int count = 0;
+		while(!browser.isTextPresent(browserText) && count < 2 * 20){
+			Thread.sleep(50); //Wait up to 2 seconds to find the callback Text
+			count++;
+		}
+	}
+
+	public static void waitForCallbackToCompleteViaPropertyValue(DefaultSelenium browser, String objectType, String objectXPath, String neededValue) throws InterruptedException{
+		int count = 0;
+		while(!getValue(browser, objectType, objectXPath).equals(neededValue) && count < 2 * 20){
+			Thread.sleep(50); //Wait up to 2 seconds to find the proper value of the object
+			count++;
+		}
 	}
 }

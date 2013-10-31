@@ -246,29 +246,26 @@ public class ParserExampleTest
 	//NOTE: For now these are simply copied from ConfigXMLParser for ease of use in the test.
 	/********* BEGIN Method for generating the XML Documents*********/
 	public String generateInstructionSetXMLDoc(ArrayList<String> keywords, ArrayList<ArrayList<String>> inputs){
-		ConfigXMLParser parser = new ConfigXMLParser();
-		String xmlDoc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + parser.INSTRUCTION_SET_XML_TAG + ">\n";
+		String xmlDoc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<" + ConfigXMLParser.INSTRUCTION_SET_XML_TAG + ">\n";
 		for (int x=0; x < keywords.size(); x++) {
 			xmlDoc += generateInstructionXMLDoc(keywords.get(x), inputs.get(x)) + "\n";
 		}
-		xmlDoc += "</" + parser.INSTRUCTION_SET_XML_TAG + ">";
+		xmlDoc += "</" + ConfigXMLParser.INSTRUCTION_SET_XML_TAG + ">";
 		return xmlDoc;
 	}
 	public String generateInstructionXMLDoc(String keyword, ArrayList<String> inputs) {
-		ConfigXMLParser parser = new ConfigXMLParser();
-		String xmlDoc = "\t<" + parser.INSTRUCTION_XML_TAG + ">\n" +
-				"\t\t<" + parser.KEYWORD_XML_TAG + ">" + keyword + "</" + parser.KEYWORD_XML_TAG + ">\n" +
+		String xmlDoc = "\t<" + ConfigXMLParser.INSTRUCTION_XML_TAG + ">\n" +
+				"\t\t<" + ConfigXMLParser.KEYWORD_XML_TAG + ">" + keyword + "</" + ConfigXMLParser.KEYWORD_XML_TAG + ">\n" +
 				generateInputsXMLDoc(inputs) +
-				"\n\t</" + parser.INSTRUCTION_XML_TAG + ">";
+				"\n\t</" + ConfigXMLParser.INSTRUCTION_XML_TAG + ">";
 		return xmlDoc;
 	}
 	public String generateInputsXMLDoc(ArrayList<String> inputs) {
-		ConfigXMLParser parser = new ConfigXMLParser();
-		String xmlDoc = "\t\t<" + parser.INPUTS_LIST_XML_TAG + ">\n";
+		String xmlDoc = "\t\t<" + ConfigXMLParser.INPUTS_LIST_XML_TAG + ">\n";
 		for (String input : inputs) {
-			xmlDoc += "\t\t\t<" + parser.INPUT_XML_TAG + ">" + input + "</" + parser.INPUT_XML_TAG + ">\n";
+			xmlDoc += "\t\t\t<" + ConfigXMLParser.INPUT_XML_TAG + ">" + input + "</" + ConfigXMLParser.INPUT_XML_TAG + ">\n";
 		}
-		xmlDoc += "\t\t</" + parser.INPUTS_LIST_XML_TAG + ">";
+		xmlDoc += "\t\t</" + ConfigXMLParser.INPUTS_LIST_XML_TAG + ">";
 		return xmlDoc;
 	}
 	/********* END Method for generating the XML Documents*********/

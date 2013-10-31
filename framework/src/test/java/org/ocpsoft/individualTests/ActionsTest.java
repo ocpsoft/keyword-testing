@@ -109,12 +109,12 @@ public class ActionsTest {//Begin Class
 		createMiniAction();
 		createNestedMiniAction();
 		
-		createNewTest(null);
+		createNewTest("testNestedActions");
 		buildTest2();
-		verifyCorrectTestStepsOnUITest2("testName");
+		verifyCorrectTestStepsOnUITest2("testNestedActions");
 
 		browser.click("id=RunTests");
-		TestUtility.validateRunDidCompleteSuccessfully(browser, 12);
+		TestUtility.validateRunDidCompleteSuccessfully(browser, 15);
 	}//End Test Case
 	
 	private void callActionInTest(String actionName) throws InterruptedException {
@@ -122,7 +122,7 @@ public class ActionsTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", actionName);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 
 	private void verifyActionsFile() {
@@ -160,17 +160,17 @@ public class ActionsTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 
 	private void buildTest2() throws InterruptedException {
@@ -178,7 +178,7 @@ public class ActionsTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    callActionInTest("nestedMiniAction");
 	}
@@ -186,7 +186,7 @@ public class ActionsTest {//Begin Class
 	private void exportToAction(String actionName) throws InterruptedException {
 		browser.type("//input[@id='exportToActionName']", actionName);
 		browser.click("id=exportToAction");
-		Thread.sleep(600);//Give time for server to add all steps to Actions class as a new method
+		TestUtility.waitForCallbackToComplete(browser, "SUCCESS: New Action [");
 	}
 	
 	private void createNestedMiniAction() throws InterruptedException {
@@ -195,14 +195,14 @@ public class ActionsTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    callActionInTest("miniAction");
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    exportToAction("nestedMiniAction");
 	}
@@ -213,22 +213,24 @@ public class ActionsTest {//Begin Class
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    exportToAction("miniAction");
 	}
 	
 	private void setupForNewTestCase() throws InterruptedException {
 		browser.open(deploymentURL + "index.jsp");
-		browser.click("id=BeginNewProject");
 		browser.click("id=deleteSuite");
+		Thread.sleep(100);
+		browser.click("id=BeginNewProject");
+		Thread.sleep(100);
 	}
 	
 	private void createNewTest(String testName) throws InterruptedException{
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -236,7 +238,7 @@ public class ActionsTest {//Begin Class
 	    	browser.type("//input[@id='Input1']", testName);
 	    }
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {

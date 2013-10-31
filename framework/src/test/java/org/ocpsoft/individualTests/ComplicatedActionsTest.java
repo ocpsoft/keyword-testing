@@ -93,14 +93,14 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input1']", "deploymentURL");
 	    browser.type("//input[@id='Input2']", "new URL(\"http://localhost:8080/AppUnderTest/\")");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "Login.html"); //Note: Login.html
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -108,7 +108,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    //Prove that we can pass in new variables we create and they cascade down
 	    //Also prove that we can pass direct values in, and those values get set to the variables in the calls
@@ -132,7 +132,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "UserIDInput");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -140,14 +140,14 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "//input[@id='" + Constants.VARIABLE_INPUT_MARKER + "fieldID" + Constants.VARIABLE_INPUT_MARKER +"']");
 	    browser.type("//input[@id='Input2']", Constants.VARIABLE_INPUT_MARKER + "value" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 		
 		//Export the current Test as a new Action
 	    ArrayList<String> ckboxes = new ArrayList<String>();
@@ -166,7 +166,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "LoginButton");
 	    browser.type("//input[@id='Input3']", "");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
 	    ArrayList<String> ckboxes = new ArrayList<String>();
@@ -183,7 +183,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -191,28 +191,28 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "test123");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", ACTION_TYPE_INPUT);
 	    browser.type("//input[@id='Input2']", "\"UserIDInput\", " + Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", ACTION_TYPE_INPUT);
 	    browser.type("//input[@id='Input2']", "\"passwordInput\", " + Constants.VARIABLE_INPUT_MARKER + "password" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", ACTION_CLICK_LOGIN);
 	    browser.type("//input[@id='Input2']", "");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
 	    ArrayList<String> ckboxes = new ArrayList<String>();
@@ -231,7 +231,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -240,7 +240,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input3']", "//div[@id='loggedInStatus']");
 	    browser.type("//input[@id='Input4']", "Welcome " + Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER + "!");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
 	    ArrayList<String> ckboxes = new ArrayList<String>();
@@ -259,7 +259,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input3']", "//div[@id='loggedInStatus']");
 	    browser.type("//input[@id='Input4']", "Invalid login attempt");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
 	    ArrayList<String> ckboxes = new ArrayList<String>();
@@ -276,7 +276,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "boolean");
 	    browser.type("//input[@id='Input3']", "true");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -284,7 +284,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -295,7 +295,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    		Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.type("//input[@id='Input3']", ACTION_VERIFY_UNSUCCESSFUL_LOGIN);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
 	    ArrayList<String> ckboxes = new ArrayList<String>();
@@ -312,7 +312,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    browser.type("//input[@id='Input1']", actionName);
 	    browser.type("//input[@id='Input2']", additionalInputs);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 
 
@@ -328,7 +328,7 @@ public class ComplicatedActionsTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 	private void startNewTestCase()  throws InterruptedException {
 		createNewTest(null);
@@ -340,14 +340,14 @@ public class ComplicatedActionsTest {//Begin Class
 	    	browser.type("//input[@id='Input1']", testName);
 	    }
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 
 	private void exportToAction(String actionName, ArrayList<String> iDsOfvarsToClick) throws InterruptedException {
 		browser.type("//input[@id='exportToActionName']", actionName);
 		browser.click("id=exportToAction");
-		Thread.sleep(300); //To call server to get all variables and display them in iFrame if there are any.
 		if(iDsOfvarsToClick.size() > 0){
+			TestUtility.waitForCallbackToComplete(browser, "Here are the variables being created.");
 			//Click each var checkbox we need to
 			for (String id : iDsOfvarsToClick) {
 				browser.click("id=" + id);
@@ -355,7 +355,7 @@ public class ComplicatedActionsTest {//Begin Class
 			Thread.sleep(50);
 			browser.click("id=continueExportToAction");
 		}
-		Thread.sleep(600);//Give time for server to add all steps to Actions class as a new method
+		TestUtility.waitForCallbackToComplete(browser, "SUCCESS: New Action [");
 	}
 	
 	private void deleteTest(String testName){

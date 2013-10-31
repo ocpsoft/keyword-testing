@@ -147,7 +147,7 @@ public class ConditionalsTest {//Begin Class
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    //True condition only
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
@@ -156,7 +156,7 @@ public class ConditionalsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "trueAction");
 	    browser.type("//input[@id='Input3']", "");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    //True and false condition
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
@@ -165,13 +165,13 @@ public class ConditionalsTest {//Begin Class
 	    browser.type("//input[@id='Input2']", "trueAction");
 	    browser.type("//input[@id='Input3']", "falseAction");	    
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 
 	private void exportToAction(String actionName) throws InterruptedException {
 		browser.type("//input[@id='exportToActionName']", actionName);
 		browser.click("id=exportToAction");
-		Thread.sleep(600);//Give time for server to add all steps to Actions class as a new method
+		TestUtility.waitForCallbackToComplete(browser, "SUCCESS: New Action [");
 	}
 	
 	private void createTrueAction() throws InterruptedException {
@@ -180,12 +180,12 @@ public class ConditionalsTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    exportToAction("trueAction");
 	}
@@ -196,7 +196,7 @@ public class ConditionalsTest {//Begin Class
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    exportToAction("falseAction");
 	}
@@ -211,7 +211,7 @@ public class ConditionalsTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
@@ -219,7 +219,7 @@ public class ConditionalsTest {//Begin Class
 	    	browser.type("//input[@id='Input1']", testName);
 	    }
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 	
 	private void verifyCorrectTestStepsOnUITest(String testCaseName) {

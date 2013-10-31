@@ -158,17 +158,17 @@ private String getValue(String objectType, String objectXPath){
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
-		Thread.sleep(500);
+		Thread.sleep(100);
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
-		Thread.sleep(500);
+		Thread.sleep(100);
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.type("//input[@id='Input1']", "deploymentURL");
 	    browser.type("//input[@id='Input3']", "\"http://www.facebook.com\"");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 		
 		String testSuiteName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
 		String testCaseName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginTest).get(0);
@@ -186,7 +186,7 @@ private String getValue(String objectType, String objectXPath){
 	    browser.type("//input[@id='Input1']", "deploymentURL");
 	    browser.type("//input[@id='Input3']", "\"http://www.cnn.com\"");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 		
 		testClass = Utility.getJavaClass(testSuiteName);
 		testMethod = testClass.getMethod(testCaseName);
@@ -213,7 +213,8 @@ private String getValue(String objectType, String objectXPath){
 		browser.open(deploymentURL + "index.jsp");
 
 		browser.click("link=Click to go to myLink");
-		Thread.sleep(200);//Allow the page to load
+		Thread.sleep(100); //Selenium Error's if it can't access document if HTML page insn't fully loaded
+		TestUtility.waitForCallbackToComplete(browser, "Click to go to Index");
 		
 		value = getValue("input", "//input[@id='myInput']");
 		String expected = "";
@@ -228,7 +229,8 @@ private String getValue(String objectType, String objectXPath){
 				expected.equals(value));	
 		
 		browser.click("link=Click to go to Index");
-		Thread.sleep(100);//Allow the page to load
+		Thread.sleep(100); //Selenium Error's if it can't access document if HTML page insn't fully loaded
+		TestUtility.waitForCallbackToComplete(browser, "Click to go to myLink");
 		
 		Assert.assertTrue("User should be on Index Page!",
 			           browser.isElementPresent("xpath=//div[@id='entireInput1']"));
@@ -280,7 +282,7 @@ private String getValue(String objectType, String objectXPath){
 			}
 			
 			browser.click("id=AddInstruction");
-			Thread.sleep(200);
+			Thread.sleep(100);
 
 			if(keyword.equals(Constants.KEYWORD_KEYS.BeginClass)){
 				testSuiteName = Constants.KEYWORD_VALUES.get(keyword).get(0);
@@ -395,47 +397,10 @@ private String getValue(String objectType, String objectXPath){
 	}
 	
 	@Test
-	public void testBuildingASuiteAndViewing() throws InterruptedException {//Begin Test Case
+	public void testBuildingASuiteAndViewingAndRunning() throws InterruptedException {//Begin Test Case
 		/* This test builds a new suite via the app.
 		 * Once constructed, it will verify the testSuite div is displaying correctly on the UI.
-		 */
-
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
-		browser.open(deploymentURL + "index.jsp");
-
-		browser.click("id=deleteSuite");
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		//The Default
-		browser.click("id=AddInstruction");
-
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		Thread.sleep(500);
-		
-		value = getValue("div", "//div[@id='testSuite']");
-		String expected = "Test Suite Named: MySuiteTest\n" +
-							"testName\n" +
-							"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
-							"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
-							"if adding onto end of the domain): index.jsp";
-		Assert.assertEquals(expected, value);
-	}//End Test Case
-	
-	@Test
-	public void testBuildingASuiteAndRunning() throws InterruptedException {//Begin Test Case
-		/* This test builds a new suite via the app.
-		 * Once constructed, it will click the [Run Tests] button to kick it off.
+		 * Finally, it will click the [Run Tests] button to kick it off.
 		 * We then test to make sure the test we created in example-project is run successfully.
 		 */
 
@@ -449,6 +414,10 @@ private String getValue(String objectType, String objectXPath){
 		browser.open(deploymentURL + "index.jsp");
 
 		browser.click("id=deleteSuite");
+		Thread.sleep(100);
+		browser.click("id=BeginNewProject");
+		Thread.sleep(100);
+		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 		//The Default
 		browser.click("id=AddInstruction");
@@ -460,10 +429,18 @@ private String getValue(String objectType, String objectXPath){
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
 		browser.click("id=AddInstruction");
+		Thread.sleep(100);
+		
+		value = getValue("div", "//div[@id='testSuite']");
+		String expected = "Test Suite Named: MySuiteTest\n" +
+							"testName\n" +
+							"|UP| |DOWN| AssignVariable: with name: deploymentURL, with value of: new URL(\"http://localhost:8080/framework/\")\n" +
+							"|UP| |DOWN| OpenBrowser: with Webpage of test Domain plus (OPTIONAL FIELD - " + 
+							"if adding onto end of the domain): index.jsp";
+		Assert.assertEquals(expected, value);
 		
 		browser.click("id=RunTests");
-		TestUtility.validateRunDidCompleteSuccessfully(browser, 13);
+		TestUtility.validateRunDidCompleteSuccessfully(browser, 12);
 	}//End Test Case
-
 	
 }//End Class

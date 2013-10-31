@@ -68,7 +68,7 @@ public class ExportTest {//Begin Class
 		verifyCorrectTestStepsOnUI("testName");
 		
 		browser.click("id=exportTestCase");
-		Thread.sleep(300);//Give time for server to create the file
+		TestUtility.waitForCallbackToComplete(browser, "File Created!");
 		
 		verifyOutputFileOfExport();
 		System.out.println("***************** Verified UI message of Export successfully ****************");
@@ -100,28 +100,28 @@ public class ExportTest {//Begin Class
 		browser.click("id=deleteSuite");
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(200);
+	    Thread.sleep(100);
 	}
 	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {
@@ -195,6 +195,6 @@ public class ExportTest {//Begin Class
 		
 		browser.type("//input[@id='ImportInput1']", exportFilePath);
 		browser.click("id=importSteps");
-		Thread.sleep(300);//Give time for server modify the test by adding all the steps from the inputFile.
+		TestUtility.waitForCallbackToComplete(browser, "Just finished importing the following Keywords:");
 	}
 }//End Class
