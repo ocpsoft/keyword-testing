@@ -144,30 +144,15 @@ private String getValue(String objectType, String objectXPath){
 		 * No matter how many times we add UpdateTestDomain as a step in a test.
 		 */
 
-		//TODO: #DeploymentURL_HACK
-		try {
-			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
-		browser.open(deploymentURL + "index.jsp");
-		String valToSelect;
-		browser.click("id=deleteSuite"); //Make sure we start fresh
-		Thread.sleep(100);
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		Thread.sleep(100);
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		Thread.sleep(100);
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "deploymentURL");
 	    browser.type("//input[@id='Input3']", "\"http://www.facebook.com\"");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 		
 		String testSuiteName = Constants.KEYWORD_VALUES.get(KEYWORD_KEYS.BeginClass).get(0);
@@ -183,9 +168,11 @@ private String getValue(String objectType, String objectXPath){
 		//Add another Update, make sure that line is in there correctly too, and make sure we only have 1 Malformed Exception on the testcase (not 2).
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "deploymentURL");
 	    browser.type("//input[@id='Input3']", "\"http://www.cnn.com\"");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 		
 		testClass = Utility.getJavaClass(testSuiteName);
@@ -270,6 +257,7 @@ private String getValue(String objectType, String objectXPath){
 			Assert.assertTrue("Keyword - value should be [" + expected + "]",
 					expected.equals(value));
 			
+			TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 			for(int x = 0; x < Constants.KEYWORD_DESCRIPTIONS.get(keyword).size(); x ++) {
 				value = getValue("div", "//div[@id='input" + (x+1) + "Desc']"); //UI starts counting divs and Inputs at 1
 				expected = Constants.KEYWORD_DESCRIPTIONS.get(keyword).get(x);
@@ -282,6 +270,7 @@ private String getValue(String objectType, String objectXPath){
 			}
 			
 			browser.click("id=AddInstruction");
+			TestUtility.setSeleniumBackToMainPage(browser);
 			Thread.sleep(100);
 
 			if(keyword.equals(Constants.KEYWORD_KEYS.BeginClass)){
@@ -404,12 +393,12 @@ private String getValue(String objectType, String objectXPath){
 		 * We then test to make sure the test we created in example-project is run successfully.
 		 */
 		
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 		String valToSelect;
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
+		TestUtility.clickAddInstruction(browser);
 		Thread.sleep(100);
 		
 		value = getValue("div", "//div[@id='testSuite']");

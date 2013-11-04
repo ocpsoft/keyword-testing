@@ -46,7 +46,7 @@ public class UIspecificTest {//Begin Class
 		 * Delete the entire suite and verify UI.
 		 */
 
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 	    //Verify testName dropdown
 	    String value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -54,9 +54,10 @@ public class UIspecificTest {//Begin Class
 		
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "otherTest");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(150);
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -64,9 +65,10 @@ public class UIspecificTest {//Begin Class
 
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "otherTest4567");
 	    browser.click("id=AddInstruction");
-	    Thread.sleep(150);
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    
 	    //Verify testName dropdown
 	    value = TestUtility.getValue(browser, "select", "//select[@id='testCaseName']");
@@ -82,7 +84,6 @@ public class UIspecificTest {//Begin Class
 	    value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
 		Assert.assertEquals("SUCCESS: Test Case Deleted named [testName].", value);
 		
-
 	    browser.click("id=deleteSuite");
 	    Thread.sleep(100);
 	    //Verify Status of deleted test Suite

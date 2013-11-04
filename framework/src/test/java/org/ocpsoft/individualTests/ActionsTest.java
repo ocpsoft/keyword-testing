@@ -67,7 +67,7 @@ public class ActionsTest {//Begin Class
 		
 		//Clear the entire class, then create a new test and try to call the newly created action
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, "myNewTest");
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, "myNewTest");
 		callActionInTest(ACTION_NAME);
 		
 		//Verfiy the correct message on the UI for the import step
@@ -88,12 +88,12 @@ public class ActionsTest {//Begin Class
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 		createMiniAction();
 		createNestedMiniAction();
 		
-		createNewTest("testNestedActions");
+		TestUtility.createNewSuiteAndTest(browser, "testNestedActions");
 		buildTest2();
 		verifyCorrectTestStepsOnUITest2("testNestedActions");
 
@@ -104,8 +104,10 @@ public class ActionsTest {//Begin Class
 	private void callActionInTest(String actionName) throws InterruptedException {
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", actionName);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	}
 
@@ -137,22 +139,22 @@ public class ActionsTest {//Begin Class
 	}
 
 	private void buildTest() throws InterruptedException {
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 	    
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	}
 
@@ -160,7 +162,7 @@ public class ActionsTest {//Begin Class
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    callActionInTest("nestedMiniAction");
@@ -173,48 +175,35 @@ public class ActionsTest {//Begin Class
 	}
 	
 	private void createNestedMiniAction() throws InterruptedException {
-		createNewTest(null);
+		TestUtility.createNewSuiteAndTest(browser, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    callActionInTest("miniAction");
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    exportToAction("nestedMiniAction");
 	}
 
 	private void createMiniAction() throws InterruptedException {
-		createNewTest(null);
+		TestUtility.createNewSuiteAndTest(browser, null);
 		
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    exportToAction("miniAction");
 	}
 	
-	private void createNewTest(String testName) throws InterruptedException{
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    if(testName != null && !testName.equals("")){
-	    	browser.type("//input[@id='Input1']", testName);
-	    }
-	    browser.click("id=AddInstruction");
-	    Thread.sleep(100);
-	}
+
 	
 	private void verifyCorrectTestStepsOnUI(String testCaseName) {
 		String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");

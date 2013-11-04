@@ -55,15 +55,19 @@ public class VariablesTest {//Begin Class
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "myVariable");
 	    browser.type("//input[@id='Input2']", "\"RunTestsResults\"");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input2']", "div[@id='||var||myVariable||var||']");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    verifyCorrectTestStepsOnUITest2("testName");
@@ -79,28 +83,32 @@ public class VariablesTest {//Begin Class
 		 * Should get an error condition
 		 */
 
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "myDouble");
 	    browser.type("//input[@id='Input2']", "Double");
 	    browser.type("//input[@id='Input3']", "3.14159");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "myDouble");
 	    browser.type("//input[@id='Input2']", "Double");
 	    browser.type("//input[@id='Input3']", "0.99999");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
@@ -114,19 +122,21 @@ public class VariablesTest {//Begin Class
 		 * Should get an error condition
 		 */
 		
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "myVar");
 	    browser.type("//input[@id='Input2']", "This should error");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    String value = TestUtility.getValue(browser, "div", "//div[@id='testSuite']");
@@ -136,25 +146,29 @@ public class VariablesTest {//Begin Class
 	
 	
 	private void buildTest() throws InterruptedException {
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 	    
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "myVariable");
 	    browser.type("//input[@id='Input3']", "SomeWrongValue");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input2']", "div[@id='||var||myVariable||var||']");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	}
 

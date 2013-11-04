@@ -87,24 +87,22 @@ public class ExportTest {//Begin Class
 	}//End Test Case
 		
 	private void buildTest() throws InterruptedException {
-		browser.open(deploymentURL + "index.jsp");
-		
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 	    
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsNotDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	}
 	
@@ -163,19 +161,7 @@ public class ExportTest {//Begin Class
 	}
 
 	private void importTestFromFile(String testName) throws InterruptedException {
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.click("id=AddInstruction");
-		Thread.sleep(100);
-		
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-		browser.select("id=keyword", "label=" + valToSelect);
-		browser.type("//input[@id='Input1']", testName);
-		browser.click("id=AddInstruction");
-		Thread.sleep(100);
-		
-		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
-		browser.select("id=keyword", "label=" + valToSelect); //Need to open the testCaseName field on the UI
+		TestUtility.createNewSuiteAndTest(browser, testName);
 		
 		browser.type("//input[@id='ImportInput1']", exportFilePath);
 		browser.click("id=importSteps");

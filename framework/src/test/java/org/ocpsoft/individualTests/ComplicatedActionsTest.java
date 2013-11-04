@@ -65,7 +65,7 @@ public class ComplicatedActionsTest {//Begin Class
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 		createTypeInputAction();
 		createClickLoginAction();
@@ -76,30 +76,36 @@ public class ComplicatedActionsTest {//Begin Class
 		
 		//Start from scratch and use the Actions we created to make a really good test.
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 		//Note, this test goes against Login.html of the example-project (not index.jsp)
 		//TODO: #DeploymentURL_HACK - we must set the URL to the example-project manually through an assignment 
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.AssignVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "deploymentURL");
 	    browser.type("//input[@id='Input2']", "new URL(\"http://localhost:8080/AppUnderTest/\")");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "Login.html"); //Note: Login.html
 	    Thread.sleep(100);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "user");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    //Prove that we can pass in new variables we create and they cascade down
@@ -120,25 +126,31 @@ public class ComplicatedActionsTest {//Begin Class
 		//Build Action for Entering a value into an input box
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "fieldID");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "UserIDInput");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "value");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "//input[@id='" + Constants.VARIABLE_INPUT_MARKER + "fieldID" + Constants.VARIABLE_INPUT_MARKER +"']");
 	    browser.type("//input[@id='Input2']", Constants.VARIABLE_INPUT_MARKER + "value" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 		
 		//Export the current Test as a new Action
@@ -150,14 +162,16 @@ public class ComplicatedActionsTest {//Begin Class
 
 	private void createClickLoginAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ClickElement);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "id");
 	    browser.type("//input[@id='Input2']", "LoginButton");
 	    browser.type("//input[@id='Input3']", "");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
@@ -167,43 +181,53 @@ public class ComplicatedActionsTest {//Begin Class
 
 	private void createPerformLoginAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "userName");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "password");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "test123");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", ACTION_TYPE_INPUT);
 	    browser.type("//input[@id='Input2']", "\"UserIDInput\", " + Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", ACTION_TYPE_INPUT);
 	    browser.type("//input[@id='Input2']", "\"passwordInput\", " + Constants.VARIABLE_INPUT_MARKER + "password" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", ACTION_CLICK_LOGIN);
 	    browser.type("//input[@id='Input2']", "");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
@@ -215,23 +239,27 @@ public class ComplicatedActionsTest {//Begin Class
 
 	private void createVerifySuccessLoginAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "userName");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "Craig");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "Should have successful login.");
 	    browser.type("//input[@id='Input2']", "other");
 	    browser.type("//input[@id='Input3']", "//div[@id='loggedInStatus']");
 	    browser.type("//input[@id='Input4']", "Welcome " + Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER + "!");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
@@ -242,15 +270,17 @@ public class ComplicatedActionsTest {//Begin Class
 
 	private void createVerifyUnsuccessLoginAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectProperty);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "Should have successful login.");
 	    browser.type("//input[@id='Input2']", "other");
 	    browser.type("//input[@id='Input3']", "//div[@id='loggedInStatus']");
 	    browser.type("//input[@id='Input4']", "Invalid login attempt");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
@@ -260,26 +290,31 @@ public class ComplicatedActionsTest {//Begin Class
 
 	private void createVerifyLoginAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "shouldBeSuccessful");
 	    browser.type("//input[@id='Input2']", "boolean");
 	    browser.type("//input[@id='Input3']", "true");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CreateVariable);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "userName");
 	    browser.type("//input[@id='Input2']", "String");
 	    browser.type("//input[@id='Input3']", "");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 		valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", Constants.VARIABLE_INPUT_MARKER + "shouldBeSuccessful" + Constants.VARIABLE_INPUT_MARKER);
 	    //TODO: Note at present we have to pass the extraInputs that these Actions require in the same UI Input as the Action itslef
 	    //TODO: And just seperate it with the Constants.ObjectDelimiter
@@ -287,6 +322,7 @@ public class ComplicatedActionsTest {//Begin Class
 	    		Constants.VARIABLE_INPUT_MARKER + "userName" + Constants.VARIABLE_INPUT_MARKER);
 	    browser.type("//input[@id='Input3']", ACTION_VERIFY_UNSUCCESSFUL_LOGIN);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 
 		//Export the current Test as a new Action
@@ -299,9 +335,11 @@ public class ComplicatedActionsTest {//Begin Class
 	private void callActionInTest(String actionName, String additionalInputs) throws InterruptedException {
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.CallAction);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", actionName);
 	    browser.type("//input[@id='Input2']", additionalInputs);
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	}
 

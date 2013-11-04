@@ -25,7 +25,7 @@ public class TestUtility {
 		}
 	}
 	
-	public static void beginNewSuiteAndTest(DefaultSelenium browser, URL deploymentURL) throws InterruptedException {
+	public static void OpenPageAndBeginNewSuiteAndTest(DefaultSelenium browser, URL deploymentURL) throws InterruptedException {
 		//TODO: #DeploymentURL_HACK
 		try {
 			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
@@ -39,18 +39,10 @@ public class TestUtility {
 		browser.click("id=BeginNewProject");
 		Thread.sleep(100);
 		
-		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
-		browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    TestUtility.waitForCallbackToComplete(browser, "Test Suite Named: MySuiteTest");
-	    
-	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
-	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
-	    TestUtility.waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
+		createNewSuiteAndTest(browser, null);
 	}
 
-	public static void beginNewTest(DefaultSelenium browser, URL deploymentURL, String testName) throws InterruptedException {
+	public static void openPageAndBeginNewTest(DefaultSelenium browser, URL deploymentURL, String testName) throws InterruptedException {
 		//TODO: #DeploymentURL_HACK
 		try {
 			deploymentURL = new URL(Constants.FRAMEWORK_LOCALHOST_URL);
@@ -59,14 +51,40 @@ public class TestUtility {
 		}
 				
 		browser.open(deploymentURL + "index.jsp");
-	    
+		createNewTest(browser, testName);
+	}
+	public static void createNewTest(DefaultSelenium browser, String testName) throws InterruptedException{
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginTest);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    if(testName != null && !testName.equals("")){
 	    	browser.type("//input[@id='Input1']", testName);
 	    }
 	    browser.click("id=AddInstruction");
-	    TestUtility.waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
+	    setSeleniumBackToMainPage(browser);
+	    waitForCallbackToComplete(browser, "|UP| |DOWN| AssignVariable: with name: deploymentURL");
+	}
+	
+	public static void createNewSuiteAndTest(DefaultSelenium browser, String testName) throws InterruptedException{
+		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.BeginClass);
+		browser.select("id=keyword", "label=" + valToSelect);
+		clickAddInstruction(browser);
+	    Thread.sleep(100);
+	    
+	    createNewTest(browser, testName);
+	}
+
+	public static void clickAddInstruction(DefaultSelenium browser) throws InterruptedException{
+		setSeleniumToIFrame(browser, "iFrameInputSelections");
+	    browser.click("id=AddInstruction");
+	    setSeleniumBackToMainPage(browser);
+	}
+	public static void setSeleniumToIFrame(DefaultSelenium browser, String frameID) throws InterruptedException{
+		browser.selectFrame("id=" + frameID);
+		Thread.sleep(100);
+	}
+	public static void setSeleniumBackToMainPage(DefaultSelenium browser){
+		browser.selectFrame("relative=top");
 	}
 	
 	public static void deleteTest(DefaultSelenium browser, String testName){

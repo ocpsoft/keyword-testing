@@ -116,30 +116,16 @@
        		%>
 		</select>
 		<P />
-       <div id='entireInput1'>
-       		<div id="input1Desc">with Input 1: </div> 
-       		<input type="text" id="Input1" /><P />
-       </div>
-       <div id='entireInput2'>
-	       <div id="input2Desc">with Input 2: </div> 
-    	   <input type="text" id="Input2" /><P />
-       </div>
-       <div id='entireInput3'>
-	       <div id="input3Desc">with Input 3: </div>
-    	   <input type="text" id="Input3" /><P />
-       </div>
-       <div id='entireInput4'>
-	       <div id="input4Desc">with Input 4: </div>
-     	  <input type="text" id="Input4" /><P />
-       </div>         
-       <input type="submit" id="AddInstruction" value="Add Instruction" onClick='addInstruction()' /><P />
+		
+		<div id='iframeSlot_inputs'></div> <P />
+		
        <center>
        <div id="InstructionStatus"></div><P />
        <input type="submit" id="RunTests" value="Run Tests" onClick='runTests()'/><P />
        <div id="RunTestsResults"><img src="" id="RunTestsResultsImg" /></div><P />
        <BR /><P />
        </center>
-       <div id='iframeSlot'></div>
+       <div id='iframeSlot_varList'></div>
        <input type="submit" id="exportToAction" value="Export to Action" onClick='exportToAction()' />
        <input type="text" id="exportToActionName" value="NameOfActionToCreate"/><br />
        <input type="submit" id="exportTestCase" value="Export Current Test to XML File" onClick='exportTestCase()'/>
@@ -157,67 +143,42 @@
         <script type="text/javascript">
 
         var doneRunningTests = false;
-        
-		function instruction_Selected(){
-			var dropdown = document.getElementById("keyword");
-			var keyword = dropdown.options[dropdown.selectedIndex].value;
-			hideAllInputs();
-			if(keyword == "BeginClass"){
-				updateTestCaseNames("NewClass", null);
-			} else {
-				updateTestCaseNames("NewTest", getTestCaseName());
-			}
-			showAllNecessaryInputs(keyword);
-		}
-
-		function hideAllInputs(){
-			//Make sure you clear to +1 since we started the elements out at 1 (not 0)
-			for(var x=1; x < MAX_NUMBER_OF_KEYWORD_DESCRIPTIONS +1; x++){
-				hideSpecificInput(x);
-			}
-		}
-
-		function showSpecificInput(inputNum){
-			var entireInput = document.getElementById("entireInput" + inputNum);
-			var inputDesc = document.getElementById("input" + inputNum + "Desc");
-			var input = document.getElementById("Input" + inputNum);			
-			entireInput.style.display = 'block';
-			inputDesc.style.visibility = 'visible';
-			input.style.visibility = 'visible';		
-		}
-
-		function hideSpecificInput(inputNum){
-			var entireInput = document.getElementById("entireInput" + inputNum);
-			var inputDesc = document.getElementById("input" + inputNum + "Desc");
-			var input = document.getElementById("Input" + inputNum);			
-			entireInput.style.display = 'none';
-			inputDesc.innerHTML = "Input " + inputNum;
-			input.value = "assigned_null";	
-		}
 
 		String.prototype.replaceAll = function (find, replace) {
 		    var str = this;
 		    return str.replace(new RegExp(find, 'g'), replace);
 		};
-		function showAllNecessaryInputs(keyword){
-			//First clear all input fields
-			hideAllInputs();
-
-			//Now Display all input Descriptions based on the InputConstants Map
-			//And Also Display all input default Values based on the InputConstants Map
-			//Note: We have a JUnit to confirm that the arrays will always match up in numbers (Desc and Value),
-					//So we can just use the same index for each of the arrays here.
-			var keywordDescs = keywordDescMap[keyword].split(", ");
-			var keywordVals = keywordValueMap[keyword].split(", ");
-			var quoteReplaceStr = "<%=Constants.DOUBLE_QUOTE_REPLACEMENT%>";
-			for (var i=0; i < keywordDescs.length; i++){
-				showSpecificInput(i+1);
-				document.getElementById("input" + (i+1) + "Desc").innerHTML = keywordDescs[i];
-				document.getElementById("Input" + (i+1)).value = keywordVals[i].replaceAll(quoteReplaceStr, "\"");
+        
+		function instruction_Selected(){
+			var dropdown = document.getElementById("keyword");
+			var keyword = dropdown.options[dropdown.selectedIndex].value;
+			closeInputOptionsFrame();
+			if(keyword == "BeginClass"){
+				updateTestCaseNames("NewClass", null);
+			} else {
+				updateTestCaseNames("NewTest", getTestCaseName());
 			}
+			makeInputOptionsFrame(keyword);
 		}
-
-		
+		function makeInputOptionsFrame(keyword) { 
+			   ifrm = document.createElement("IFRAME"); 
+			   ifrm.id = "iFrameInputSelections";
+			   ifrm.setAttribute("src", "iFrameInputSelections.jsp?keyword=" + keyword); 
+			   ifrm.style.width = 400+"px"; 
+			   ifrm.style.height = 330+"px"; 
+			   document.getElementById('iframeSlot_inputs').appendChild(ifrm); 
+		} 
+		function closeInputOptionsFrame() {
+        	var iframe = document.getElementById('iFrameInputSelections');
+        	iframe.parentNode.removeChild(iframe);
+     	}
+		function mySerialize(obj) {
+			var str = [];
+			for(var p in obj)
+				str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+			return str.join("&");
+		}
+				
 		function doGET(GetURL){
 			var myObj = null;
 			var xmlhttp = null;
@@ -358,10 +319,10 @@
 		function makeVariableChoiceFrame(variables) { 
 			   ifrm = document.createElement("IFRAME"); 
 			   ifrm.id = "varListIframe";
-			   ifrm.setAttribute("src", "variableList.html?variables=" + variables); 
+			   ifrm.setAttribute("src", "iFrameVariableList.html?variables=" + variables); 
 			   ifrm.style.width = 430+"px"; 
 			   ifrm.style.height = (120+(variables.split(",").length * 22))+"px"; 
-			   document.getElementById('iframeSlot').appendChild(ifrm); 
+			   document.getElementById('iframeSlot_varList').appendChild(ifrm); 
 		} 
 		function closeVariableChoiceFrame() {
            	var iframe = document.getElementById('varListIframe');
@@ -410,6 +371,18 @@
 				testCaseName = "assigned_null";
 			}
 			return testCaseName;
+		}
+		function setTestCaseName(testName){
+			var selectObject = document.getElementById('testCaseName');
+			//See if the name we want is in there
+			for (var i=0; i < selectObject.options.length; i++){
+				if(selectObject.options[i].innerText = testName){
+					selectObject.selectedIndex = i;
+					return;
+				}
+			}
+			//Not in the list yet, so add it and select it
+			selectObject.options[selectObject.options.length] = new Option(testName,i);
 		}
 
 		function updateTestSuiteDisplay(testSuiteText){
@@ -560,42 +533,25 @@
 			clearDivs();
 			document.getElementById('testSuite').innerHTML = returnVal;		
 		}
-		
-		function getAllInputValuesAsXML(){
-			var inputArray = "<InputsList>";
-			var count = 1;
 
-			var e = document.getElementById("Input" + count);
-			while (e != null){
-				if (e.value != "assigned_null"){
-					inputArray += "<Input>" + e.value + "</Input>";
-				}
-				count ++;
-				e = document.getElementById("Input" + count);
-			}
-			inputArray = inputArray + "</InputsList>";
-			return inputArray;
-		}
-
-		function addInstruction(){
+		function addInstruction(className, inputsAsXML){
 			var e = document.getElementById("keyword");
 			var keyword = e.options[e.selectedIndex].value;
 			//alert("keyword = " + keyword + ", input1: " + input1 + ", input2: " + input2);
 
 			if(keyword == "BeginClass"){
-				document.getElementById("className").value = document.getElementById("Input1").value;
+				document.getElementById("className").value = className;
 			}
 			
 			if(typeof(document.getElementById("className").value) === 'undefined' || document.getElementById("className").value == ''){
 				document.getElementById('testSuite').innerHTML = "<font color = 'red'>ERROR: You must start a Test Sutie First.  No instruction was added.</font>"
 			}
 			else{
-				postInstruction(keyword, getAllInputValuesAsXML());
+				postInstruction(keyword, inputsAsXML);
 			}
 		}
 		function addInstructionCallBack(output){
 			if(output.indexOf("ERROR") == -1){
-				updateTestCaseNames("NewTest", document.getElementById("Input1").value);
 				getTestSuite();
 			} else {
 				//There was an error, display it in the status:
@@ -603,10 +559,9 @@
 			}
 		}
 
-		hideAllInputs();
 		document.getElementById('testCaseDiv').style.visibility = 'hidden';	
-		showAllNecessaryInputs("BeginClass");
-		document.getElementById("Input1").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
+		makeInputOptionsFrame("BeginClass");
+		//document.getElementById("Input1").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
 		document.getElementById("className").value = "MySuiteTest"; //Default, will be changed when AddInstruction of BeginClass
 	   	document.getElementById("deleteSuite").value = "Delete Suite : " + document.getElementById("className").value;
 		</script>

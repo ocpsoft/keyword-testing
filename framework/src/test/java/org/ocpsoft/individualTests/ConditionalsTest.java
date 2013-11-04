@@ -53,7 +53,7 @@ public class ConditionalsTest {//Begin Class
 		File actionsFile = new File(actionsFilePath);
 		Assert.assertTrue("Actions File doesn't exist and we're starting fresh", !actionsFile.exists());
 		
-		TestUtility.beginNewSuiteAndTest(browser, deploymentURL);
+		TestUtility.OpenPageAndBeginNewSuiteAndTest(browser, deploymentURL);
 		
 		createFalseAction();
 		createTrueAction();
@@ -131,30 +131,34 @@ public class ConditionalsTest {//Begin Class
 	}//End Test Case
 	
 	private void buildTest() throws InterruptedException {
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 	    
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.OpenBrowser);
 	    browser.select("id=keyword", "label=" + valToSelect);
 	    Thread.sleep(100);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    //True condition only
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "0==0");
 	    browser.type("//input[@id='Input2']", "trueAction");
 	    browser.type("//input[@id='Input3']", "");
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	    
 	    //True and false condition
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.ConditionalBranch);
 	    browser.select("id=keyword", "label=" + valToSelect);
+	    TestUtility.setSeleniumToIFrame(browser, "iFrameInputSelections");
 	    browser.type("//input[@id='Input1']", "0==1");
 	    browser.type("//input[@id='Input2']", "trueAction");
 	    browser.type("//input[@id='Input3']", "falseAction");	    
 	    browser.click("id=AddInstruction");
+	    TestUtility.setSeleniumBackToMainPage(browser);
 	    Thread.sleep(100);
 	}
 
@@ -166,16 +170,16 @@ public class ConditionalsTest {//Begin Class
 	
 	private void createTrueAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 		String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.EnterTextInInput);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.SelectDropdownValue);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    exportToAction("trueAction");
@@ -183,11 +187,11 @@ public class ConditionalsTest {//Begin Class
 
 	private void createFalseAction() throws InterruptedException {
 		TestUtility.deleteTest(browser, null);
-		TestUtility.beginNewTest(browser, deploymentURL, null);
+		TestUtility.openPageAndBeginNewTest(browser, deploymentURL, null);
 		
 	    String valToSelect = Constants.KEYWORD_LONGNAMES.get(KEYWORD_KEYS.VerifyObjectIsDisplayed);
 	    browser.select("id=keyword", "label=" + valToSelect);
-	    browser.click("id=AddInstruction");
+	    TestUtility.clickAddInstruction(browser);
 	    Thread.sleep(100);
 	    
 	    exportToAction("falseAction");
